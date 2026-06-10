@@ -3,563 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stardew Craft: Ultimate Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <title>EcoFazenda: Simulador Realista 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'VT323', monospace;
-            font-size: 24px;
-            text-align: center;
-            background-color: #1a110b;
-            background-image: radial-gradient(#2e1f14 20%, transparent 20%);
-            background-size: 16px 16px;
-            color: #fff8eb;
+            font-family: 'Roboto', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
             margin: 0;
-            padding: 10px;
+            padding: 0;
+            overflow: hidden; /* O jogo ocupa a tela toda */
             user-select: none;
-            overflow: hidden;
-        }
-        
-        h1 { 
-            margin: 2px 0; 
-            color: #ffcc00; 
-            font-size: 42px; 
-            text-shadow: 3px 3px 0px #4a2f13;
         }
 
-        /* Top HUD de Sobrevivência */
-        .hud-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .hud-box {
-            background-color: #b97038;
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-size: 26px;
-            color: #fff1d4;
-            border: 4px solid #4a2a14;
-            box-shadow: inset -3px -3px 0px #82471d, inset 3px 3px 0px #e69d65;
-            text-shadow: 2px 2px 0px #3c1f0b;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Barra de Energia Vertical clássica */
-        .energia-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 18px;
-        }
-        .energia-barra-fundo {
-            width: 20px;
-            height: 100px;
-            background-color: #4a1414;
-            border: 3px solid #4a2a14;
-            border-radius: 4px;
-            position: relative;
-        }
-        .energia-barra-preenchimento {
-            width: 100%;
-            height: 100%;
-            background-color: #2ecc71;
+        /* HUD Superior */
+        #hud-top {
             position: absolute;
-            bottom: 0;
-            transition: height 0.2s, background-color 0.3s;
-        }
-        
-        canvas {
-            background-color: #4a7027;
-            cursor: crosshair;
-            border: 6px solid #4a2a14;
-            border-radius: 12px;
-            image-rendering: pixelated;
-            box-shadow: 0px 6px 0px rgba(0,0,0,0.6);
-        }
-
-        /* Hotbar de Itens inferior estilo Minecraft/Stardew */
-        .hotbar-container {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .hotbar {
-            display: flex;
-            background: #2b180a;
-            padding: 6px;
-            border-radius: 8px;
-            border: 4px solid #5c3418;
-            gap: 4px;
-        }
-        
-        .slot {
-            background: #cc8443;
-            color: #fff1d4;
-            width: 70px;
-            height: 70px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid #733e17;
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-            box-shadow: inset 2px 2px 0px #e69d65;
-        }
-        
-        .slot.selecionado { 
-            border-color: #ffffff; 
-            background: #ffebd1;
-            color: #3c1f0b;
-            box-shadow: 0px 0px 10px #ffcc00, inset 2px 2px 0px #ffffff;
-        }
-        
-        .slot .tecla-atalho {
-            position: absolute;
-            top: 2px;
-            left: 4px;
-            font-size: 14px;
-            color: rgba(0,0,0,0.4);
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 30px;
+            border-radius: 50px;
+            border: 2px solid #2ecc71;
+            font-size: 24px;
             font-weight: bold;
+            display: flex;
+            gap: 20px;
+            z-index: 100;
         }
-        .slot.selecionado .tecla-atalho { color: rgba(0,0,0,0.6); }
-        .slot span { font-size: 28px; }
-        .slot .custo { font-size: 14px; font-weight: bold; color: #4a2a14;}
+
+        .status-alerta { color: #e74c3c; animation: piscar 1s infinite; }
+        @keyframes piscar { 50% { opacity: 0.5; } }
+
+        /* Barra de Ferramentas Inferior */
+        .toolbar-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .titulo-toolbar { font-size: 14px; color: #bdc3c7; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            background: rgba(44, 62, 80, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #7f8c8d;
+        }
+
+        .btn-ferramenta {
+            background: #95a5a6;
+            color: #2c3e50;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border: 3px solid #7f8c8d;
+            border-radius: 8px;
+            font-family: inherit;
+            width: 110px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-ferramenta:hover { background: #bdc3c7; transform: translateY(-3px);}
+        
+        .btn-ferramenta.selecionado { 
+            border-color: #ffffff; 
+            background: #ecf0f1;
+            transform: scale(1.05);
+            box-shadow: 0px 5px 15px rgba(255,255,255,0.3);
+        }
+        
+        .btn-ferramenta span { font-size: 28px; margin-bottom: 5px; }
+        .btn-ferramenta .custo { font-size: 11px; color: #7f8c8d; margin-top: 3px; }
+        .btn-ferramenta.selecionado .custo { color: #2c3e50; }
 
         #mensagem {
-            font-size: 26px;
-            color: #ff4a4a;
-            text-shadow: 2px 2px 0px #000;
-            margin-top: 5px;
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #e74c3c;
+            font-weight: bold;
+            z-index: 100;
             height: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
-        #dica { font-size: 16px; color: #8a8a8a; margin-top: 2px; }
+
+        /* Container do Three.js */
+        #banco-jogo {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
     </style>
 </head>
 <body>
 
-    <h1>✨ Stardew Craft: RPG Edition ✨</h1>
-
-    <div class="hud-container">
-        <div class="hud-box">🪙 <span id="moedas">50</span>g</div>
-        <div class="hud-box">📅 Dia <span id="dia">1</span> - <span id="relogio">06:00</span></div>
-        <div class="hud-box energia-container">
-            ⚡E
-            <div class="energia-barra-fundo">
-                <div id="energiaBarra" class="energia-barra-preenchimento"></div>
-            </div>
-        </div>
-    </div>
-
-    <canvas id="jogoCanvas" width="600" height="400"></canvas>
-
-    <div class="hotbar-container">
-        <div class="hotbar">
-            <div class="slot selecionado" id="slot-1" onclick="trocarSlot(1, 'safra')">
-                <div class="tecla-atalho">1</div>
-                <span>🌾</span><div class="custo">5g</div>
-            </div>
-            <div class="slot" id="slot-2" onclick="trocarSlot(2, 'agro')">
-                <div class="tecla-atalho">2</div>
-                <span>🧪</span><div class="custo">5g</div>
-            </div>
-            <div class="slot" id="slot-3" onclick="trocarSlot(3, 'arvore')">
-                <div class="tecla-atalho">3</div>
-                <span>🌳</span><div class="custo">12g</div>
-            </div>
-            <div class="slot" id="slot-4" onclick="trocarSlot(4, 'bio')">
-                <div class="tecla-atalho">4</div>
-                <span>🧫</span><div class="custo">8g</div>
-            </div>
-            <div class="slot" id="slot-5" onclick="trocarSlot(5, 'enxada')">
-                <div class="tecla-atalho">5</div>
-                <span>🪓</span><div class="custo">0g</div>
-            </div>
-        </div>
+    <div id="hud-top">
+        <div>🪙 Moedas: <span id="moedas">40</span></div>
+        <div>🌍 Saúde do Solo: <span id="solo">100</span>%</div>
     </div>
 
     <div id="mensagem"></div>
-    <div id="dica">Controles: <b>WASD / Setas</b> para andar. Teclas <b>1 a 5</b> selecionam ferramentas. Clique perto para agir.</div>
+
+    <div id="banco-jogo"></div>
+
+    <div class="toolbar-container">
+        <div class="titulo-toolbar">⚙️ BARRA DE FERRAMENTAS PRO</div>
+        <div class="toolbar">
+            <button class="btn-ferramenta selecionado" id="f-safra" onclick="selecionarFerramenta('safra', this)">
+                <span>🌾</span>Safra
+                <div class="custo">Custa: 5$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-agro" onclick="selecionarFerramenta('agro', this)">
+                <span>🧪</span>Agrotóxico
+                <div class="custo">Custa: 5$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-arvore" onclick="selecionarFerramenta('arvore', this)">
+                <span>🌳</span>Reflorestar
+                <div class="custo">Custa: 12$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-bio" onclick="selecionarFerramenta('bio', this)">
+                <span>🧫</span>Bioferti.
+                <div class="custo">Custa: 8$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-enxada" onclick="selecionarFerramenta('enxada', this)">
+                <span>🪓</span>Limpar/Colher
+                <div class="custo">Custa: 2$</div>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        const canvas = document.getElementById('jogoCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Mundo Expandido
-        const tamanhoCélula = 50;
-        const colunasMundo = 24;
-        const linhasMundo = 24;
-        const larguraMundo = colunasMundo * tamanhoCélula;
-        const alturaMundo = linhasMundo * tamanhoCélula;
+        // --- CONFIGURAÇÃO BÁSICA DO THREE.JS (REALISTA) ---
+        let cena, camera, renderizador, raycaster;
+        let ground, player;
+        let gradeMeshes = []; // Guarda os objetos 3D das safras/árvores
 
-        // IDs dos Blocos: 0=Grama, 1=Terra Arada, 2=Safra Crescendo, 3=Safra Pronta, 4=Árvore, 5=Pedra de Minério, 6=Safra Química
-        let gradeMundo = [];
-        for (let i = 0; i < colunasMundo; i++) {
-            gradeMundo[i] = [];
-            for (let j = 0; j < linhasMundo; j++) {
-                let rand = Math.random();
-                if (rand > 0.92) gradeMundo[i][j] = 5; // Gera Pedras
-                else if (rand > 0.85) gradeMundo[i][j] = 4; // Gera Árvores Nativas
-                else if (rand > 0.60) gradeMundo[i][j] = 1; // Terra arada vazia
-                else gradeMundo[i][j] = 0; // Grama
-            }
-        }
+        const tamanhoGrade = 10;
+        const tamanhoCélula = 2; // Tamanho de cada bloco no mundo 3D
+        const larguraMundo = tamanhoGrade * tamanhoCélula;
 
-        // Jogador
-        let jogador = {
-            x: larguraMundo / 2,
-            y: alturaMundo / 2,
-            velocidade: 4,
-            tamanho: 22,
-            energia: 100,
-            maxEnergia: 100
-        };
-
-        // Tempo e Economia
-        let moedas = 50;
+        let moedas = 40;
         let saudeSolo = 100;
-        let ferramentaSelecionada = 'safra';
-        let slotAtivo = 1;
+        let ferramentaSelecionada = 'safra'; 
         let jogoAtivo = true;
-        let teclas = {};
-        
-        // Relógio do Jogo
-        let tempo = { dia: 1, hora: 6, minuto: 0 };
+        let mousedown = false;
+        let mouse = new THREE.Vector2();
 
-        // Textos flutuantes para efeitos visuais (+10g, -4 Energia)
-        let textosFlutuantes = [];
-
-        // Mapeamento de Ferramentas por Teclado (1-5)
-        const ferramentasPorSlot = {
-            1: 'safra',
-            2: 'agro',
-            3: 'arvore',
-            4: 'bio',
-            5: 'enxada'
-        };
-
-        window.addEventListener('keydown', e => {
-            teclas[e.key.toLowerCase()] = true;
-            if (['1','2','3','4','5'].includes(e.key)) {
-                trocarSlot(parseInt(e.key), ferramentasPorSlot[e.key]);
+        // Dados do Jogo (A grade ainda é lógica)
+        let gradeDados = [];
+        for (let i = 0; i < tamanhoGrade; i++) {
+            gradeDados[i] = [];
+            gradeMeshes[i] = [];
+            for (let j = 0; j < tamanhoGrade; j++) {
+                gradeDados[i][j] = 0; // 0=Vazio
+                gradeMeshes[i][j] = null; // Nenhum objeto 3D ainda
             }
-        });
-        window.addEventListener('keyup', e => teclas[e.key.toLowerCase()] = false);
-
-        function trocarSlot(num, ferramenta) {
-            slotAtivo = num;
-            ferramentaSelecionada = ferramenta;
-            document.querySelectorAll('.slot').forEach(s => s.classList.remove('selecionado'));
-            document.getElementById(`slot-${num}`).classList.add('selecionado');
         }
 
-        function adicionarTextoFlutuante(txt, x, y, cor) {
-            textosFlutuantes.push({ txt: txt, x: x, y: y, alfa: 1, yVel: -1 });
+        init3D();
+        animar();
+
+        function init3D() {
+            // 1. Cena e Câmera
+            cena = new THREE.Scene();
+            cena.background = new THREE.Color(0xa0a0a0); // Cor do céu básica
+            cena.fog = new THREE.Fog(0xa0a0a0, 10, 50); // Neblina para profundidade realista
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(larguraMundo / 2, 10, larguraMundo + 5); // Posição isométrica/superior
+            camera.lookAt(larguraMundo / 2, 0, larguraMundo / 2);
+
+            // 2. Renderizador (com sombras e antialiasing para realismo)
+            renderizador = new THREE.WebGLRenderer({ antialias: true });
+            renderizador.setSize(window.innerWidth, window.innerHeight);
+            renderizador.shadowMap.enabled = true; // Habilitar sombras
+            renderizador.shadowMap.type = THREE.PCFSoftShadowMap; // Sombras suaves
+            document.getElementById('banco-jogo').appendChild(renderizador.domElement);
+
+            // 3. Iluminação Realista
+            const luzAmbiente = new THREE.AmbientLight(0xffffff, 0.5); // Luz suave global
+            cena.add(luzAmbiente);
+
+            const luzSol = new THREE.DirectionalLight(0xffffff, 1); // Luz solar forte
+            luzSol.position.set(10, 20, 10);
+            luzSol.castShadow = true; // Sol projeta sombras
+            // Configuração da área de sombra
+            luzSol.shadow.camera.left = -20;
+            luzSol.shadow.camera.right = 20;
+            luzSol.shadow.camera.top = 20;
+            luzSol.shadow.camera.bottom = -20;
+            cena.add(luzSol);
+
+            // 4. Solo Realista
+            // PlaneGeometry é o padrão para chão
+            const geometrySolo = new THREE.PlaneGeometry(larguraMundo, larguraMundo);
+            // MeshStandardMaterial reage à luz de forma realista (PBR)
+            const materialSolo = new THREE.MeshStandardMaterial({ 
+                color: 0x795548, // Marrom terra
+                roughness: 1, // Muito áspero (sem brilho)
+                metalness: 0  // Não metálico
+            });
+            ground = new THREE.Mesh(geometrySolo, materialSolo);
+            ground.rotation.x = -Math.PI / 2; // Deitar o plano
+            ground.position.set(larguraMundo / 2 - tamanhoCélula/2, 0, larguraMundo / 2 - tamanhoCélula/2);
+            ground.receiveShadow = true; // O chão recebe sombras
+            cena.add(ground);
+
+            // 5. Jogador (Um avatar simples, mas 3D)
+            const geometryPlayer = new THREE.CylinderGeometry(0.5, 0.5, 2, 16);
+            const materialPlayer = new THREE.MeshStandardMaterial({ color: 0x2980b9 });
+            player = new THREE.Mesh(geometryPlayer, materialPlayer);
+            player.position.set(0, 1, 0); // Altura dos pés no chão
+            player.castShadow = true;
+            cena.add(player);
+
+            // 6. Raycaster para interação do mouse
+            raycaster = new THREE.Raycaster();
+
+            // Eventos
+            window.addEventListener('resize', onWindowResize, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+            window.addEventListener('mousedown', () => mousedown = true);
+            window.addEventListener('mouseup', onMouseUp);
         }
 
-        // Clique de Ação
-        canvas.addEventListener('mousedown', function(e) {
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderizador.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            // Normaliza as coordenadas do mouse para o raycaster (-1 a +1)
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        // --- LÓGICA DO JOGO E MODELAGEM 3D DINÂMICA ---
+
+        function onMouseUp(event) {
+            mousedown = false;
             if (!jogoAtivo) return;
 
-            if (jogador.energia <= 0) {
-                mostrarMensagem("Você está exausto! Precisa dormir para recuperar as energias.");
-                return;
-            }
+            // 1. Atualizar o raio com a posição do mouse e câmera
+            raycaster.setFromCamera(mouse, camera);
 
-            const rect = canvas.getBoundingClientRect();
-            const cameraX = jogador.x - canvas.width / 2;
-            const cameraY = jogador.y - canvas.height / 2;
-            
-            const mundoX = (e.clientX - rect.left) + cameraX;
-            const mundoY = (e.clientY - rect.top) + cameraY;
+            // 2. Calcular objetos interceptados (apenas o chão nos interessa)
+            const intersects = raycaster.intersectObject(ground);
 
-            const bX = Math.floor(mundoX / tamanhoCélula);
-            const bY = Math.floor(mundoY / tamanhoCélula);
+            if (intersects.length > 0) {
+                const pontoIntersecao = intersects[0].point;
 
-            if(bX < 0 || bX >= colunasMundo || bY < 0 || bY >= linhasMundo) return;
+                // 3. Converter ponto 3D em coordenadas da grade lógica
+                const gx = Math.round(pontoIntersecao.x / tamanhoCélula);
+                const gz = Math.round(pontoIntersecao.z / tamanhoCélula);
 
-            // Checar proximidade (Raio de ação do jogador)
-            const dist = Math.hypot((bX * tamanhoCélula + 25) - jogador.x, (bY * tamanhoCélula + 25) - jogador.y);
-            if (dist > tamanhoCélula * 2.2) {
-                mostrarMensagem("Muito longe!");
-                return;
-            }
-
-            let bloco = gradeMundo[bX][bY];
-            let acaoEfetuada = false;
-
-            // Lógica Avançada de Ferramentas e Recursos
-            if (ferramentaSelecionada === 'safra' && bloco === 1 && moedas >= 5) {
-                moedas -= 5;
-                gradeMundo[bX][bY] = 2; // Planta Semente
-                acaoEfetuada = true;
-            } 
-            else if (ferramentaSelecionada === 'agro' && bloco === 2 && moedas >= 5) {
-                moedas -= 5;
-                gradeMundo[bX][bY] = 6; // Torna Química
-                acaoEfetuada = true;
-            } 
-            else if (ferramentaSelecionada === 'arvore' && (bloco === 0 || bloco === 1) && moedas >= 12) {
-                moedas -= 12;
-                gradeMundo[bX][bY] = 4; // Nasce Árvore
-                acaoEfetuada = true;
-            } 
-            else if (ferramentaSelecionada === 'bio' && moedas >= 8) {
-                moedas -= 8;
-                saudeSolo = Math.min(100, saudeSolo + 15);
-                adicionarTextoFlutuante("+15 Solo", mundoX, mundoY, '#2ecc71');
-                acaoEfetuada = true;
-            } 
-            else if (ferramentaSelecionada === 'enxada') {
-                if (bloco === 3) { // Colher Planta Pronta
-                    moedas += 15;
-                    gradeMundo[bX][bY] = 1;
-                    adicionarTextoFlutuante("+15g", mundoX, mundoY, '#f1c40f');
-                    acaoEfetuada = true;
-                } else if (bloco === 6) { // Colher Planta Química (Dá mais dinheiro, destrói o solo)
-                    moedas += 28;
-                    gradeMundo[bX][bY] = 1;
-                    saudeSolo = Math.max(0, saudeSolo - 10);
-                    adicionarTextoFlutuante("+28g", mundoX, mundoY, '#9b59b6');
-                    acaoEfetuada = true;
-                } else if (bloco === 4) { // Cortar Árvore (Madeira/Coleta)
-                    moedas += 8;
-                    gradeMundo[bX][bY] = 1;
-                    adicionarTextoFlutuante("+8g Madeira", mundoX, mundoY, '#da9e5f');
-                    acaoEfetuada = true;
-                } else if (bloco === 5) { // Minar Pedra
-                    moedas += 20;
-                    gradeMundo[bX][bY] = 1;
-                    adicionarTextoFlutuante("+20g Pedra/Carvão", mundoX, mundoY, '#bdc3c7');
-                    acaoEfetuada = true;
-                } else if (bloco === 0) { // Capinar grama para virar terra
-                    gradeMundo[bX][bY] = 1;
-                    acaoEfetuada = true;
+                if (gx >= 0 && gx < tamanhoGrade && gz >= 0 && gz < tamanhoGrade) {
+                    executarFerramenta(gx, gz);
                 }
             }
-
-            if (acaoEfetuada) {
-                jogador.energia = Math.max(0, jogador.energia - 4);
-                adicionarTextoFlutuante("-4 E", jogador.x, jogador.y - 20, '#ff7675');
-                atualizarUI();
-            }
-        });
-
-        function mostrarMensagem(txt) {
-            const div = document.getElementById('mensagem');
-            div.innerText = txt;
-            setTimeout(() => { if(jogoAtivo) div.innerText = ""; }, 2500);
         }
 
-        // Relógio e crescimento das plantações
+        function executarFerramenta(x, z) {
+            const blocoAtual = gradeDados[x][z];
+            let acaoRealizada = false;
+
+            if (ferramentaSelecionada === 'safra' && blocoAtual === 0 && moedas >= 5) {
+                moedas -= 5;
+                gradeDados[x][z] = 1; // Safra Comum
+                criarModelo3D(x, z, 'safra');
+                acaoRealizada = true;
+            } 
+            else if (ferramentaSelecionada === 'agro' && blocoAtual === 1 && moedas >= 5) {
+                moedas -= 5;
+                gradeDados[x][z] = 3; // Safra Química
+                atualizarModelo3D(x, z, 'quimica');
+                acaoRealizada = true;
+            } 
+            else if (ferramentaSelecionada === 'arvore' && blocoAtual === 0 && moedas >= 12) {
+                moedas -= 12;
+                gradeDados[x][z] = 2; // Árvore
+                criarModelo3D(x, z, 'arvore');
+                acaoRealizada = true;
+            } 
+            else if (ferramentaSelecionada === 'bio' && blocoAtual === 0 && moedas >= 8) {
+                moedas -= 8;
+                saudeSolo = Math.min(100, saudeSolo + 12);
+                acaoRealizada = true;
+                // Efeito visual 3D rápido (ex: lampejo no chão) poderia ser adicionado aqui
+            } 
+            else if (ferramentaSelecionada === 'enxada' && blocoAtual !== 0 && moedas >= 2) {
+                moedas -= 2;
+                gradeDados[x][z] = 0; 
+                removerModelo3D(x, z);
+                acaoRealizada = true;
+            }
+
+            if (acaoRealizada) atualizarUI();
+        }
+
+        // --- GESTÃO DE MODELOS 3D (Substitui o desenharGrade 2D) ---
+
+        function criarModelo3D(x, z, tipo) {
+            let mesh;
+            const px = x * tamanhoCélula;
+            const pz = z * tamanhoCélula;
+
+            if (tipo === 'safra') {
+                // Modelo simples de planta (cone verde)
+                const geometry = new THREE.ConeGeometry(0.4, 1, 8);
+                const material = new THREE.MeshStandardMaterial({ color: 0x2ecc71, roughness: 0.8 });
+                mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(px, 0.5, pz); // Cone base no chão
+            } 
+            else if (tipo === 'arvore') {
+                // Modelo simples de árvore (tronco + copa)
+                mesh = new THREE.Group(); // Agrupar múltiplas formas
+
+                const geometryTronco = new THREE.CylinderGeometry(0.2, 0.2, 1.5, 8);
+                const materialTronco = new THREE.MeshStandardMaterial({ color: 0x5d4037 });
+                const tronco = new THREE.Mesh(geometryTronco, materialTronco);
+                tronco.position.y = 0.75;
+                tronco.castShadow = true;
+                mesh.add(tronco);
+
+                const geometryCopa = new THREE.SphereGeometry(0.8, 12, 12);
+                const materialCopa = new THREE.MeshStandardMaterial({ color: 0x1a531c, roughness: 0.9 });
+                const copa = new THREE.Mesh(geometryCopa, materialCopa);
+                copa.position.y = 2;
+                copa.castShadow = true;
+                mesh.add(copa);
+
+                mesh.position.set(px, 0, pz);
+            }
+
+            if (mesh) {
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                cena.add(mesh);
+                gradeMeshes[x][z] = mesh;
+            }
+        }
+
+        function atualizarModelo3D(x, z, novoEstado) {
+            const mesh = gradeMeshes[x][z];
+            if (!mesh) return;
+
+            if (novoEstado === 'quimica') {
+                // Mudar cor da safra para laranja/roxo químico
+                mesh.material.color.setHex(0xe67e22);
+                
+                // Adicionar pequenas "partículas" roxas ao redor
+                const geometryPart = new THREE.SphereGeometry(0.1, 4, 4);
+                const materialPart = new THREE.MeshBasicMaterial({ color: 0x9b59b6 });
+                const part = new THREE.Mesh(geometryPart, materialPart);
+                part.position.set(0.3, 0.5, 0.3);
+                mesh.add(part); // Adiciona como filho da planta principal
+            }
+        }
+
+        function removerModelo3D(x, z) {
+            const mesh = gradeMeshes[x][z];
+            if (mesh) {
+                cena.remove(mesh); // Remove da cena 3D
+                // É boa prática limpar a geometria e material da memória em jogos grandes
+                // mesh.geometry.dispose(); mesh.material.dispose(); 
+                gradeMeshes[x][z] = null;
+            }
+        }
+
+        // --- CICLO DE TEMPO E UI (Mantidos da lógica original) ---
+
+        function selecionarFerramenta(ferramenta, elemento) {
+            ferramentaSelecionada = ferramenta;
+            document.querySelectorAll('.btn-ferramenta').forEach(b => b.classList.remove('selecionado'));
+            elemento.classList.add('selecionado');
+        }
+
         setInterval(() => {
             if (!jogoAtivo) return;
 
-            // Avança o tempo
-            tempo.minuto += 10;
-            if (tempo.minuto >= 60) {
-                tempo.minuto = 0;
-                tempo.hora++;
-            }
-            if (tempo.hora >= 24) {
-                tempo.hora = 0;
-                tempo.dia++;
-                // Novo dia restaura um pouco de energia naturalmente se foi dormir cedo
-                jogador.energia = jogador.maxEnergia;
-                mostrarMensagem("🌅 Um novo dia amanheceu no vale!");
-            }
+            let safrasComuns = 0;
+            let safrasAgro = 0;
+            let arvores = 0;
 
-            // Desmaiar às 02:00 da manhã
-            if (tempo.hora === 2 && tempo.minuto === 0) {
-                jogador.energia = 50; // Penalidade de energia
-                moedas = Math.max(0, moedas - 20); // Taxa médica do Dr. Harvey
-                tempo.hora = 6;
-                tempo.minuto = 0;
-                tempo.dia++;
-                mostrarMensagem("⚰️ Você desmaiou de sono! O médico te cobrou 20g.");
-            }
-
-            // Lógica de crescimento aleatório de safras
-            for (let i = 0; i < colunasMundo; i++) {
-                for (let j = 0; j < linhasMundo; j++) {
-                    if (gradeMundo[i][j] === 2 && Math.random() > 0.6) {
-                        gradeMundo[i][j] = 3; // Trigo cresceu e está pronto para colher!
-                    }
+            for (let i = 0; i < tamanhoGrade; i++) {
+                for (let j = 0; j < tamanhoGrade; j++) {
+                    if (gradeDados[i][j] === 1) safrasComuns++;
+                    if (gradeDados[i][j] === 3) safrasAgro++;
+                    if (gradeDados[i][j] === 2) arvores++;
                 }
             }
 
+            moedas += (safrasComuns * 3) + (safrasAgro * 10); 
+            saudeSolo -= (safrasComuns * 2) + (safrasAgro * 8);
+            saudeSolo += (arvores * 4);
+
+            if (saudeSolo > 100) saudeSolo = 100;
+
             atualizarUI();
-            checarFimDeJogo();
-        }, 1200);
+            verificarFimDeJogo();
+        }, 2000);
 
         function atualizarUI() {
             document.getElementById('moedas').innerText = moedas;
-            document.getElementById('dia').innerText = tempo.dia;
+            const spanSolo = document.getElementById('solo');
+            spanSolo.innerText = saudeSolo;
             
-            let mStr = tempo.minuto === 0 ? "00" : tempo.minuto;
-            let hStr = tempo.hora < 10 ? "0" + tempo.hora : tempo.hora;
-            document.getElementById('relogio').innerText = `${hStr}:${mStr}`;
-
-            // Atualiza Barra de Energia
-            let pctEnergia = (jogador.energia / jogador.maxEnergia) * 100;
-            const bEnergia = document.getElementById('energiaBarra');
-            bEnergia.style.height = pctEnergia + "%";
-            if (pctEnergia < 25) bEnergia.style.backgroundColor = '#ff4a4a';
-            else if (pctEnergia < 50) bEnergia.style.backgroundColor = '#f1c40f';
-            else bEnergia.style.backgroundColor = '#2ecc71';
+            if (saudeSolo <= 30) spanSolo.className = 'status-alerta';
+            else spanSolo.className = '';
         }
 
-        // Loop de Renderização Principal (60 FPS)
-        function loopPrincipal() {
-            // Movimentação
-            if (jogoAtivo) {
-                let velAtual = jogador.energia <= 0 ? 1.2 : jogador.velocidade; // Exaustão diminui velocidade
-                if (teclas['w'] || teclas['arrowup']) jogador.y -= velAtual;
-                if (teclas['s'] || teclas['arrowdown']) jogador.y += velAtual;
-                if (teclas['a'] || teclas['arrowleft']) jogador.x -= velAtual;
-                if (teclas['d'] || teclas['arrowright']) jogador.x += velAtual;
-
-                // Colisão com as bordas do Mundo Aberto
-                jogador.x = Math.max(jogador.tamanho, Math.min(larguraMundo - jogador.tamanho, jogador.x));
-                jogador.y = Math.max(jogador.tamanho, Math.min(alturaMundo - jogador.tamanho, jogador.y));
-            }
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const cameraX = jogador.x - canvas.width / 2;
-            const cameraY = Math.max(0, jogador.y - canvas.height / 2);
-
-            // 1. DESENHAR O MAPA MUNDI
-            for (let i = 0; i < colunasMundo; i++) {
-                for (let j = 0; j < linhasMundo; j++) {
-                    let cx = i * tamanhoCélula - cameraX;
-                    let cy = j * tamanhoCélula - cameraY;
-
-                    if (cx + tamanhoCélula < 0 || cx > canvas.width || cy + tamanhoCélula < 0 || cy > canvas.height) continue;
-
-                    let bloco = gradeMundo[i][j];
-
-                    // Desenha Solo Base
-                    if (bloco === 0) {
-                        ctx.fillStyle = '#5c8a36'; // Grama viva
-                        ctx.fillRect(cx, cy, tamanhoCélula, tamanhoCélula);
-                    } else {
-                        ctx.fillStyle = '#734d26'; // Terra arada rica
-                        ctx.fillRect(cx, cy, tamanhoCélula, tamanhoCélula);
-                        ctx.fillStyle = '#593a1c';
-                        ctx.fillRect(cx + 4, cy + 20, tamanhoCélula - 8, 4); // Textura de sulco
-                    }
-
-                    // Elementos sobrepostos pixelados
-                    if (bloco === 2) { // Brotando
-                        ctx.fillStyle = '#78e08f';
-                        ctx.fillRect(cx + 22, cy + 30, 6, 12);
-                    } 
-                    else if (bloco === 3) { // Trigo Maduro Pronto
-                        ctx.fillStyle = '#f39c12';
-                        ctx.fillRect(cx + 18, cy + 15, 6, 25);
-                        ctx.fillRect(cx + 28, cy + 10, 6, 30);
-                        ctx.fillStyle = '#f1c40f';
-                        ctx.fillRect(cx + 15, cy + 10, 20, 5);
-                    } 
-                    else if (bloco === 4) { // Árvore Grande
-                        ctx.fillStyle = '#4e3629'; // Tronco
-                        ctx.fillRect(cx + 21, cy + 22, 8, 22);
-                        ctx.fillStyle = '#27ae60'; // Folhagem
-                        ctx.beginPath(); ctx.arc(cx + 25, cy + 16, 16, 0, Math.PI*2); ctx.fill();
-                    } 
-                    else if (bloco === 5) { // Pedra de Minério
-                        ctx.fillStyle = '#7f8c8d'; // Pedra
-                        ctx.fillRect(cx + 12, cy + 16, 26, 24);
-                        ctx.fillStyle = '#f1c40f'; // Pepitas de ouro dentro
-                        ctx.fillRect(cx + 18, cy + 22, 6, 6);
-                        ctx.fillRect(cx + 28, cy + 28, 4, 4);
-                    }
-                    else if (bloco === 6) { // Safra Química Mutante
-                        ctx.fillStyle = '#8e44ad'; // Roxa radioativa
-                        ctx.fillRect(cx + 16, cy + 16, 18, 24);
-                        ctx.fillStyle = '#2ecc71';
-                        ctx.fillRect(cx + 22, cy + 8, 6, 8);
-                    }
-
-                    // Linha sutil de grid estilo sandbox
-                    ctx.strokeStyle = 'rgba(0,0,0,0.04)';
-                    ctx.strokeRect(cx, cy, tamanhoCélula, tamanhoCélula);
-                }
-            }
-
-            // 2. DESENHAR O JOGADOR (Fazendeiro Pixel)
-            let jtX = jogador.x - cameraX;
-            let jtY = jogador.y - cameraY;
-
-            ctx.fillStyle = 'rgba(0,0,0,0.15)'; // Sombra redonda
-            ctx.beginPath(); ctx.ellipse(jtX, jtY + 12, 12, 5, 0, 0, Math.PI*2); ctx.fill();
-
-            ctx.fillStyle = '#3498db'; // Jardineira Jeans
-            ctx.fillRect(jtX - 8, jtY - 4, 16, 16);
-            ctx.fillStyle = '#ffdbac'; // Pele
-            ctx.fillRect(jtX - 6, jtY - 14, 12, 10);
-            ctx.fillStyle = '#e67e22'; // Cabelo/Chapéu
-            ctx.fillRect(jtX - 10, jtY - 17, 20, 4);
-
-            // Ferramenta na mão visualmente ativa
-            ctx.fillStyle = '#bdc3c7';
-            ctx.fillRect(jtX + 6, jtY, 4, 8);
-
-            // 3. ILUMINAÇÃO DINÂMICA (Efeito Avançado de Ciclo Dia/Noite)
-            // Filtro de cor por cima do Canvas dependendo do horário
-            let filtroAlfa = 0;
-            let filtroCor = "10, 10, 50"; // Tom azul escuro de noite
-
-            if (tempo.hora >= 18 && tempo.hora < 20) { // Entardecer
-                filtroAlfa = 0.25; filtroCor = "230, 126, 34"; // Laranja
-            } else if (tempo.hora >= 20 || tempo.hora < 4) { // Noite Escura
-                filtroAlfa = 0.55; // Escurece bastante
-            } else if (tempo.hora >= 4 && tempo.hora < 6) { // Alvorecer
-                filtroAlfa = 0.2; filtroCor = "155, 89, 182"; // Roxo sutil
-            }
-
-            if (filtroAlfa > 0) {
-                ctx.fillStyle = `rgba(${filtroCor}, ${filtroAlfa})`;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-
-            // 4. PROCESSAR E RENDERIZAR TEXTOS FLUTUANTES
-            for (let k = textosFlutuantes.length - 1; k >= 0; k--) {
-                let t = textosFlutuantes[k];
-                ctx.fillStyle = t.cor || '#ffffff';
-                ctx.font = "bold 22px 'VT323'";
-                ctx.fillText(t.txt, t.x - cameraX, t.y - cameraY);
-                t.y += t.yVel;
-                t.alfa -= 0.02;
-                if (t.alfa <= 0) textosFlutuantes.splice(k, 1);
-            }
-
-            requestAnimationFrame(loopPrincipal);
-        }
-
-        function checarFimDeJogo() {
+        function verificarFimDeJogo() {
+            const divMensagem = document.getElementById('mensagem');
+            
             if (saudeSolo <= 0) {
+                saudeSolo = 0;
+                atualizarUI();
                 jogoAtivo = false;
-                document.getElementById('mensagem').innerText = "🚨 O solo do Vale desertificou por excesso de químicos. Fim de jogo! 🥀";
-            } else if (moedas >= 500) {
+                divMensagem.innerText = "🚨 Solo esgotado e infértil! Manejo insustentável. 🥀";
+            } else if (moedas >= 400) {
                 jogoAtivo = false;
-                const msg = document.getElementById('mensagem');
-                msg.style.color = '#5aff5a';
-                msg.innerText = "🏆 Lendário! Você alcançou o topo da economia agrícola sustentável do vale!";
+                divMensagem.style.color = '#2ecc71';
+                divMensagem.innerText = "🏆 Incrível! Fazenda equilibrada e próspera!";
             }
         }
 
-        // Inicializar
-        atualizarUI();
-        loopPrincipal();
+        // Loop de Animação 3D (Obrigatório para Three.js)
+        function animar() {
+            requestAnimationFrame(animar);
+
+            // Pequena animação do jogador para dar vida
+            if(jogoAtivo) {
+                player.rotation.y += 0.01;
+                player.position.y = 1 + Math.sin(Date.now() * 0.005) * 0.1; // Flutuar levemente
+            }
+
+            renderizador.render(cena, camera);
+        }
+
     </script>
 </body>
 </html>
