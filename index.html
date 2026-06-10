@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoFazenda: Sistema de Ferramentas</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            background-color: #2c3e50;
+            color: white;
+            margin-top: 20px;
+            user-select: none;
+        }
+        h1 { margin: 0; color: #2ecc71; }
+        p { margin: 5px 0 20px 0; color: #bdc3c7; }
+        
+        #painel {
+            background-color: #34495e;
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #7f8c8d;
+        }
+        
+        .status-alerta { color: #e74c3c; animation: piscar 1s infinite; }
+        @keyframes piscar { 50% { opacity: 0.5; } }
+        
+        canvas {
+            background-color: #8d6e63;
+            cursor: pointer;
+            border: 4px solid #ecf0f1;
+            border-radius: 4px;
+            image-rendering: pixelated;
+        }
+
+        /* Estilização da Barra de Ferramentas */
+        .toolbar-container {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        .titulo-toolbar {
+            font-size: 14px;
+            color: #bdc3c7;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            background: #34495e;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #bdc3c7;
+            max-width: 600px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn-ferramenta {
+            background: #95a5a6;
+            color: #2c3e50;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            border: 3px solid #7f8c8d;
+            border-radius: 6px;
+            font-family: inherit;
+            width: 110px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.1s;
+        }
+        .btn-ferramenta:hover { background: #bdc3c7; }
+        .btn-ferramenta.selecionado { 
+            border-color: #ffffff; 
+            background: #ecf0f1;
+            transform: scale(1.05);
+            box-shadow: 0px 0px 10px rgba(255,255,255,0.5);
+        }
+        .btn-ferramenta span { font-size: 20px; margin-bottom: 4px; }
+        .btn-ferramenta .custo { font-size: 10px; color: #7f8c8d; margin-top: 3px; }
+        .btn-ferramenta.selecionado .custo { color: #2c3e50; }
+
+        #mensagem {
+            font-size: 22px;
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 20px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🌱 EcoFazenda: Simulador Agroecológico</h1>
+    <p>Alcance 400 moedas gerenciando os recursos e ferramentas da sua terra!</p>
+
+    <div id="painel">
+        🪙 Moedas: <span id="moedas">40</span> | 
+        🌍 Saúde Geral do Solo: <span id="solo">100</span>%
+    </div>
+
+    <br>
+    <canvas id="jogoCanvas" width="400" height="400"></canvas>
+
+    <div class="toolbar-container">
+        <div class="titulo-toolbar">⚙️ BARRA DE FERRAMENTAS</div>
+        <div class="toolbar">
+            <button class="btn-ferramenta selecionado" id="f-safra" onclick="selecionarFerramenta('safra', this)">
+                <span>🌾</span>Safra
+                <div class="custo">Custa: 5$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-agro" onclick="selecionarFerramenta('agro', this)">
+                <span>🧪</span>Agrotóxico
+                <div class="custo">Custa: 5$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-arvore" onclick="selecionarFerramenta('arvore', this)">
+                <span>🌳</span>Reflorestar
+                <div class="custo">Custa: 12$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-bio" onclick="selecionarFerramenta('bio', this)">
+                <span>🧫</span>Bioferti.
+                <div class="custo">Custa: 8$</div>
+            </button>
+            <button class="btn-ferramenta" id="f-enxada" onclick="selecionarFerramenta('enxada', this)">
+                <span>🪓</span>Limpar/Colher
+                <div class="custo">Custa: 2$</div>
+            </button>
+        </div>
+    </div>
+
+    <div id="mensagem"></div>
+
+    <script>
+        const canvas = document.getElementById('jogoCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const tamanhoGrade = 8;
+        const tamanhoCélula = canvas.width / tamanhoGrade;
+        let grade = [];
+        
+        let moedas = 40;
+        let saudeSolo = 100;
+        let ferramentaSelecionada = 'safra'; 
+        let jogoAtivo = true;
+
+        // Inicializa a grade (0 = Terra limpa)
+        for (let i = 0; i < tamanhoGrade; i++) {
+            grade[i] = [];
+            for (let j = 0; j < tamanhoGrade; j++) {
+                grade[i][j] = 0;
+            }
+        }
+
+        function selecionarFerramenta(ferramenta, elemento) {
+            ferramentaSelecionada = ferramenta;
+            document.querySelectorAll('.btn-ferramenta').forEach(b => b.classList.remove('selecionado'));
+            elemento.classList.add('selecionado');
+        }
+
+        // Lógica de clique e uso das ferramentas
+        canvas.addEventListener('mousedown', function(e) {
+            if (!jogoAtivo) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / tamanhoCélula);
+            const y = Math.floor((e.clientY - rect.top) / tamanhoCélula);
+
+            const blocoAtual = grade[x][y];
+
+            // Execução das Ferramentas
+            if (ferramentaSelecionada === 'safra' && blocoAtual === 0 && moedas >= 5) {
+                moedas -= 5;
+                grade[x][y] = 1; // Planta Safra Comum
+            } 
+            else if (ferramentaSelecionada === 'agro' && blocoAtual === 1 && moedas >= 5) {
+                moedas -= 5;
+                grade[x][y] = 3; // Transforma em Safra Química
+            } 
+            else if (ferramentaSelecionada === 'arvore' && blocoAtual === 0 && moedas >= 12) {
+                moedas -= 12;
+                grade[x][y] = 2; // Planta Árvore
+            } 
+            else if (ferramentaSelecionada === 'bio' && blocoAtual === 0 && moedas >= 8) {
+                // Biofertilizante age diretamente nutrindo a terra vazia instantaneamente
+                moedas -= 8;
+                saudeSolo += 12; 
+                if (saudeSolo > 100) saudeSolo = 100;
+                // Efeito visual rápido de lampejo piscando pode ser simulado atualizando a UI
+            } 
+            else if (ferramentaSelecionada === 'enxada' && blocoAtual !== 0 && moedas >= 2) {
+                moedas -= 2;
+                grade[x][y] = 0; // Limpa o bloco (colheita ou erradicação)
+            }
+
+            atualizarUI();
+            desenharGrade();
+        });
+
+        // Ciclo de tempo (Turnos automáticos da natureza)
+        setInterval(() => {
+            if (!jogoAtivo) return;
+
+            let safrasComuns = 0;
+            let safrasAgro = 0;
+            let arvores = 0;
+
+            for (let i = 0; i < tamanhoGrade; i++) {
+                for (let j = 0; j < tamanhoGrade; j++) {
+                    if (grade[i][j] === 1) safrasComuns++;
+                    if (grade[i][j] === 3) safrasAgro++;
+                    if (grade[i][j] === 2) arvores++;
+                }
+            }
+
+            // Impactos por ciclo
+            moedas += (safrasComuns * 3) + (safrasAgro * 10); 
+            saudeSolo -= (safrasComuns * 2) + (safrasAgro * 8);
+            saudeSolo += (arvores * 4);
+
+            if (saudeSolo > 100) saudeSolo = 100;
+
+            atualizarUI();
+            verificarFimDeJogo();
+        }, 2000);
+
+        // Renderização Gráfica
+        function desenharGrade() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < tamanhoGrade; i++) {
+                for (let j = 0; j < tamanhoGrade; j++) {
+                    
+                    if (grade[i][j] === 0) {
+                        ctx.fillStyle = '#8d6e63'; // Terra Comum
+                    } else if (grade[i][j] === 1) {
+                        ctx.fillStyle = '#f1c40f'; // Safra Comum (Amarela)
+                    } else if (grade[i][j] === 2) {
+                        ctx.fillStyle = '#2ecc71'; // Árvore (Verde)
+                    } else if (grade[i][j] === 3) {
+                        ctx.fillStyle = '#e67e22'; // Safra com Agrotóxico (Laranja)
+                    }
+                    
+                    ctx.fillRect(i * tamanhoCélula, j * tamanhoCélula, tamanhoCélula - 2, tamanhoCélula - 2);
+                    
+                    // Detalhes "Pixel Art" adicionais para as ferramentas aplicadas
+                    if (grade[i][j] === 3) { // Agrotóxico ganha pontos roxos químicos
+                        ctx.fillStyle = '#9b59b6';
+                        ctx.fillRect(i * tamanhoCélula + 15, j * tamanhoCélula + 15, 16, 16);
+                    }
+                    if (grade[i][j] === 2) { // Árvore ganha um tronco centralizado
+                        ctx.fillStyle = '#5d4037';
+                        ctx.fillRect(i * tamanhoCélula + 20, j * tamanhoCélula + 35, 8, 12);
+                    }
+                }
+            }
+        }
+
+        function atualizarUI() {
+            document.getElementById('moedas').innerText = moedas;
+            const spanSolo = document.getElementById('solo');
+            spanSolo.innerText = saudeSolo;
+            
+            if (saudeSolo <= 30) {
+                spanSolo.className = 'status-alerta';
+            } else {
+                spanSolo.className = '';
+            }
+        }
+
+        function verificarFimDeJogo() {
+            const divMensagem = document.getElementById('mensagem');
+            
+            if (saudeSolo <= 0) {
+                saudeSolo = 0;
+                atualizarUI();
+                jogoAtivo = false;
+                divMensagem.innerText = "🚨 Solo esgotado e infértil por falta de manejo sustentável! 🥀";
+            } else if (moedas >= 400) {
+                jogoAtivo = false;
+                divMensagem.style.color = '#2ecc71';
+                divMensagem.innerText = "🏆 Incrível! Você usou as ferramentas certas e equilibrou a fazenda!";
+            }
+        }
+
+        desenharGrade();
+        atualizarUI();
+    </script>
+</body>
+</html>
