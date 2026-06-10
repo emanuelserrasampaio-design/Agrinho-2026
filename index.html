@@ -3,139 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoFazenda: Sistema de Ferramentas</title>
+    <title>Stardew Valley Eco-Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
             text-align: center;
-            background-color: #2c3e50;
-            color: white;
-            margin-top: 20px;
+            background-color: #2b1d12; /* Fundo escuro rústico */
+            background-image: radial-gradient(#402b1c 20%, transparent 20%), radial-gradient(#402b1c 20%, transparent 20%);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+            color: #fff8eb;
+            margin: 0;
+            padding: 20px;
             user-select: none;
         }
-        h1 { margin: 0; color: #2ecc71; }
-        p { margin: 5px 0 20px 0; color: #bdc3c7; }
         
-        #painel {
-            background-color: #34495e;
-            padding: 15px;
-            border-radius: 8px;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            border: 2px solid #7f8c8d;
+        h1 { 
+            margin: 10px 0 0 0; 
+            color: #ffcc00; 
+            font-size: 56px; 
+            text-shadow: 4px 4px 0px #4a2f13;
+            letter-spacing: 2px;
         }
         
-        .status-alerta { color: #e74c3c; animation: piscar 1s infinite; }
+        p { 
+            margin: 5px 0 20px 0; 
+            color: #da9e5f; 
+            font-size: 26px;
+            text-shadow: 2px 2px 0px #000;
+        }
+        
+        /* Painel Estilo Menu do Stardew Valley (Madeira Rústica) */
+        #painel {
+            background-color: #b97038;
+            padding: 15px 30px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 32px;
+            color: #fff1d4;
+            border: 6px solid #4a2a14;
+            box-shadow: inset -4px -4px 0px #82471d, inset 4px 4px 0px #e69d65, 0px 6px 0px rgba(0,0,0,0.4);
+            text-shadow: 2px 2px 0px #3c1f0b;
+        }
+        
+        .status-alerta { color: #ff3b3b; animation: piscar 1s infinite; text-shadow: 2px 2px 0px #000; }
         @keyframes piscar { 50% { opacity: 0.5; } }
         
         canvas {
-            background-color: #8d6e63;
+            background-color: #5c4028;
             cursor: pointer;
-            border: 4px solid #ecf0f1;
-            border-radius: 4px;
+            border: 8px solid #4a2a14;
+            border-radius: 12px;
             image-rendering: pixelated;
+            box-shadow: 0px 8px 0px rgba(0,0,0,0.5);
         }
 
-        /* Estilização da Barra de Ferramentas */
+        /* Container da Barra de Ferramentas / Inventário inferior */
         .toolbar-container {
-            margin-top: 15px;
+            margin-top: 25px;
             display: flex;
             justify-content: center;
             flex-direction: column;
             align-items: center;
         }
+        
         .titulo-toolbar {
-            font-size: 14px;
-            color: #bdc3c7;
-            margin-bottom: 5px;
-            text-transform: uppercase;
+            font-size: 24px;
+            color: #f1b26b;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0px #000;
+            letter-spacing: 1px;
         }
+        
+        /* Inventário de Madeira Escura */
         .toolbar {
             display: flex;
-            gap: 10px;
-            background: #34495e;
+            gap: 8px;
+            background: #2b180a;
             padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #bdc3c7;
-            max-width: 600px;
+            border-radius: 10px;
+            border: 6px solid #5c3418;
+            max-width: 650px;
             flex-wrap: wrap;
             justify-content: center;
+            box-shadow: inset 0px 4px 8px rgba(0,0,0,0.6), 0px 4px 0px rgba(0,0,0,0.3);
         }
+        
+        /* Slots de itens tipo inventário RPG */
         .btn-ferramenta {
-            background: #95a5a6;
-            color: #2c3e50;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 13px;
+            background: #cc8443;
+            color: #fff1d4;
+            padding: 5px;
+            font-size: 22px;
+            font-family: 'VT323', monospace;
             cursor: pointer;
-            border: 3px solid #7f8c8d;
+            border: 4px solid #733e17;
             border-radius: 6px;
-            font-family: inherit;
-            width: 110px;
-            height: 80px;
+            width: 105px;
+            height: 90px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            transition: 0.1s;
+            justify-content: space-between;
+            box-shadow: inset 2px 2px 0px #e69d65, inset -2px -2px 0px #9e5622;
+            transition: transform 0.1s;
         }
-        .btn-ferramenta:hover { background: #bdc3c7; }
+        
+        .btn-ferramenta:hover { 
+            background: #df9653; 
+        }
+        
+        /* Slot selecionado ganha a famosa borda vermelha/branca brilhante de seleção */
         .btn-ferramenta.selecionado { 
-            border-color: #ffffff; 
-            background: #ecf0f1;
+            border-color: #ffcc00; 
+            background: #ffebd1;
+            color: #3c1f0b;
             transform: scale(1.05);
-            box-shadow: 0px 0px 10px rgba(255,255,255,0.5);
+            box-shadow: inset 3px 3px 0px #ffffff, inset -3px -3px 0px #cca100, 0px 0px 12px #ffcc00;
         }
-        .btn-ferramenta span { font-size: 20px; margin-bottom: 4px; }
-        .btn-ferramenta .custo { font-size: 10px; color: #7f8c8d; margin-top: 3px; }
-        .btn-ferramenta.selecionado .custo { color: #2c3e50; }
+        
+        .btn-ferramenta span { font-size: 34px; line-height: 1; margin-top: 5px; }
+        .btn-ferramenta .custo { font-size: 18px; color: #523014; font-weight: bold; }
+        .btn-ferramenta.selecionado .custo { color: #804b1c; }
 
         #mensagem {
-            font-size: 22px;
-            color: #e74c3c;
-            font-weight: bold;
-            margin-top: 20px;
-            height: 30px;
+            font-size: 32px;
+            color: #ff4a4a;
+            text-shadow: 2px 2px 0px #000;
+            margin-top: 25px;
+            height: 40px;
         }
     </style>
 </head>
 <body>
 
-    <h1>🌱 EcoFazenda: Simulador Agroecológico</h1>
-    <p>Alcance 400 moedas gerenciando os recursos e ferramentas da sua terra!</p>
+    <h1>👨‍🌾 Stardew EcoFazenda 👩‍🌾</h1>
+    <p>Gere 400 moedas cuidando do solo do vale de forma sustentável!</p>
 
     <div id="painel">
         🪙 Moedas: <span id="moedas">40</span> | 
-        🌍 Saúde Geral do Solo: <span id="solo">100</span>%
+        🌱 Saúde do Solo: <span id="solo">100</span>%
     </div>
 
     <br>
     <canvas id="jogoCanvas" width="400" height="400"></canvas>
 
     <div class="toolbar-container">
-        <div class="titulo-toolbar">⚙️ BARRA DE FERRAMENTAS</div>
+        <div class="titulo-toolbar">🎒 INVENTÁRIO DE FERRAMENTAS</div>
         <div class="toolbar">
             <button class="btn-ferramenta selecionado" id="f-safra" onclick="selecionarFerramenta('safra', this)">
                 <span>🌾</span>Safra
-                <div class="custo">Custa: 5$</div>
+                <div class="custo">5g</div>
             </button>
             <button class="btn-ferramenta" id="f-agro" onclick="selecionarFerramenta('agro', this)">
-                <span>🧪</span>Agrotóxico
-                <div class="custo">Custa: 5$</div>
+                <span>🧪</span>Veneno
+                <div class="custo">5g</div>
             </button>
             <button class="btn-ferramenta" id="f-arvore" onclick="selecionarFerramenta('arvore', this)">
-                <span>🌳</span>Reflorestar
-                <div class="custo">Custa: 12$</div>
+                <span>🌳</span>Árvore
+                <div class="custo">12g</div>
             </button>
             <button class="btn-ferramenta" id="f-bio" onclick="selecionarFerramenta('bio', this)">
-                <span>🧫</span>Bioferti.
-                <div class="custo">Custa: 8$</div>
+                <span>🧫</span>Adubo
+                <div class="custo">8g</div>
             </button>
             <button class="btn-ferramenta" id="f-enxada" onclick="selecionarFerramenta('enxada', this)">
-                <span>🪓</span>Limpar/Colher
-                <div class="custo">Custa: 2$</div>
+                <span>🪓</span>Colher
+                <div class="custo">2g</div>
             </button>
         </div>
     </div>
@@ -155,7 +192,7 @@
         let ferramentaSelecionada = 'safra'; 
         let jogoAtivo = true;
 
-        // Inicializa a grade (0 = Terra limpa)
+        // Inicializa a grade (0 = Terra arada)
         for (let i = 0; i < tamanhoGrade; i++) {
             grade[i] = [];
             for (let j = 0; j < tamanhoGrade; j++) {
@@ -169,7 +206,7 @@
             elemento.classList.add('selecionado');
         }
 
-        // Lógica de clique e uso das ferramentas
+        // Cliques no Canvas
         canvas.addEventListener('mousedown', function(e) {
             if (!jogoAtivo) return;
 
@@ -177,38 +214,38 @@
             const x = Math.floor((e.clientX - rect.left) / tamanhoCélula);
             const y = Math.floor((e.clientY - rect.top) / tamanhoCélula);
 
+            // Proteção contra cliques fora dos limites
+            if(x < 0 || x >= tamanhoGrade || y < 0 || y >= tamanhoGrade) return;
+
             const blocoAtual = grade[x][y];
 
-            // Execução das Ferramentas
             if (ferramentaSelecionada === 'safra' && blocoAtual === 0 && moedas >= 5) {
                 moedas -= 5;
                 grade[x][y] = 1; // Planta Safra Comum
             } 
             else if (ferramentaSelecionada === 'agro' && blocoAtual === 1 && moedas >= 5) {
                 moedas -= 5;
-                grade[x][y] = 3; // Transforma em Safra Química
+                grade[x][y] = 3; // Safra Química
             } 
             else if (ferramentaSelecionada === 'arvore' && blocoAtual === 0 && moedas >= 12) {
                 moedas -= 12;
                 grade[x][y] = 2; // Planta Árvore
             } 
             else if (ferramentaSelecionada === 'bio' && blocoAtual === 0 && moedas >= 8) {
-                // Biofertilizante age diretamente nutrindo a terra vazia instantaneamente
                 moedas -= 8;
                 saudeSolo += 12; 
                 if (saudeSolo > 100) saudeSolo = 100;
-                // Efeito visual rápido de lampejo piscando pode ser simulado atualizando a UI
             } 
             else if (ferramentaSelecionada === 'enxada' && blocoAtual !== 0 && moedas >= 2) {
                 moedas -= 2;
-                grade[x][y] = 0; // Limpa o bloco (colheita ou erradicação)
+                grade[x][y] = 0; // Limpa/Colhe
             }
 
             atualizarUI();
             desenharGrade();
         });
 
-        // Ciclo de tempo (Turnos automáticos da natureza)
+        // Ciclo da Fazenda (Turnos)
         setInterval(() => {
             if (!jogoAtivo) return;
 
@@ -224,7 +261,6 @@
                 }
             }
 
-            // Impactos por ciclo
             moedas += (safrasComuns * 3) + (safrasAgro * 10); 
             saudeSolo -= (safrasComuns * 2) + (safrasAgro * 8);
             saudeSolo += (arvores * 4);
@@ -233,34 +269,74 @@
 
             atualizarUI();
             verificarFimDeJogo();
+            desenharGrade(); // Redesenha em tempo de ciclo para atualizações visuais se necessário
         }, 2000);
 
-        // Renderização Gráfica
+        // Renderização Pixel Art Estilizada
         function desenharGrade() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
             for (let i = 0; i < tamanhoGrade; i++) {
                 for (let j = 0; j < tamanhoGrade; j++) {
+                    let cx = i * tamanhoCélula;
+                    let cy = j * tamanhoCélula;
+
+                    // 1. Renderizar Base da Terra Arada rústica
+                    ctx.fillStyle = '#66462c';
+                    ctx.fillRect(cx, cy, tamanhoCélula, tamanhoCélula);
                     
-                    if (grade[i][j] === 0) {
-                        ctx.fillStyle = '#8d6e63'; // Terra Comum
-                    } else if (grade[i][j] === 1) {
-                        ctx.fillStyle = '#f1c40f'; // Safra Comum (Amarela)
-                    } else if (grade[i][j] === 2) {
-                        ctx.fillStyle = '#2ecc71'; // Árvore (Verde)
-                    } else if (grade[i][j] === 3) {
-                        ctx.fillStyle = '#e67e22'; // Safra com Agrotóxico (Laranja)
-                    }
-                    
-                    ctx.fillRect(i * tamanhoCélula, j * tamanhoCélula, tamanhoCélula - 2, tamanhoCélula - 2);
-                    
-                    // Detalhes "Pixel Art" adicionais para as ferramentas aplicadas
-                    if (grade[i][j] === 3) { // Agrotóxico ganha pontos roxos químicos
-                        ctx.fillStyle = '#9b59b6';
-                        ctx.fillRect(i * tamanhoCélula + 15, j * tamanhoCélula + 15, 16, 16);
-                    }
-                    if (grade[i][j] === 2) { // Árvore ganha um tronco centralizado
-                        ctx.fillStyle = '#5d4037';
-                        ctx.fillRect(i * tamanhoCélula + 20, j * tamanhoCélula + 35, 8, 12);
+                    // Pequenas linhas escuras simulando terra cultivada
+                    ctx.fillStyle = '#4d331f';
+                    ctx.fillRect(cx + 4, cy + 12, tamanhoCélula - 8, 3);
+                    ctx.fillRect(cx + 4, cy + 24, tamanhoCélula - 8, 3);
+                    ctx.fillRect(cx + 4, cy + 36, tamanhoCélula - 8, 3);
+
+                    // Bordas das células internas (grid sutil)
+                    ctx.strokeStyle = '#543923';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(cx, cy, tamanhoCélula, tamanhoCélula);
+
+                    // 2. Renderizar os Elementos por cima da terra
+                    if (grade[i][j] === 1) { 
+                        // Safra Comum (Trigo Amarelado Pixelado)
+                        ctx.fillStyle = '#f3a93a';
+                        ctx.fillRect(cx + 12, cy + 15, 6, 25);
+                        ctx.fillRect(cx + 22, cy + 10, 6, 30);
+                        ctx.fillRect(cx + 32, cy + 18, 6, 22);
+                        // Pontinhas de trigo
+                        ctx.fillStyle = '#ffe391';
+                        ctx.fillRect(cx + 10, cy + 10, 10, 5);
+                        ctx.fillRect(cx + 20, cy + 5, 10, 5);
+                        ctx.fillRect(cx + 30, cy + 12, 10, 5);
+
+                    } else if (grade[i][j] === 2) { 
+                        // Árvore do Vale (Folhagem redonda e viva com graminha embaixo)
+                        // Grama na base
+                        ctx.fillStyle = '#3a5f25';
+                        ctx.fillRect(cx + 8, cy + 38, 34, 8);
+                        // Tronco
+                        ctx.fillStyle = '#3e230d';
+                        ctx.fillRect(cx + 21, cy + 20, 8, 20);
+                        // Copa da Árvore verde-floresta
+                        ctx.fillStyle = '#497c2a';
+                        ctx.beginPath();
+                        ctx.arc(cx + 25, cy + 16, 16, 0, Math.PI * 2);
+                        ctx.fill();
+                        // Brilho na folhagem
+                        ctx.fillStyle = '#65a83e';
+                        ctx.beginPath();
+                        ctx.arc(cx + 21, cy + 12, 10, 0, Math.PI * 2);
+                        ctx.fill();
+
+                    } else if (grade[i][j] === 3) { 
+                        // Safra Quimicamente Alterada (Planta Roxa/Laranja estranha)
+                        ctx.fillStyle = '#d35400';
+                        ctx.fillRect(cx + 15, cy + 15, 20, 25);
+                        // Folhas roxas radioativas mutadas pelo agrotóxico
+                        ctx.fillStyle = '#8e44ad';
+                        ctx.fillRect(cx + 10, cy + 10, 10, 12);
+                        ctx.fillRect(cx + 30, cy + 15, 10, 10);
+                        ctx.fillRect(cx + 20, cy + 5, 10, 8);
                     }
                 }
             }
@@ -285,14 +361,16 @@
                 saudeSolo = 0;
                 atualizarUI();
                 jogoAtivo = false;
-                divMensagem.innerText = "🚨 Solo esgotado e infértil por falta de manejo sustentável! 🥀";
+                divMensagem.style.color = '#ff4a4a';
+                divMensagem.innerText = "🚨 O solo morreu! O Prefeito Lewis fechou sua fazenda... 🥀";
             } else if (moedas >= 400) {
                 jogoAtivo = false;
-                divMensagem.style.color = '#2ecc71';
-                divMensagem.innerText = "🏆 Incrível! Você usou as ferramentas certas e equilibrou a fazenda!";
+                divMensagem.style.color = '#5aff5a';
+                divMensagem.innerText = "🏆 Sucesso! O Centro Comunitário foi restaurado graças a você!";
             }
         }
 
+        // Execução Inicial
         desenharGrade();
         atualizarUI();
     </script>
