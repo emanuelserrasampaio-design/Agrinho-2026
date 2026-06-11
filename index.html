@@ -3,233 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoVale: União pelo Amanhã</title>
+    <title>TerraEco: Fronteiras do Amanhã</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #1e251f;
+            background-color: #060913;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             color: white;
             flex-direction: column;
         }
         canvas {
-            border: 4px solid #2e3d30;
-            background-color: #228B22; 
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.6);
+            border: 4px solid #2c3545;
+            border-radius: 4px;
+            box-shadow: 0px 15px 35px rgba(0,0,0,0.8);
         }
         .instrucoes {
             margin-top: 15px;
             text-align: center;
-            font-size: 15px;
-            color: #a2b9a5;
+            font-size: 13px;
+            color: #8da3b3;
             line-height: 1.6;
-            max-width: 750px;
+            max-width: 800px;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="gameCanvas" width="800" height="520"></canvas>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
     
     <div class="instrucoes">
-        <strong>Controles:</strong> Mova-se com as setas ou W, A, S, D.<br>
-        <strong>Na Terra Marrom:</strong> [1] Plantar Orgânico ($10) | [2] Plantar Químico ($5) | [R] Regar | [E] Colher<br>
-        <strong>Perto da Vizinha (Rosa):</strong> Pressione <strong>[C]</strong> para Conversar / Conscientizar.
+        <strong>Controles da Fazenda Integrada:</strong> Mover: <strong>A, D</strong> | Pular: <strong>W ou ESPAÇO</strong><br>
+        <strong>Trabalho Agrícola:</strong> Pegue água no poço (esquerda) para irrigar. No lote: [J] Orgânico ($10) | [K] Químico ($5) | [R] Regar | [E] Colher<br>
+        <strong>Manejo de Animais:</strong> Aproxime-se da Vaca ou Galinha e pressione <strong>[U]</strong> para alimentá-los ou coletar produtos (Leite/Ovo).
     </div>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // Variáveis do Jogo
-        let jogador = { x: 400, y: 350, tamanho: 30, velocidade: 4 };
-        let npc = { x: 200, y: 150, tamanho: 30, nome: "Clarice (Vizinha)" };
-        
-        let dinheiro = 100;
-        let saudeEcologica = 50;   // Estado do meio ambiente (0 a 100)
-        let conscientizacao = 0;   // Progresso de conscientização da vila (0 a 100)
-        let dialogo = "Clarice: Olá! O antigo dono desta fazenda usava muito veneno... O que você vai fazer?";
+        const GRAVIDADE = 0.4;
+        let tempoAnimacao = 0;
 
-        // Estrutura do Lote de Terra
-        let lote = { x: 450, y: 120, largura: 120, altura: 120, estado: 0, progresso: 0, insumo: null };
+        // Jogador
+        let jogador = { 
+            x: 220, y: 300, largura: 26, altura: 40, 
+            velX: 0, velY: 0, velocidade: 3.5, forcaPulo: 9.5, noChao: false,
+            olhandoPara: "direita", andando: false, aguaNoBalde: false
+        };
+        
+        // NPC Clarice
+        let npc = { x: 670, y: 210, largura: 26, altura: 40, nome: "Clarice" };
+        
+        // Animais da Fazenda (Com inteligência artificial simples de caminhada)
+        let animais = [
+            { tipo: "vaca", x: 120, y: 365, largura: 38, altura: 35, velX: 0.3, direcao: 1, prontoParaColeta: true, alimentado: true },
+            { tipo: "galinha", x: 280, y: 385, largura: 16, altura: 15, velX: 0.5, direcao: -1, prontoParaColeta: true, alimentado: true }
+        ];
+
+        let chaoY = 400;
+        let plataformaNPC = { x: 620, y: 250, largura: 130, altura: 12 };
+        let areaPoco = { x: 40, y: 320, largura: 60, altura: 80 };
+
+        // 3 Lotes de Terra Distintos
+        let lotes = [
+            { id: 1, x: 200, y: 380, largura: 70, altura: 20, estado: 0, progresso: 0, insumo: null },
+            { id: 2, x: 320, y: 380, largura: 70, altura: 20, estado: 0, progresso: 0, insumo: null },
+            { id: 3, x: 440, y: 380, largura: 70, altura: 20, estado: 0, progresso: 0, insumo: null }
+        ];
+
+        let particulasAgua = [];
+        let dinheiro = 100;
+        let saudeEcologica = 50;
+        let conscientizacao = 0;
+        let dialogo = "Clarice: Animais trazem vida à fazenda! Mas lembre-se: eles adoecem se o solo e a água forem poluídos.";
 
         let teclas = {};
 
         window.addEventListener("keydown", (e) => {
             teclas[e.key.toLowerCase()] = true;
+            if (e.key === " " || e.key.toLowerCase() === "w") {
+                if (jogador.noChao) {
+                    jogador.velY = -jogador.forcaPulo;
+                    jogador.noChao = false;
+                }
+            }
             verificarInteracao(e.key.toLowerCase());
         });
+        
         window.addEventListener("keyup", (e) => {
             teclas[e.key.toLowerCase()] = false;
         });
 
         function checarColisao(objA, objB) {
             return (
-                objA.x < objB.x + (objB.largura || objB.tamanho) &&
-                objA.x + objA.tamanho > objB.x &&
-                objA.y < objB.y + (objB.altura || objB.tamanho) &&
-                objA.y + objA.tamanho > objB.y
+                objA.x < objB.x + objB.largura &&
+                objA.x + objA.largura > objB.x &&
+                objA.y < objB.y + objB.altura &&
+                objA.y + objA.altura > objB.y
             );
         }
 
         function verificarInteracao(tecla) {
-            // Interação com a TERRA
-            if (checarColisao(jogador, lote)) {
-                if (tecla === "1" && lote.estado === 0 && dinheiro >= 10) {
-                    dinheiro -= 10; lote.estado = 2; lote.insumo = "organico";
-                    saudeEcologica = Math.min(100, saudeEcologica + 8);
-                    dialogo = "Você plantou usando adubo orgânico. A terra agradece!";
-                }
-                else if (tecla === "2" && lote.estado === 0 && dinheiro >= 5) {
-                    dinheiro -= 5; lote.estado = 2; lote.insumo = "quimico";
-                    saudeEcologica = Math.max(0, saudeEcologica - 18);
-                    dialogo = "Você usou fertilizante químico pesado. O solo perdeu vida.";
-                }
-                else if (tecla === "r" && lote.estado === 2) {
-                    lote.estado = 1;
-                }
-                else if (tecla === "e" && lote.estado === 3) {
-                    dinheiro += (lote.insumo === "organico") ? 30 : 45;
-                    lote.estado = 0; lote.progresso = 0; lote.insumo = null;
-                    dialogo = "Colheita realizada com sucesso!";
+            // Poço de Água
+            if (checarColisao(jogador, areaPoco)) {
+                if (!jogador.aguaNoBalde) {
+                    jogador.aguaNoBalde = true;
+                    dialogo = "Você coletou água limpa para a irrigação.";
                 }
             }
 
-            // Interação com o NPC (CONSCIENTIZAÇÃO)
+            // Interação com Lotes
+            lotes.forEach(lote => {
+                if (checarColisao(jogador, lote)) {
+                    if (tecla === "j" && lote.estado === 0 && dinheiro >= 10) {
+                        dinheiro -= 10; lote.estado = 2; lote.insumo = "organico";
+                        saudeEcologica = Math.min(100, saudeEcologica + 4);
+                        dialogo = `Lote ${lote.id}: Adubado organicamente.`;
+                    }
+                    else if (tecla === "k" && lote.estado === 0 && dinheiro >= 5) {
+                        dinheiro -= 5; lote.estado = 2; lote.insumo = "quimico";
+                        saudeEcologica = Math.max(0, saudeEcologica - 12);
+                        dialogo = `Lote ${lote.id}: Poluído com fertilizante químico sintético.`;
+                    }
+                    else if (tecla === "r" && lote.estado === 2 && jogador.aguaNoBalde) {
+                        lote.estado = 1; jogador.aguaNoBalde = false;
+                        dialogo = `Lote ${lote.id}: Cultivo irrigado.`;
+                    }
+                    else if (tecla === "e" && lote.estado === 3) {
+                        dinheiro += (lote.insumo === "organico") ? 30 : 45;
+                        lote.estado = 0; lote.progresso = 0; lote.insumo = null;
+                        dialogo = "Colheita concluída com sucesso!";
+                    }
+                }
+            });
+
+            // Interação com Animais (Alimentar e Coletar subprodutos)
+            if (tecla === "u") {
+                animais.forEach(ani => {
+                    if (checarColisao(jogador, ani)) {
+                        if (saudeEcologica < 30) {
+                            dialogo = `A ${ani.tipo} está fraca por causa da poluição química e não pode produzir.`;
+                            return;
+                        }
+
+                        if (ani.prontoParaColeta) {
+                            if (ani.tipo === "vaca") {
+                                dinheiro += 20;
+                                dialogo = "Você ordenhou a vaca! Leite orgânico vendido por $20.";
+                            } else if (ani.tipo === "galinha") {
+                                dinheiro += 10;
+                                dialogo = "Você coletou um ovo fresco no pasto! Vendido por $10.";
+                            }
+                            ani.prontoParaColeta = false;
+                            ani.alimentado = false;
+                        } else if (!ani.alimentado) {
+                            ani.alimentado = true;
+                            ani.prontoParaColeta = true;
+                            dialogo = `Você alimentou a ${ani.tipo} com pasto limpo. Ela produzirá novamente!`;
+                        }
+                    }
+                });
+            }
+
+            // NPC Clarice
             if (checarColisao(jogador, npc) && tecla === "c") {
                 if (conscientizacao >= 100) {
-                    dialogo = "Clarice: Nós conseguimos! Toda a vila agora produz de forma sustentável!";
-                } 
+                    dialogo = "Clarice: Incrível! A integração entre plantas, solo e animais salvou nossa comunidade.";
+                }
                 else if (saudeEcologica >= 75) {
-                    if (teclas["c_pressionado"] !== true) {
-                        conscientizacao = Math.min(100, conscientizacao + 20);
-                        // Truque simples para não ganhar pontos infinitos clicando sem parar
-                        teclas["c_pressionado"] = true; 
-                    }
-                    dialogo = "Clarice: Incrível como suas plantas são lindas sem química! Vou adotar isso na minha horta!";
+                    if (!teclas["c_trava"]) { conscientizacao = Math.min(100, conscientizacao + 25); teclas["c_trava"] = true; }
+                    dialogo = "Clarice: Seus animais são saudáveis e seus lotes produzem limpo. Exemplo perfeito de agroecologia!";
                 } 
-                else if (saudeEcologica < 35) {
-                    dialogo = "Clarice: Desculpe, mas não quero conversar. A água do meu poço está contaminada pelos seus químicos...";
+                else if (saudeEcologica < 30) {
+                    dialogo = "Clarice: Olhe seus animais... Eles estão sofrendo com a toxicidade desse solo.";
                 } 
                 else {
-                    dialogo = "Clarice: É bom ver você trabalhando, mas ainda não tenho certeza se a agroecologia funciona na prática.";
+                    dialogo = "Clarice: Para mudar a vila, prove que consegue expandir a produção animal sem poluir os recursos naturais.";
                 }
             }
         }
 
         function atualizar() {
-            if (teclas["a"] || teclas["arrowleft"]) jogador.x -= jogador.velocidade;
-            if (teclas["d"] || teclas["arrowright"]) jogador.x += jogador.velocidade;
-            if (teclas["w"] || teclas["arrowup"]) jogador.y -= jogador.velocidade;
-            if (teclas["s"] || teclas["arrowdown"]) jogador.y += jogador.velocidade;
+            // Movimento Jogador
+            jogador.velX = 0; jogador.andando = false;
+            if (teclas["a"] || teclas["arrowleft"]) { jogador.velX = -jogador.velocidade; jogador.olhandoPara = "esquerda"; jogador.andando = true; }
+            if (teclas["d"] || teclas["arrowright"]) { jogador.velX = jogador.velocidade; jogador.olhandoPara = "direita"; jogador.andando = true; }
 
-            jogador.x = Math.max(0, Math.min(canvas.width - jogador.tamanho, jogador.x));
-            jogador.y = Math.max(0, Math.min(canvas.height - jogador.tamanho, jogador.y));
+            jogador.x += jogador.velX; jogador.velY += GRAVIDADE; jogador.y += jogador.velY;
 
-            // Resetar a trava do diálogo quando se afasta do NPC
-            if (!checarColisao(jogador, npc)) {
-                teclas["c_pressionado"] = false;
-            }
+            if (jogador.y + jogador.altura >= chaoY) { jogador.y = chaoY - jogador.altura; jogador.velY = 0; jogador.noChao = true; }
+            if (jogador.velY > 0 && jogador.x + jogador.largura > plataformaNPC.x && jogador.x < plataformaNPC.x + plataformaNPC.largura && jogador.y + jogador.altura >= plataformaNPC.y && jogador.y + jogador.altura - jogador.velY <= plataformaNPC.y) { jogador.y = plataformaNPC.y - jogador.altura; jogador.velY = 0; jogador.noChao = true; }
+            jogador.x = Math.max(0, Math.min(canvas.width - jogador.largura, jogador.x));
 
-            // Crescimento da planta
-            if (lote.estado === 1) {
-                lote.progresso += 0.4;
-                if (lote.progresso >= 100) lote.estado = 3;
-            }
+            if (!checarColisao(jogador, npc)) teclas["c_trava"] = false;
 
-            // Bônus Passivo: Se a vila estiver muito consciente, o meio ambiente se recupera sozinho!
-            if (conscientizacao >= 50 && Math.random() < 0.002) {
-                saudeEcologica = Math.min(100, saudeEcologica + 1);
+            // Crescimento Lotes
+            lotes.forEach(lote => { if (lote.estado === 1) { lote.progresso += 0.35; if (lote.progresso >= 100) lote.estado = 3; } });
+
+            // Movimentação Autônoma dos Animais (IA de Pastagem)
+            animais.forEach(ani => {
+                if (saudeEcologica >= 30) { // Animais só andam se estiverem saudáveis
+                    ani.x += ani.velX * ani.direcao;
+                    // Limites de caminhada para não saírem da área da fazenda
+                    if (ani.x < 110 || ani.x > 500) ani.direcao *= -1; 
+                }
+            });
+
+            tempoAnimacao += 0.05;
+
+            // Partículas do Poço
+            if (Math.random() < 0.1) { particulasAgua.push({ x: areaPoco.x + 15 + Math.random() * 30, y: areaPoco.y + 65, raio: 1 + Math.random() * 1.5, velY: 0.2 + Math.random() * 0.4 }); }
+            for (let i = particulasAgua.length - 1; i >= 0; i--) { particulasAgua[i].y -= particulasAgua[i].velY; if (particulasAgua[i].y < areaPoco.y + 45) particulasAgua.splice(i, 1); }
+        }
+
+        // --- ART DESIGN EM CANVAS (PIXEL ART GERADA VIA CÓDIGO) ---
+
+        function desenharPersonagem(ctx, x, y, corCamisa, corCabelo, olhandoPara, andando, seguroBalde) {
+            let balanco = andando ? Math.sin(tempoAnimacao * 2) * 2 : 0;
+            ctx.fillStyle = "#2c251e"; ctx.fillRect(x + 2, y + 36 + (balanco > 0 ? -2 : 0), 8, 4); ctx.fillRect(x + 14, y + 36 + (balanco < 0 ? -2 : 0), 8, 4);
+            ctx.fillStyle = "#34495e"; ctx.fillRect(x + 3, y + 26, 20, 10);
+            ctx.fillStyle = corCamisa; ctx.fillRect(x + 3, y + 14, 20, 12);
+            ctx.fillStyle = "#ffdbac"; ctx.fillRect(x + 5, y + 4, 16, 11);
+            ctx.fillStyle = corCabelo; ctx.fillRect(x + 4, y, 18, 5);
+            if (olhandoPara === "direita") {
+                ctx.fillRect(x + 16, y + 4, 6, 6); ctx.fillStyle = "#333"; ctx.fillRect(x + 14, y + 7, 3, 3);
+                if (seguroBalde) { ctx.fillStyle = jogador.aguaNoBalde ? "#3498db" : "#7f8c8d"; ctx.fillRect(x + 22, y + 20, 10, 10); }
+            } else {
+                ctx.fillRect(x + 4, y + 4, 6, 6); ctx.fillStyle = "#333"; ctx.fillRect(x + 8, y + 7, 3, 3);
+                if (seguroBalde) { ctx.fillStyle = jogador.aguaNoBalde ? "#3498db" : "#7f8c8d"; ctx.fillRect(x - 6, y + 20, 10, 10); }
             }
         }
 
-        function desenhar() {
-            // Grama
-            ctx.fillStyle = "#2E8B57";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function desenharAnimais() {
+            animais.forEach(ani => {
+                let frameBalanco = Math.sin(tempoAnimacao * 1.5) * 1.5;
+                
+                if (ani.tipo === "vaca") {
+                    // Corpo Principal (Branco/Malhado)
+                    ctx.fillStyle = (saudeEcologica < 30) ? "#7f8c8d" : "#ffffff";
+                    ctx.fillRect(ani.x, ani.y + 8, ani.largura, 20);
+                    
+                    // Manchas Pretas da Vaca (Se saudável)
+                    if (saudeEcologica >= 30) {
+                        ctx.fillStyle = "#2c3e50";
+                        ctx.fillRect(ani.x + 8, ani.y + 10, 10, 8);
+                        ctx.fillRect(ani.x + 24, ani.y + 14, 8, 10);
+                    }
+                    
+                    // Pernas com balanço
+                    ctx.fillStyle = "#d5dbdb";
+                    ctx.fillRect(ani.x + 4, ani.y + 28 + (frameBalanco > 0 ? -1 : 0), 5, 8);
+                    ctx.fillRect(ani.x + 12, ani.y + 28 + (frameBalanco < 0 ? -1 : 0), 5, 8);
+                    ctx.fillRect(ani.x + 22, ani.y + 28 + (frameBalanco > 0 ? -1 : 0), 5, 8);
+                    ctx.fillRect(ani.x + 30, ani.y + 28 + (frameBalanco < 0 ? -1 : 0), 5, 8);
 
-            // Rio decorativo (para mostrar a água que pode ser poluída)
-            ctx.fillStyle = (saudeEcologica < 35) ? "#556B2F" : "#4682B4"; // Rio fica turvo se poluído
-            ctx.fillRect(0, 0, 80, canvas.height);
+                    // Cabeça da Vaca
+                    ctx.fillStyle = (saudeEcologica < 30) ? "#626567" : "#f2f3f4";
+                    if (ani.direcao === 1) {
+                        ctx.fillRect(ani.x + ani.largura - 4, ani.y, 10, 14); // Cabeça à direita
+                        ctx.fillStyle = "#e59866"; ctx.fillRect(ani.x + ani.largura + 2, ani.y + 6, 4, 8); // Focinho
+                    } else {
+                        ctx.fillRect(ani.x - 6, ani.y, 10, 14); // Cabeça à esquerda
+                        ctx.fillStyle = "#e59866"; ctx.fillRect(ani.x - 6, ani.y + 6, 4, 8); // Focinho
+                    }
 
-            // Lote de Terra
-            ctx.fillStyle = (lote.estado === 1) ? "#5c3a21" : "#8B4513";
-            ctx.fillRect(lote.x, lote.y, lote.largura, lote.altura);
+                    // Balão indicador de subproduto pronto (Leite)
+                    if (ani.prontoParaColeta && saudeEcologica >= 30) {
+                        ctx.fillStyle = "#ffffff"; ctx.fillRect(ani.x + 10, ani.y - 18, 16, 14);
+                        ctx.fillStyle = "#3498db"; ctx.font = "bold 10px Arial"; ctx.fillText("🥛", ani.x + 12, ani.y - 7);
+                    }
 
-            // Planta
-            let cX = lote.x + lote.largura / 2;
-            let cY = lote.y + lote.altura / 2;
-            if (lote.estado === 1 || lote.estado === 2) {
-                ctx.fillStyle = "#98FB98";
-                ctx.beginPath(); ctx.arc(cX, cY, 15, 0, Math.PI * 2); ctx.fill();
-            } else if (lote.estado === 3) {
-                ctx.fillStyle = (lote.insumo === "organico") ? "#FFD700" : "#FF4500"; // Fruto dourado vs avermelhado/químico
-                ctx.beginPath(); ctx.arc(cX, cY, 25, 0, Math.PI * 2); ctx.fill();
-            }
+                } else if (ani.tipo === "galinha") {
+                    // Corpo (Branco/Amarelado)
+                    ctx.fillStyle = (saudeEcologica < 30) ? "#95a5a6" : "#f39c12";
+                    ctx.fillRect(ani.x, ani.y + 4, ani.largura, 12);
+                    
+                    // Cabeça e Crista
+                    ctx.fillStyle = (saudeEcologica < 30) ? "#7f8c8d" : "#f1c40f";
+                    if (ani.direcao === 1) {
+                        ctx.fillRect(ani.x + ani.largura - 6, ani.y - 2, 6, 8);
+                        ctx.fillStyle = "red"; ctx.fillRect(ani.x + ani.largura - 4, ani.y - 5, 4, 3); // Crista
+                    } else {
+                        ctx.fillRect(ani.x, ani.y - 2, 6, 8);
+                        ctx.fillStyle = "red"; ctx.fillRect(ani.x, ani.y - 5, 4, 3); // Crista
+                    }
 
-            // NPC (Clarice) - Cor Rosa/Roxa
-            ctx.fillStyle = "#DA70D6";
-            ctx.fillRect(npc.x, npc.y, npc.tamanho, npc.tamanho);
-            ctx.fillStyle = "white";
-            ctx.font = "12px Arial";
-            ctx.fillText("Clarice", npc.x - 5, npc.y - 5);
+                    // Perninhas finas
+                    ctx.fillStyle = "#d35400";
+                    ctx.fillRect(ani.x + 3, ani.y + 15, 2, 4);
+                    ctx.fillRect(ani.x + 10, ani.y + 15, 2, 4);
 
-            // Jogador - Cor Azul
-            ctx.fillStyle = "#1E90FF";
-            ctx.fillRect(jogador.x, jogador.y, jogador.tamanho, jogador.tamanho);
+                    // Balão indicador de subproduto pronto (Ovo)
+                    if (ani.prontoParaColeta && saudeEcologica >= 30) {
+                        ctx.fillStyle = "#ffffff"; ctx.fillRect(ani.x, ani.y - 18, 16, 14);
+                        ctx.fillStyle = "#d35400"; ctx.font = "bold 10px Arial"; ctx.fillText("🥚", ani.x + 2, ani.y - 7);
+                    }
+                }
+            });
+        }
 
-            // --- INTERFACE (HUD) ---
-            // Fundo da barra superior
-            ctx.fillStyle = "rgba(0,0,0,0.4)";
-            ctx.fillRect(0, 0, canvas.width, 90);
+        function desenharCenarioFazenda() {
+            let gradCeu = ctx.createLinearGradient(0, 0, 0, chaoY);
+            if (saudeEcologica < 30) { gradCeu.addColorStop(0, "#3e4242"); gradCeu.addColorStop(1, "#686e6b"); } 
+            else { gradCeu.addColorStop(0, "#4a8ee6"); gradCeu.addColorStop(1, "#8ec3ff"); }
+            ctx.fillStyle = gradCeu; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Textos de Status
-            ctx.fillStyle = "white";
-            ctx.font = "bold 16px Arial";
-            ctx.fillText(`Dinheiro: $${dinheiro}`, 100, 35);
+            ctx.fillStyle = (saudeEcologica < 30) ? "#ded6ba" : "#f1c40f";
+            ctx.beginPath(); ctx.arc(700, 60, 25, 0, Math.PI * 2); ctx.fill();
+
+            // Silo
+            ctx.fillStyle = "#7f8c8d"; ctx.fillRect(540, chaoY - 180, 50, 180);
+            ctx.fillStyle = "#bdc3c7"; ctx.beginPath(); ctx.arc(565, chaoY - 180, 25, Math.PI, 0); ctx.fill();
             
-            // Cor do Texto de Saúde Ecológica
-            if (saudeEcologica >= 70) ctx.fillStyle = "#7FFF00";
-            else if (saudeEcologica >= 40) ctx.fillStyle = "#FFD700";
-            else ctx.fillStyle = "#FF6347";
-            ctx.fillText(`Saúde Ecológica do Vale: ${saudeEcologica}%`, 100, 65);
+            // Cerca de Proteção
+            ctx.fillStyle = "#734020";
+            for(let cx = 110; cx < 520; cx += 30) { ctx.fillRect(cx, chaoY - 20, 4, 20); ctx.fillRect(cx, chaoY - 15, 30, 3); }
 
-            // Barra de Conscientização Coletiva
-            ctx.fillStyle = "white";
-            ctx.fillText(`Conscientização da Vila: ${conscientizacao}%`, 450, 35);
-            ctx.fillStyle = "#555";
-            ctx.fillRect(450, 45, 200, 15);
-            ctx.fillStyle = "#00FF7F";
-            ctx.fillRect(450, 45, 2 * conscientizacao, 15);
+            // Poço de Água
+            ctx.fillStyle = "#707b7c"; ctx.fillRect(areaPoco.x, areaPoco.y + 40, areaPoco.largura, 40);
+            ctx.fillStyle = "#5c3317"; ctx.fillRect(areaPoco.x + 8, areaPoco.y, 6, 40); ctx.fillRect(areaPoco.x + areaPoco.largura - 14, areaPoco.y, 6, 40);
+            ctx.fillStyle = "#e74c3c"; ctx.fillRect(areaPoco.x - 5, areaPoco.y - 5, areaPoco.largura + 10, 10);
+            ctx.fillStyle = (saudeEcologica < 30) ? "#52633d" : "#3498db"; ctx.fillRect(areaPoco.x + 10, areaPoco.y + 50, areaPoco.largura - 20, 25);
+            ctx.fillStyle = "rgba(255,255,255,0.3)"; particulasAgua.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.raio, 0, Math.PI*2); ctx.fill(); });
 
-            // Caixa de Diálogo (Inferior)
-            ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-            ctx.fillRect(20, canvas.height - 70, canvas.width - 40, 50);
-            ctx.fillStyle = "#FFF";
-            ctx.font = "italic 14px Arial";
-            ctx.fillText(dialogo, 40, canvas.height - 40);
+            // Solo Inferior e Grama
+            ctx.fillStyle = "#4a3319"; ctx.fillRect(0, chaoY, canvas.width, canvas.height - chaoY);
+            ctx.fillStyle = (saudeEcologica < 30) ? "#827144" : "#4ca63c"; ctx.fillRect(0, chaoY, canvas.width, 12);
+            for (let i = 0; i < canvas.width; i += 12) { ctx.fillRect(i, chaoY - 3, 2, 3); }
 
-            // Condição de Vitória Visual
+            // Plataforma Clarice
+            ctx.fillStyle = "#5c3317"; ctx.fillRect(plataformaNPC.x + 15, plataformaNPC.y, 8, chaoY - plataformaNPC.y); ctx.fillRect(plataformaNPC.x + plataformaNPC.largura - 23, plataformaNPC.y, 8, chaoY - plataformaNPC.y);
+            ctx.fillStyle = "#a66232"; ctx.fillRect(plataformaNPC.x, plataformaNPC.y, plataformaNPC.largura, plataformaNPC.altura);
+        }
+
+        function desenharLotesFazenda() {
+            lotes.forEach(lote => {
+                ctx.fillStyle = (lote.estado === 1) ? "#3b1e0a" : "#542e13"; ctx.fillRect(lote.x, lote.y, lote.largura, lote.altura);
+                ctx.fillStyle = "#7e5109"; ctx.fillRect(lote.x + lote.largura/2 - 2, lote.y + lote.altura, 4, 10);
+                ctx.fillStyle = "#d35400"; ctx.fillRect(lote.x + lote.largura/2 - 8, lote.y + lote.altura + 4, 16, 10);
+                ctx.fillStyle = "white"; ctx.font = "bold 9px Arial"; ctx.fillText(lote.id, lote.x + lote.largura/2 - 3, lote.y + lote.altura + 12);
+
+                let cX = lote.x + lote.largura / 2; let cY = lote.y;
+                if (lote.estado === 1 || lote.estado === 2) {
+                    ctx.fillStyle = "#a1f06c"; ctx.fillRect(cX - 2, cY - 10, 4, 10);
+                } else if (lote.estado === 3) {
+                    ctx.fillStyle = "#55ad28"; ctx.fillRect(cX - 12, cY - 14, 24, 14);
+                    ctx.fillStyle = (lote.insumo === "organico") ? "#f39c12" : "#e74c3c";
+                    if (lote.insumo === "organico") { ctx.beginPath(); ctx.arc(cX, cY - 18, 9, 0, Math.PI*2); ctx.fill(); } 
+                    else { ctx.fillRect(cX - 12, cY - 26, 24, 14); }
+                }
+            });
+        }
+
+        function desenharHUD() {
+            ctx.fillStyle = "rgba(12, 19, 36, 0.85)"; ctx.strokeStyle = "#2c3545"; ctx.lineWidth = 3;
+            ctx.fillRect(15, 15, 360, 110); ctx.strokeRect(15, 15, 360, 110);
+
+            ctx.fillStyle = "#f1c40f"; ctx.font = "bold 13px 'Courier New'"; ctx.fillText(`● RECURSOS DISPONÍVEIS: $${dinheiro}`, 30, 42);
+            ctx.fillStyle = "#ffffff"; ctx.fillText(`SAÚDE ECOLÓGICA: ${saudeEcologica}%`, 30, 68);
+            ctx.fillStyle = "#1a252f"; ctx.fillRect(205, 58, 150, 12);
+            ctx.fillStyle = (saudeEcologica < 30) ? "#e74c3c" : "#2ecc71"; ctx.fillRect(205, 58, 1.5 * saudeEcologica, 12);
+
+            ctx.fillText(`CONSCIENTIZAÇÃO:  ${conscientizacao}%`, 30, 95);
+            ctx.fillStyle = "#1a252f"; ctx.fillRect(205, 85, 150, 12);
+            ctx.fillStyle = "#3498db"; ctx.fillRect(205, 85, 1.5 * conscientizacao, 12);
+
+            ctx.fillStyle = "rgba(8, 12, 21, 0.9)"; ctx.strokeStyle = "#404b5e"; ctx.lineWidth = 2;
+            ctx.fillRect(20, 430, canvas.width - 40, 52); ctx.strokeRect(20, 430, canvas.width - 40, 52);
+            ctx.fillStyle = "#edf2f7"; ctx.font = "14px Arial"; ctx.fillText(dialogo, 40, 462);
+        }
+
+        function desenhar() {
+            desenharCenarioFazenda();
+            desenharLotesFazenda();
+            desenharAnimais();
+
+            desenharPersonagem(ctx, jogador.x, jogador.y, "#e74c3c", "#4a3319", jogador.olhandoPara, jogador.andando, true);
+            desenharPersonagem(ctx, npc.x, npc.y, "#9b59b6", "#f39c12", "esquerda", false, false);
+
+            desenharHUD();
+
             if (conscientizacao >= 100) {
-                ctx.fillStyle = "rgba(0,128,0,0.85)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "white";
-                ctx.font = "bold 30px Arial";
-                ctx.fillText("VITÓRIA ECOLÓGICA!", canvas.width/2 - 160, canvas.height/2 - 20);
-                ctx.font = "18px Arial";
-                ctx.fillText("Você conscientizou a vila inteira e garantiu o futuro do EcoVale!", canvas.width/2 - 260, canvas.height/2 + 20);
+                ctx.fillStyle = "rgba(16, 26, 20, 0.95)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = "#2ecc71"; ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+                ctx.fillStyle = "#2ecc71"; ctx.font = "bold 24px 'Courier New'"; ctx.fillText("ECOVALE SALVO E PRODUTIVO!", canvas.width/2 - 210, canvas.height/2 - 20);
+                ctx.fillStyle = "#ffffff"; ctx.font = "14px Arial";
+                ctx.fillText("Parabéns! Você estruturou uma fazenda integrada de sucesso, provando", canvas.width/2 - 250, canvas.height/2 + 15);
+                ctx.fillText("que agricultura, pecuária e a natureza prosperam juntas com respeito.", canvas.width/2 - 260, canvas.height/2 + 40);
             }
         }
 
         function loop() {
-            if (conscientizacao < 100) {
-                atualizar();
-            }
+            if (conscientizacao < 100) atualizar();
             desenhar();
             requestAnimationFrame(loop);
         }
