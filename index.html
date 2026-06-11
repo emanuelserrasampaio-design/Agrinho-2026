@@ -3,45 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoVale: Raízes do Amanhã</title>
+    <title>EcoVale: União pelo Amanhã</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #222;
+            background-color: #1e251f;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
             flex-direction: column;
         }
         canvas {
-            border: 4px solid #333;
-            background-color: #228B22; /* Cor da grama */
-            box-shadow: 0px 0px 20px rgba(0,0,0,0.5);
+            border: 4px solid #2e3d30;
+            background-color: #228B22; 
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.6);
         }
         .instrucoes {
             margin-top: 15px;
             text-align: center;
-            font-size: 16px;
-            color: #ccc;
-            line-height: 1.5;
+            font-size: 15px;
+            color: #a2b9a5;
+            line-height: 1.6;
+            max-width: 750px;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <canvas id="gameCanvas" width="800" height="520"></canvas>
     
     <div class="instrucoes">
-        <strong>Controles:</strong> Use as setas do teclado ou W, A, S, D para mover o quadrado azul.<br>
-        Fique em cima da terra marrom e pressione:<br>
-        <strong>[1]</strong> Plantar Orgânico (Custa $10, +5% Eco) | 
-        <strong>[2]</strong> Plantar Químico (Custa $5, -15% Eco)<br>
-        <strong>[R]</strong> Regar planta | 
-        <strong>[E]</strong> Colher planta madura
+        <strong>Controles:</strong> Mova-se com as setas ou W, A, S, D.<br>
+        <strong>Na Terra Marrom:</strong> [1] Plantar Orgânico ($10) | [2] Plantar Químico ($5) | [R] Regar | [E] Colher<br>
+        <strong>Perto da Vizinha (Rosa):</strong> Pressione <strong>[C]</strong> para Conversar / Conscientizar.
     </div>
 
     <script>
@@ -49,23 +47,17 @@
         const ctx = canvas.getContext("2d");
 
         // Variáveis do Jogo
-        let jogador = { x: 400, y: 250, tamanho: 30, velocidade: 4 };
+        let jogador = { x: 400, y: 350, tamanho: 30, velocidade: 4 };
+        let npc = { x: 200, y: 150, tamanho: 30, nome: "Clarice (Vizinha)" };
+        
         let dinheiro = 100;
-        let saudeEcologica = 50; // Escala de 0 a 100
+        let saudeEcologica = 50;   // Estado do meio ambiente (0 a 100)
+        let conscientizacao = 0;   // Progresso de conscientização da vila (0 a 100)
+        let dialogo = "Clarice: Olá! O antigo dono desta fazenda usava muito veneno... O que você vai fazer?";
 
         // Estrutura do Lote de Terra
-        // Estados: 0 = Seco, 1 = Molhado/Crescendo, 2 = Plantado(esperando rega), 3 = Pronto para Colheita
-        let lote = {
-            x: 350,
-            y: 180,
-            largura: 100,
-            altura: 100,
-            estado: 0,
-            progresso: 0,
-            insumo: null
-        };
+        let lote = { x: 450, y: 120, largura: 120, altura: 120, estado: 0, progresso: 0, insumo: null };
 
-        // Teclas pressionadas
         let teclas = {};
 
         window.addEventListener("keydown", (e) => {
@@ -76,128 +68,172 @@
             teclas[e.key.toLowerCase()] = false;
         });
 
-        // Verifica colisões entre o jogador e o lote
-        function checarColisao() {
+        function checarColisao(objA, objB) {
             return (
-                jogador.x < lote.x + lote.largura &&
-                jogador.x + jogador.tamanho > lote.x &&
-                jogador.y < lote.y + lote.altura &&
-                jogador.y + jogador.tamanho > lote.y
+                objA.x < objB.x + (objB.largura || objB.tamanho) &&
+                objA.x + objA.tamanho > objB.x &&
+                objA.y < objB.y + (objB.altura || objB.tamanho) &&
+                objA.y + objA.tamanho > objB.y
             );
         }
 
-        // Interações baseadas nas teclas
         function verificarInteracao(tecla) {
-            if (!checarColisao()) return;
-
-            // 1. Plantar Orgânico
-            if (tecla === "1" && lote.estado === 0 && dinheiro >= 10) {
-                dinheiro -= 10;
-                lote.estado = 2;
-                lote.insumo = "organico";
-                saudeEcologica = Math.min(100, saudeEcologica + 5);
-            }
-            // 2. Plantar Químico
-            else if (tecla === "2" && lote.estado === 0 && dinheiro >= 5) {
-                dinheiro -= 5;
-                lote.estado = 2;
-                lote.insumo = "quimico";
-                saudeEcologica = Math.max(0, saudeEcologica - 15);
-            }
-            // 3. Regar
-            else if (tecla === "r" && lote.estado === 2) {
-                lote.estado = 1; // Começa a crescer
-            }
-            // 4. Colher
-            else if (tecla === "e" && lote.estado === 3) {
-                if (lote.insumo === "organico") {
-                    dinheiro += 25;
-                } else if (lote.insumo === "quimico") {
-                    dinheiro += 40;
+            // Interação com a TERRA
+            if (checarColisao(jogador, lote)) {
+                if (tecla === "1" && lote.estado === 0 && dinheiro >= 10) {
+                    dinheiro -= 10; lote.estado = 2; lote.insumo = "organico";
+                    saudeEcologica = Math.min(100, saudeEcologica + 8);
+                    dialogo = "Você plantou usando adubo orgânico. A terra agradece!";
                 }
-                // Reseta o lote
-                lote.estado = 0;
-                lote.progresso = 0;
-                lote.insumo = null;
+                else if (tecla === "2" && lote.estado === 0 && dinheiro >= 5) {
+                    dinheiro -= 5; lote.estado = 2; lote.insumo = "quimico";
+                    saudeEcologica = Math.max(0, saudeEcologica - 18);
+                    dialogo = "Você usou fertilizante químico pesado. O solo perdeu vida.";
+                }
+                else if (tecla === "r" && lote.estado === 2) {
+                    lote.estado = 1;
+                }
+                else if (tecla === "e" && lote.estado === 3) {
+                    dinheiro += (lote.insumo === "organico") ? 30 : 45;
+                    lote.estado = 0; lote.progresso = 0; lote.insumo = null;
+                    dialogo = "Colheita realizada com sucesso!";
+                }
+            }
+
+            // Interação com o NPC (CONSCIENTIZAÇÃO)
+            if (checarColisao(jogador, npc) && tecla === "c") {
+                if (conscientizacao >= 100) {
+                    dialogo = "Clarice: Nós conseguimos! Toda a vila agora produz de forma sustentável!";
+                } 
+                else if (saudeEcologica >= 75) {
+                    if (teclas["c_pressionado"] !== true) {
+                        conscientizacao = Math.min(100, conscientizacao + 20);
+                        // Truque simples para não ganhar pontos infinitos clicando sem parar
+                        teclas["c_pressionado"] = true; 
+                    }
+                    dialogo = "Clarice: Incrível como suas plantas são lindas sem química! Vou adotar isso na minha horta!";
+                } 
+                else if (saudeEcologica < 35) {
+                    dialogo = "Clarice: Desculpe, mas não quero conversar. A água do meu poço está contaminada pelos seus químicos...";
+                } 
+                else {
+                    dialogo = "Clarice: É bom ver você trabalhando, mas ainda não tenho certeza se a agroecologia funciona na prática.";
+                }
             }
         }
 
-        // Atualiza a lógica (Movimento e Crescimento)
         function atualizar() {
-            // Movimentação
             if (teclas["a"] || teclas["arrowleft"]) jogador.x -= jogador.velocidade;
             if (teclas["d"] || teclas["arrowright"]) jogador.x += jogador.velocidade;
             if (teclas["w"] || teclas["arrowup"]) jogador.y -= jogador.velocidade;
             if (teclas["s"] || teclas["arrowdown"]) jogador.y += jogador.velocidade;
 
-            // Limites da tela para o jogador
             jogador.x = Math.max(0, Math.min(canvas.width - jogador.tamanho, jogador.x));
             jogador.y = Math.max(0, Math.min(canvas.height - jogador.tamanho, jogador.y));
 
-            // Lógica de crescimento da planta
+            // Resetar a trava do diálogo quando se afasta do NPC
+            if (!checarColisao(jogador, npc)) {
+                teclas["c_pressionado"] = false;
+            }
+
+            // Crescimento da planta
             if (lote.estado === 1) {
-                lote.progresso += 0.5; // Velocidade do crescimento
-                if (lote.progresso >= 100) {
-                    lote.estado = 3; // Pronta para colheita
-                }
+                lote.progresso += 0.4;
+                if (lote.progresso >= 100) lote.estado = 3;
+            }
+
+            // Bônus Passivo: Se a vila estiver muito consciente, o meio ambiente se recupera sozinho!
+            if (conscientizacao >= 50 && Math.random() < 0.002) {
+                saudeEcologica = Math.min(100, saudeEcologica + 1);
             }
         }
 
-        // Desenha os elementos na tela
         function desenhar() {
-            // Limpa a tela com a cor da grama
-            ctx.fillStyle = "#228B22";
+            // Grama
+            ctx.fillStyle = "#2E8B57";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Desenhar o Lote de Terra
-            if (lote.estado === 1) {
-                ctx.fillStyle = "#654321"; // Terra úmida
-            } else {
-                ctx.fillStyle = "#8B4513"; // Terra seca
-            }
+            // Rio decorativo (para mostrar a água que pode ser poluída)
+            ctx.fillStyle = (saudeEcologica < 35) ? "#556B2F" : "#4682B4"; // Rio fica turvo se poluído
+            ctx.fillRect(0, 0, 80, canvas.height);
+
+            // Lote de Terra
+            ctx.fillStyle = (lote.estado === 1) ? "#5c3a21" : "#8B4513";
             ctx.fillRect(lote.x, lote.y, lote.largura, lote.altura);
 
-            // 2. Desenhar a planta sobre a terra
-            let centroX = lote.x + lote.largura / 2;
-            let centroY = lote.y + lote.altura / 2;
-
+            // Planta
+            let cX = lote.x + lote.largura / 2;
+            let cY = lote.y + lote.altura / 2;
             if (lote.estado === 1 || lote.estado === 2) {
-                ctx.fillStyle = "#90EE90"; // Planta jovem (Verde claro)
-                ctx.beginPath();
-                ctx.arc(centroX, centroY, 15, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = "#98FB98";
+                ctx.beginPath(); ctx.arc(cX, cY, 15, 0, Math.PI * 2); ctx.fill();
             } else if (lote.estado === 3) {
-                ctx.fillStyle = "#FFD700"; // Planta pronta (Dourado/Fruto)
-                ctx.beginPath();
-                ctx.arc(centroX, centroY, 22, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = (lote.insumo === "organico") ? "#FFD700" : "#FF4500"; // Fruto dourado vs avermelhado/químico
+                ctx.beginPath(); ctx.arc(cX, cY, 25, 0, Math.PI * 2); ctx.fill();
             }
 
-            // 3. Desenhar o Jogador
-            ctx.fillStyle = "#0000FF"; // Azul
-            ctx.fillRect(jogador.x, playerY = jogador.y, jogador.tamanho, jogador.tamanho);
-
-            // 4. Desenhar a Interface de Texto (HUD)
+            // NPC (Clarice) - Cor Rosa/Roxa
+            ctx.fillStyle = "#DA70D6";
+            ctx.fillRect(npc.x, npc.y, npc.tamanho, npc.tamanho);
             ctx.fillStyle = "white";
-            ctx.font = "20px Arial";
-            ctx.fillText(`Dinheiro: $${dinheiro}`, 20, 35);
+            ctx.font = "12px Arial";
+            ctx.fillText("Clarice", npc.x - 5, npc.y - 5);
+
+            // Jogador - Cor Azul
+            ctx.fillStyle = "#1E90FF";
+            ctx.fillRect(jogador.x, jogador.y, jogador.tamanho, jogador.tamanho);
+
+            // --- INTERFACE (HUD) ---
+            // Fundo da barra superior
+            ctx.fillStyle = "rgba(0,0,0,0.4)";
+            ctx.fillRect(0, 0, canvas.width, 90);
+
+            // Textos de Status
+            ctx.fillStyle = "white";
+            ctx.font = "bold 16px Arial";
+            ctx.fillText(`Dinheiro: $${dinheiro}`, 100, 35);
             
-            // Muda a cor do texto ecológico baseado no estado
-            if (saudeEcologica > 60) ctx.fillStyle = "#55FF55";
-            else if (saudeEcologica > 30) ctx.fillStyle = "#FFFF55";
-            else ctx.fillStyle = "#FF5555";
-            
-            ctx.fillText(`Saúde Ecológica: ${saudeEcologica}%`, 20, 65);
+            // Cor do Texto de Saúde Ecológica
+            if (saudeEcologica >= 70) ctx.fillStyle = "#7FFF00";
+            else if (saudeEcologica >= 40) ctx.fillStyle = "#FFD700";
+            else ctx.fillStyle = "#FF6347";
+            ctx.fillText(`Saúde Ecológica do Vale: ${saudeEcologica}%`, 100, 65);
+
+            // Barra de Conscientização Coletiva
+            ctx.fillStyle = "white";
+            ctx.fillText(`Conscientização da Vila: ${conscientizacao}%`, 450, 35);
+            ctx.fillStyle = "#555";
+            ctx.fillRect(450, 45, 200, 15);
+            ctx.fillStyle = "#00FF7F";
+            ctx.fillRect(450, 45, 2 * conscientizacao, 15);
+
+            // Caixa de Diálogo (Inferior)
+            ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+            ctx.fillRect(20, canvas.height - 70, canvas.width - 40, 50);
+            ctx.fillStyle = "#FFF";
+            ctx.font = "italic 14px Arial";
+            ctx.fillText(dialogo, 40, canvas.height - 40);
+
+            // Condição de Vitória Visual
+            if (conscientizacao >= 100) {
+                ctx.fillStyle = "rgba(0,128,0,0.85)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "white";
+                ctx.font = "bold 30px Arial";
+                ctx.fillText("VITÓRIA ECOLÓGICA!", canvas.width/2 - 160, canvas.height/2 - 20);
+                ctx.font = "18px Arial";
+                ctx.fillText("Você conscientizou a vila inteira e garantiu o futuro do EcoVale!", canvas.width/2 - 260, canvas.height/2 + 20);
+            }
         }
 
-        // Loop principal do jogo
         function loop() {
-            atualizar();
+            if (conscientizacao < 100) {
+                atualizar();
+            }
             desenhar();
             requestAnimationFrame(loop);
         }
 
-        // Inicia o jogo
         loop();
     </script>
 </body>
