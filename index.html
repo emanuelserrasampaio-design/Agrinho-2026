@@ -3,463 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoFazenda: Simulador Realista 3D</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>EcoVale: Raízes do Amanhã</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #1a1a1a;
-            color: white;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* O jogo ocupa a tela toda */
-            user-select: none;
-        }
-
-        /* HUD Superior */
-        #hud-top {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 30px;
-            border-radius: 50px;
-            border: 2px solid #2ecc71;
-            font-size: 24px;
-            font-weight: bold;
+            background-color: #222;
             display: flex;
-            gap: 20px;
-            z-index: 100;
-        }
-
-        .status-alerta { color: #e74c3c; animation: piscar 1s infinite; }
-        @keyframes piscar { 50% { opacity: 0.5; } }
-
-        /* Barra de Ferramentas Inferior */
-        .toolbar-container {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .titulo-toolbar { font-size: 14px; color: #bdc3c7; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-
-        .toolbar {
-            display: flex;
-            gap: 10px;
-            background: rgba(44, 62, 80, 0.9);
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #7f8c8d;
-        }
-
-        .btn-ferramenta {
-            background: #95a5a6;
-            color: #2c3e50;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            border: 3px solid #7f8c8d;
-            border-radius: 8px;
-            font-family: inherit;
-            width: 110px;
-            height: 90px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-        }
-        .btn-ferramenta:hover { background: #bdc3c7; transform: translateY(-3px);}
-        
-        .btn-ferramenta.selecionado { 
-            border-color: #ffffff; 
-            background: #ecf0f1;
-            transform: scale(1.05);
-            box-shadow: 0px 5px 15px rgba(255,255,255,0.3);
-        }
-        
-        .btn-ferramenta span { font-size: 28px; margin-bottom: 5px; }
-        .btn-ferramenta .custo { font-size: 11px; color: #7f8c8d; margin-top: 3px; }
-        .btn-ferramenta.selecionado .custo { color: #2c3e50; }
-
-        #mensagem {
-            position: absolute;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            color: #e74c3c;
-            font-weight: bold;
-            z-index: 100;
-            height: 30px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        /* Container do Three.js */
-        #banco-jogo {
-            width: 100vw;
+            align-items: center;
             height: 100vh;
-            display: block;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            flex-direction: column;
+        }
+        canvas {
+            border: 4px solid #333;
+            background-color: #228B22; /* Cor da grama */
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.5);
+        }
+        .instrucoes {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 16px;
+            color: #ccc;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
-    <div id="hud-top">
-        <div>🪙 Moedas: <span id="moedas">40</span></div>
-        <div>🌍 Saúde do Solo: <span id="solo">100</span>%</div>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    
+    <div class="instrucoes">
+        <strong>Controles:</strong> Use as setas do teclado ou W, A, S, D para mover o quadrado azul.<br>
+        Fique em cima da terra marrom e pressione:<br>
+        <strong>[1]</strong> Plantar Orgânico (Custa $10, +5% Eco) | 
+        <strong>[2]</strong> Plantar Químico (Custa $5, -15% Eco)<br>
+        <strong>[R]</strong> Regar planta | 
+        <strong>[E]</strong> Colher planta madura
     </div>
-
-    <div id="mensagem"></div>
-
-    <div id="banco-jogo"></div>
-
-    <div class="toolbar-container">
-        <div class="titulo-toolbar">⚙️ BARRA DE FERRAMENTAS PRO</div>
-        <div class="toolbar">
-            <button class="btn-ferramenta selecionado" id="f-safra" onclick="selecionarFerramenta('safra', this)">
-                <span>🌾</span>Safra
-                <div class="custo">Custa: 5$</div>
-            </button>
-            <button class="btn-ferramenta" id="f-agro" onclick="selecionarFerramenta('agro', this)">
-                <span>🧪</span>Agrotóxico
-                <div class="custo">Custa: 5$</div>
-            </button>
-            <button class="btn-ferramenta" id="f-arvore" onclick="selecionarFerramenta('arvore', this)">
-                <span>🌳</span>Reflorestar
-                <div class="custo">Custa: 12$</div>
-            </button>
-            <button class="btn-ferramenta" id="f-bio" onclick="selecionarFerramenta('bio', this)">
-                <span>🧫</span>Bioferti.
-                <div class="custo">Custa: 8$</div>
-            </button>
-            <button class="btn-ferramenta" id="f-enxada" onclick="selecionarFerramenta('enxada', this)">
-                <span>🪓</span>Limpar/Colher
-                <div class="custo">Custa: 2$</div>
-            </button>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        // --- CONFIGURAÇÃO BÁSICA DO THREE.JS (REALISTA) ---
-        let cena, camera, renderizador, raycaster;
-        let ground, player;
-        let gradeMeshes = []; // Guarda os objetos 3D das safras/árvores
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-        const tamanhoGrade = 10;
-        const tamanhoCélula = 2; // Tamanho de cada bloco no mundo 3D
-        const larguraMundo = tamanhoGrade * tamanhoCélula;
+        // Variáveis do Jogo
+        let jogador = { x: 400, y: 250, tamanho: 30, velocidade: 4 };
+        let dinheiro = 100;
+        let saudeEcologica = 50; // Escala de 0 a 100
 
-        let moedas = 40;
-        let saudeSolo = 100;
-        let ferramentaSelecionada = 'safra'; 
-        let jogoAtivo = true;
-        let mousedown = false;
-        let mouse = new THREE.Vector2();
+        // Estrutura do Lote de Terra
+        // Estados: 0 = Seco, 1 = Molhado/Crescendo, 2 = Plantado(esperando rega), 3 = Pronto para Colheita
+        let lote = {
+            x: 350,
+            y: 180,
+            largura: 100,
+            altura: 100,
+            estado: 0,
+            progresso: 0,
+            insumo: null
+        };
 
-        // Dados do Jogo (A grade ainda é lógica)
-        let gradeDados = [];
-        for (let i = 0; i < tamanhoGrade; i++) {
-            gradeDados[i] = [];
-            gradeMeshes[i] = [];
-            for (let j = 0; j < tamanhoGrade; j++) {
-                gradeDados[i][j] = 0; // 0=Vazio
-                gradeMeshes[i][j] = null; // Nenhum objeto 3D ainda
+        // Teclas pressionadas
+        let teclas = {};
+
+        window.addEventListener("keydown", (e) => {
+            teclas[e.key.toLowerCase()] = true;
+            verificarInteracao(e.key.toLowerCase());
+        });
+        window.addEventListener("keyup", (e) => {
+            teclas[e.key.toLowerCase()] = false;
+        });
+
+        // Verifica colisões entre o jogador e o lote
+        function checarColisao() {
+            return (
+                jogador.x < lote.x + lote.largura &&
+                jogador.x + jogador.tamanho > lote.x &&
+                jogador.y < lote.y + lote.altura &&
+                jogador.y + jogador.tamanho > lote.y
+            );
+        }
+
+        // Interações baseadas nas teclas
+        function verificarInteracao(tecla) {
+            if (!checarColisao()) return;
+
+            // 1. Plantar Orgânico
+            if (tecla === "1" && lote.estado === 0 && dinheiro >= 10) {
+                dinheiro -= 10;
+                lote.estado = 2;
+                lote.insumo = "organico";
+                saudeEcologica = Math.min(100, saudeEcologica + 5);
+            }
+            // 2. Plantar Químico
+            else if (tecla === "2" && lote.estado === 0 && dinheiro >= 5) {
+                dinheiro -= 5;
+                lote.estado = 2;
+                lote.insumo = "quimico";
+                saudeEcologica = Math.max(0, saudeEcologica - 15);
+            }
+            // 3. Regar
+            else if (tecla === "r" && lote.estado === 2) {
+                lote.estado = 1; // Começa a crescer
+            }
+            // 4. Colher
+            else if (tecla === "e" && lote.estado === 3) {
+                if (lote.insumo === "organico") {
+                    dinheiro += 25;
+                } else if (lote.insumo === "quimico") {
+                    dinheiro += 40;
+                }
+                // Reseta o lote
+                lote.estado = 0;
+                lote.progresso = 0;
+                lote.insumo = null;
             }
         }
 
-        init3D();
-        animar();
+        // Atualiza a lógica (Movimento e Crescimento)
+        function atualizar() {
+            // Movimentação
+            if (teclas["a"] || teclas["arrowleft"]) jogador.x -= jogador.velocidade;
+            if (teclas["d"] || teclas["arrowright"]) jogador.x += jogador.velocidade;
+            if (teclas["w"] || teclas["arrowup"]) jogador.y -= jogador.velocidade;
+            if (teclas["s"] || teclas["arrowdown"]) jogador.y += jogador.velocidade;
 
-        function init3D() {
-            // 1. Cena e Câmera
-            cena = new THREE.Scene();
-            cena.background = new THREE.Color(0xa0a0a0); // Cor do céu básica
-            cena.fog = new THREE.Fog(0xa0a0a0, 10, 50); // Neblina para profundidade realista
+            // Limites da tela para o jogador
+            jogador.x = Math.max(0, Math.min(canvas.width - jogador.tamanho, jogador.x));
+            jogador.y = Math.max(0, Math.min(canvas.height - jogador.tamanho, jogador.y));
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(larguraMundo / 2, 10, larguraMundo + 5); // Posição isométrica/superior
-            camera.lookAt(larguraMundo / 2, 0, larguraMundo / 2);
-
-            // 2. Renderizador (com sombras e antialiasing para realismo)
-            renderizador = new THREE.WebGLRenderer({ antialias: true });
-            renderizador.setSize(window.innerWidth, window.innerHeight);
-            renderizador.shadowMap.enabled = true; // Habilitar sombras
-            renderizador.shadowMap.type = THREE.PCFSoftShadowMap; // Sombras suaves
-            document.getElementById('banco-jogo').appendChild(renderizador.domElement);
-
-            // 3. Iluminação Realista
-            const luzAmbiente = new THREE.AmbientLight(0xffffff, 0.5); // Luz suave global
-            cena.add(luzAmbiente);
-
-            const luzSol = new THREE.DirectionalLight(0xffffff, 1); // Luz solar forte
-            luzSol.position.set(10, 20, 10);
-            luzSol.castShadow = true; // Sol projeta sombras
-            // Configuração da área de sombra
-            luzSol.shadow.camera.left = -20;
-            luzSol.shadow.camera.right = 20;
-            luzSol.shadow.camera.top = 20;
-            luzSol.shadow.camera.bottom = -20;
-            cena.add(luzSol);
-
-            // 4. Solo Realista
-            // PlaneGeometry é o padrão para chão
-            const geometrySolo = new THREE.PlaneGeometry(larguraMundo, larguraMundo);
-            // MeshStandardMaterial reage à luz de forma realista (PBR)
-            const materialSolo = new THREE.MeshStandardMaterial({ 
-                color: 0x795548, // Marrom terra
-                roughness: 1, // Muito áspero (sem brilho)
-                metalness: 0  // Não metálico
-            });
-            ground = new THREE.Mesh(geometrySolo, materialSolo);
-            ground.rotation.x = -Math.PI / 2; // Deitar o plano
-            ground.position.set(larguraMundo / 2 - tamanhoCélula/2, 0, larguraMundo / 2 - tamanhoCélula/2);
-            ground.receiveShadow = true; // O chão recebe sombras
-            cena.add(ground);
-
-            // 5. Jogador (Um avatar simples, mas 3D)
-            const geometryPlayer = new THREE.CylinderGeometry(0.5, 0.5, 2, 16);
-            const materialPlayer = new THREE.MeshStandardMaterial({ color: 0x2980b9 });
-            player = new THREE.Mesh(geometryPlayer, materialPlayer);
-            player.position.set(0, 1, 0); // Altura dos pés no chão
-            player.castShadow = true;
-            cena.add(player);
-
-            // 6. Raycaster para interação do mouse
-            raycaster = new THREE.Raycaster();
-
-            // Eventos
-            window.addEventListener('resize', onWindowResize, false);
-            window.addEventListener('mousemove', onMouseMove, false);
-            window.addEventListener('mousedown', () => mousedown = true);
-            window.addEventListener('mouseup', onMouseUp);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderizador.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function onMouseMove(event) {
-            // Normaliza as coordenadas do mouse para o raycaster (-1 a +1)
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        }
-
-        // --- LÓGICA DO JOGO E MODELAGEM 3D DINÂMICA ---
-
-        function onMouseUp(event) {
-            mousedown = false;
-            if (!jogoAtivo) return;
-
-            // 1. Atualizar o raio com a posição do mouse e câmera
-            raycaster.setFromCamera(mouse, camera);
-
-            // 2. Calcular objetos interceptados (apenas o chão nos interessa)
-            const intersects = raycaster.intersectObject(ground);
-
-            if (intersects.length > 0) {
-                const pontoIntersecao = intersects[0].point;
-
-                // 3. Converter ponto 3D em coordenadas da grade lógica
-                const gx = Math.round(pontoIntersecao.x / tamanhoCélula);
-                const gz = Math.round(pontoIntersecao.z / tamanhoCélula);
-
-                if (gx >= 0 && gx < tamanhoGrade && gz >= 0 && gz < tamanhoGrade) {
-                    executarFerramenta(gx, gz);
+            // Lógica de crescimento da planta
+            if (lote.estado === 1) {
+                lote.progresso += 0.5; // Velocidade do crescimento
+                if (lote.progresso >= 100) {
+                    lote.estado = 3; // Pronta para colheita
                 }
             }
         }
 
-        function executarFerramenta(x, z) {
-            const blocoAtual = gradeDados[x][z];
-            let acaoRealizada = false;
+        // Desenha os elementos na tela
+        function desenhar() {
+            // Limpa a tela com a cor da grama
+            ctx.fillStyle = "#228B22";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            if (ferramentaSelecionada === 'safra' && blocoAtual === 0 && moedas >= 5) {
-                moedas -= 5;
-                gradeDados[x][z] = 1; // Safra Comum
-                criarModelo3D(x, z, 'safra');
-                acaoRealizada = true;
-            } 
-            else if (ferramentaSelecionada === 'agro' && blocoAtual === 1 && moedas >= 5) {
-                moedas -= 5;
-                gradeDados[x][z] = 3; // Safra Química
-                atualizarModelo3D(x, z, 'quimica');
-                acaoRealizada = true;
-            } 
-            else if (ferramentaSelecionada === 'arvore' && blocoAtual === 0 && moedas >= 12) {
-                moedas -= 12;
-                gradeDados[x][z] = 2; // Árvore
-                criarModelo3D(x, z, 'arvore');
-                acaoRealizada = true;
-            } 
-            else if (ferramentaSelecionada === 'bio' && blocoAtual === 0 && moedas >= 8) {
-                moedas -= 8;
-                saudeSolo = Math.min(100, saudeSolo + 12);
-                acaoRealizada = true;
-                // Efeito visual 3D rápido (ex: lampejo no chão) poderia ser adicionado aqui
-            } 
-            else if (ferramentaSelecionada === 'enxada' && blocoAtual !== 0 && moedas >= 2) {
-                moedas -= 2;
-                gradeDados[x][z] = 0; 
-                removerModelo3D(x, z);
-                acaoRealizada = true;
+            // 1. Desenhar o Lote de Terra
+            if (lote.estado === 1) {
+                ctx.fillStyle = "#654321"; // Terra úmida
+            } else {
+                ctx.fillStyle = "#8B4513"; // Terra seca
+            }
+            ctx.fillRect(lote.x, lote.y, lote.largura, lote.altura);
+
+            // 2. Desenhar a planta sobre a terra
+            let centroX = lote.x + lote.largura / 2;
+            let centroY = lote.y + lote.altura / 2;
+
+            if (lote.estado === 1 || lote.estado === 2) {
+                ctx.fillStyle = "#90EE90"; // Planta jovem (Verde claro)
+                ctx.beginPath();
+                ctx.arc(centroX, centroY, 15, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (lote.estado === 3) {
+                ctx.fillStyle = "#FFD700"; // Planta pronta (Dourado/Fruto)
+                ctx.beginPath();
+                ctx.arc(centroX, centroY, 22, 0, Math.PI * 2);
+                ctx.fill();
             }
 
-            if (acaoRealizada) atualizarUI();
-        }
+            // 3. Desenhar o Jogador
+            ctx.fillStyle = "#0000FF"; // Azul
+            ctx.fillRect(jogador.x, playerY = jogador.y, jogador.tamanho, jogador.tamanho);
 
-        // --- GESTÃO DE MODELOS 3D (Substitui o desenharGrade 2D) ---
-
-        function criarModelo3D(x, z, tipo) {
-            let mesh;
-            const px = x * tamanhoCélula;
-            const pz = z * tamanhoCélula;
-
-            if (tipo === 'safra') {
-                // Modelo simples de planta (cone verde)
-                const geometry = new THREE.ConeGeometry(0.4, 1, 8);
-                const material = new THREE.MeshStandardMaterial({ color: 0x2ecc71, roughness: 0.8 });
-                mesh = new THREE.Mesh(geometry, material);
-                mesh.position.set(px, 0.5, pz); // Cone base no chão
-            } 
-            else if (tipo === 'arvore') {
-                // Modelo simples de árvore (tronco + copa)
-                mesh = new THREE.Group(); // Agrupar múltiplas formas
-
-                const geometryTronco = new THREE.CylinderGeometry(0.2, 0.2, 1.5, 8);
-                const materialTronco = new THREE.MeshStandardMaterial({ color: 0x5d4037 });
-                const tronco = new THREE.Mesh(geometryTronco, materialTronco);
-                tronco.position.y = 0.75;
-                tronco.castShadow = true;
-                mesh.add(tronco);
-
-                const geometryCopa = new THREE.SphereGeometry(0.8, 12, 12);
-                const materialCopa = new THREE.MeshStandardMaterial({ color: 0x1a531c, roughness: 0.9 });
-                const copa = new THREE.Mesh(geometryCopa, materialCopa);
-                copa.position.y = 2;
-                copa.castShadow = true;
-                mesh.add(copa);
-
-                mesh.position.set(px, 0, pz);
-            }
-
-            if (mesh) {
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                cena.add(mesh);
-                gradeMeshes[x][z] = mesh;
-            }
-        }
-
-        function atualizarModelo3D(x, z, novoEstado) {
-            const mesh = gradeMeshes[x][z];
-            if (!mesh) return;
-
-            if (novoEstado === 'quimica') {
-                // Mudar cor da safra para laranja/roxo químico
-                mesh.material.color.setHex(0xe67e22);
-                
-                // Adicionar pequenas "partículas" roxas ao redor
-                const geometryPart = new THREE.SphereGeometry(0.1, 4, 4);
-                const materialPart = new THREE.MeshBasicMaterial({ color: 0x9b59b6 });
-                const part = new THREE.Mesh(geometryPart, materialPart);
-                part.position.set(0.3, 0.5, 0.3);
-                mesh.add(part); // Adiciona como filho da planta principal
-            }
-        }
-
-        function removerModelo3D(x, z) {
-            const mesh = gradeMeshes[x][z];
-            if (mesh) {
-                cena.remove(mesh); // Remove da cena 3D
-                // É boa prática limpar a geometria e material da memória em jogos grandes
-                // mesh.geometry.dispose(); mesh.material.dispose(); 
-                gradeMeshes[x][z] = null;
-            }
-        }
-
-        // --- CICLO DE TEMPO E UI (Mantidos da lógica original) ---
-
-        function selecionarFerramenta(ferramenta, elemento) {
-            ferramentaSelecionada = ferramenta;
-            document.querySelectorAll('.btn-ferramenta').forEach(b => b.classList.remove('selecionado'));
-            elemento.classList.add('selecionado');
-        }
-
-        setInterval(() => {
-            if (!jogoAtivo) return;
-
-            let safrasComuns = 0;
-            let safrasAgro = 0;
-            let arvores = 0;
-
-            for (let i = 0; i < tamanhoGrade; i++) {
-                for (let j = 0; j < tamanhoGrade; j++) {
-                    if (gradeDados[i][j] === 1) safrasComuns++;
-                    if (gradeDados[i][j] === 3) safrasAgro++;
-                    if (gradeDados[i][j] === 2) arvores++;
-                }
-            }
-
-            moedas += (safrasComuns * 3) + (safrasAgro * 10); 
-            saudeSolo -= (safrasComuns * 2) + (safrasAgro * 8);
-            saudeSolo += (arvores * 4);
-
-            if (saudeSolo > 100) saudeSolo = 100;
-
-            atualizarUI();
-            verificarFimDeJogo();
-        }, 2000);
-
-        function atualizarUI() {
-            document.getElementById('moedas').innerText = moedas;
-            const spanSolo = document.getElementById('solo');
-            spanSolo.innerText = saudeSolo;
+            // 4. Desenhar a Interface de Texto (HUD)
+            ctx.fillStyle = "white";
+            ctx.font = "20px Arial";
+            ctx.fillText(`Dinheiro: $${dinheiro}`, 20, 35);
             
-            if (saudeSolo <= 30) spanSolo.className = 'status-alerta';
-            else spanSolo.className = '';
-        }
-
-        function verificarFimDeJogo() {
-            const divMensagem = document.getElementById('mensagem');
+            // Muda a cor do texto ecológico baseado no estado
+            if (saudeEcologica > 60) ctx.fillStyle = "#55FF55";
+            else if (saudeEcologica > 30) ctx.fillStyle = "#FFFF55";
+            else ctx.fillStyle = "#FF5555";
             
-            if (saudeSolo <= 0) {
-                saudeSolo = 0;
-                atualizarUI();
-                jogoAtivo = false;
-                divMensagem.innerText = "🚨 Solo esgotado e infértil! Manejo insustentável. 🥀";
-            } else if (moedas >= 400) {
-                jogoAtivo = false;
-                divMensagem.style.color = '#2ecc71';
-                divMensagem.innerText = "🏆 Incrível! Fazenda equilibrada e próspera!";
-            }
+            ctx.fillText(`Saúde Ecológica: ${saudeEcologica}%`, 20, 65);
         }
 
-        // Loop de Animação 3D (Obrigatório para Three.js)
-        function animar() {
-            requestAnimationFrame(animar);
-
-            // Pequena animação do jogador para dar vida
-            if(jogoAtivo) {
-                player.rotation.y += 0.01;
-                player.position.y = 1 + Math.sin(Date.now() * 0.005) * 0.1; // Flutuar levemente
-            }
-
-            renderizador.render(cena, camera);
+        // Loop principal do jogo
+        function loop() {
+            atualizar();
+            desenhar();
+            requestAnimationFrame(loop);
         }
 
+        // Inicia o jogo
+        loop();
     </script>
 </body>
 </html>
