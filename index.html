@@ -3,549 +3,696 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TerraEco: Crônicas do Vale Vivo [Legacy Smooth Edition]</title>
+    <title>TerraEco Pro: Premium Ecosystem Simulator</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --borda-dinamica: #10b981;
-            --glow-dinamico: rgba(16, 185, 129, 0.35);
+            --neon-green: #10b981;
+            --neon-glow: rgba(16, 185, 129, 0.3);
+            --slate-950: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
-        * { box-sizing: border-box; user-select: none; }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            margin: 0; padding: 0;
-            background: #020617;
-            display: flex; justify-content: center; align-items: center;
+            background-color: var(--slate-950);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.04) 0%, transparent 50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            color: #f8fafc; flex-direction: column; overflow: hidden;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #f8fafc;
+            flex-direction: column;
+            overflow: hidden;
         }
-        .wrapper {
-            position: relative; padding: 12px;
-            background: #0f172a; border-radius: 24px;
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9);
+
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
+
+        .canvas-container {
+            position: relative;
+            padding: 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+            border-radius: 20px;
+            box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+        }
+
         canvas {
-            display: block; border: 2px solid var(--borda-dinamica);
-            border-radius: 14px; box-shadow: 0 0 40px var(--glow-dinamico);
-            background-color: #05050a;
-            image-rendering: pixelated; /* Garante nitidez sem suavização pesada */
+            display: block;
+            border: 1px solid var(--neon-green);
+            border-radius: 14px;
+            box-shadow: 0 0 40px var(--neon-glow);
+            background-color: #040408;
         }
-        .dashboard {
-            margin-top: 24px; width: 984px;
-            background: rgba(15, 23, 42, 0.9);
-            padding: 20px 32px; border-radius: 16px;
-            border: 1px solid rgba(148, 163, 184, 0.15);
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+
+        .control-console {
+            width: 976px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            padding: 20px 32px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
         }
-        .coluna-instrucoes { font-size: 13px; color: #cbd5e1; line-height: 1.8; }
-        .coluna-instrucoes strong {
-            color: #38bdf8; font-size: 14px; letter-spacing: 0.7px;
-            text-transform: uppercase; display: block; margin-bottom: 6px;
-            border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 4px;
+
+        .console-group h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: #38bdf8;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+            margin-bottom: 8px;
         }
-        span.key {
-            background: #1e293b; color: #ffffff; padding: 3px 8px;
-            border-radius: 6px; font-family: monospace; font-weight: 700;
-            font-size: 12px; border-bottom: 3px solid #0f172a;
-            display: inline-block; margin: 2px 4px;
+
+        .console-item {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-badge {
+            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+            color: #fff;
+            padding: 1px 6px;
+            border-radius: 5px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 10px;
+            border-bottom: 2px solid #0f172a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
     </style>
 </head>
 <body>
 
-    <div class="wrapper">
-        <canvas id="gameCanvas" width="960" height="540"></canvas>
-    </div>
-    
-    <div class="dashboard">
-        <div class="coluna-instrucoes">
-            <strong>Navegação e Biomecânica</strong>
-            Movimentação: <span class="key">A</span> <span class="key">D</span> ou <span class="key">←</span> <span class="key">→</span><br>
-            Impulsão Vertical (Pulo): <span class="key">W</span> ou <span class="key">ESPAÇO</span><br>
-            Módulo de Biotecnologia: <span class="key">I</span> (Alternar Painel de Upgrades)
+    <div class="game-wrapper">
+        <div class="canvas-container">
+            <canvas id="gameCanvas" width="960" height="540"></canvas>
         </div>
-        <div class="coluna-instrucoes">
-            <strong>Manejo Sustentável de Solo e Fauna</strong>
-            Plantio: <span class="key">J</span> Orgânico (-$10) | <span class="key">K</span> Agroquímico (-$5)<br>
-            Ações de Campo: <span class="key">R</span> Regar Lote | <span class="key">E</span> Efetuar Colheita<br>
-            Simbiose Animal e Social: <span class="key">U</span> Interagir | <span class="key">C</span> Consultar Clarice
+        
+        <div class="control-console">
+            <div class="console-group">
+                <h3>Sistemas de Vetorização</h3>
+                <div class="console-item">Navegação Cinética: <span class="key-badge">A</span> <span class="key-badge">D</span> / <span class="key-badge">←</span> <span class="key-badge">→</span></div>
+                <div class="console-item">Vetor de Impulsão (Pulo): <span class="key-badge">W</span> / <span class="key-badge">ESPAÇO</span></div>
+                <div class="console-item">Console BioTek Terminal: <span class="key-badge">I</span></div>
+            </div>
+            <div class="console-group">
+                <h3>Interações de Biosfera</h3>
+                <div class="console-item">Cultura de Solo: <span class="key-badge">J</span> Orgânica (-$10) | <span class="key-badge">K</span> Industrial (-$5)</div>
+                <div class="console-item">Manejo: <span class="key-badge">R</span> Irrigar Matriz | <span class="key-badge">E</span> Bio-Colheita</div>
+                <div class="console-item">Rede Social: <span class="key-badge">U</span> Coletar Recursos | <span class="key-badge">C</span> Analisar Clarice</div>
+            </div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d", { alpha: false }); // Desativa canal alpha do canvas para otimização de render da GPU
+        // --- ARQUITETURA DE ENGENHARIA DE SOFTWARE (POO) ---
 
-        const GRAVIDADE = 0.44;
-        const LARGURA_MUNDO = 2000;
-        const chaoY = 430;
-        let tempoAnimacao = 0;
-        let cameraX = 0;
-
-        let horaMundo = 6.0;
-        let climaAtual = "ensolarado";
-        let timerClima = 400;
-        
-        // Alocação estática inicial de memória (Evita Garbage Collector)
-        const MAX_ESTRELAS = 40;
-        let estrelas = new Array(MAX_ESTRELAS);
-        for(let i=0; i<MAX_ESTRELAS; i++) {
-            estrelas[i] = { x: Math.random() * LARGURA_MUNDO, y: Math.random() * 250, brilho: Math.random(), tam: 2 };
-        }
-
-        let jogador = {
-            x: 500, y: 300, largura: 32, altura: 54,
-            velX: 0, velY: 0, velocidade: 5.0, forcaPulo: 11.5, noChao: false,
-            olhandoPara: "direita", andando: false, aguaNoBalde: false,
-            upgrades: { irrigacao: false, superSemente: false, bioRacao: false }
-        };
-
-        let npc = { x: 1800, y: 190, largura: 32, altura: 54, nome: "Clarice" };
-
-        let animais = [
-            { tipo: "vaca", x: 350, y: 360, largura: 54, height: 42, velX: 0.4, direcao: 1, prontoParaColeta: true, alimentado: true, estado: "pastando", timer: 120 },
-            { tipo: "galinha", x: 850, y: 384, largura: 24, height: 18, velX: 0.65, direcao: -1, prontoParaColeta: true, alimentado: true, estado: "bicando", timer: 60 },
-            { tipo: "ovelha", x: 1200, y: 365, largura: 44, height: 36, velX: 0.45, direcao: 1, prontoParaColeta: true, alimentado: true, estado: "andando", timer: 90 }
-        ];
-
-        let plataformaNPC = { x: 1720, y: 244, largura: 190, height: 16 };
-        let areaPoco = { x: 90, y: 340, largura: 80, height: 90 };
-        let areaSilo = { x: 1450, y: 220, largura: 100, height: 210 };
-
-        let lotes = [
-            { id: 1, x: 550, y: 410, largura: 95, altura: 20, estado: 0, progresso: 0, insumo: null },
-            { id: 2, x: 770, y: 410, largura: 95, altura: 20, estado: 0, progresso: 0, insumo: null },
-            { id: 3, x: 990, y: 410, largura: 95, altura: 20, estado: 0, progresso: 0, insumo: null },
-            { id: 4, x: 1210, y: 410, largura: 95, altura: 20, estado: 0, progresso: 0, insumo: null }
-        ];
-
-        // Object Pooling para Partículas (Memória fixa, reusando slots mortos)
-        const MAX_PARTICULAS = 60;
-        let poolParticulas = new Array(MAX_PARTICULAS);
-        for(let i=0; i<MAX_PARTICULAS; i++) {
-            poolParticulas[i] = { ativa: false, x: 0, y: 0, vx: 0, vy: 0, vida: 0, cor: "", tipo: "", tam: 0, texto: "" };
-        }
-
-        const MAX_CHUVA = 40;
-        let poolChuva = new Array(MAX_CHUVA);
-        for(let i=0; i<MAX_CHUVA; i++) {
-            poolChuva[i] = { ativa: false, x: 0, y: 0, vy: 0, vx: 0, comp: 0 };
-        }
-
-        let borboletas = [];
-        for (let i = 0; i < 5; i++) { // Reduzido de 12 para 5 instâncias
-            borboletas.push({ x: Math.random() * LARGURA_MUNDO, y: 120 + Math.random() * 160, passo: Math.random() * 5, cor: "#f43f5e" });
-        }
-
-        let menuUpgradesAberto = false;
-        let dinheiro = 150;
-        let saudeEcologica = 60;
-        let conscientizacao = 0;
-        let dialogo = "Sistemas Prontos. Monitore a Saúde Ecológica do Vale.";
-        let teclas = {};
-
-        window.addEventListener("keydown", (e) => {
-            let k = e.key.toLowerCase();
-            teclas[k] = true;
-            if ((e.key === " " || k === "w") && jogador.noChao && !menuUpgradesAberto) {
-                jogador.velY = -jogador.forcaPulo;
-                jogador.noChao = false;
-                emitirParticulas(jogador.x + 16, jogador.y + 52, "#94a3b8", 4, "poeira");
+        class InputHandler {
+            constructor() {
+                this.keys = {};
+                window.addEventListener("keydown", (e) => { this.keys[e.key.toLowerCase()] = true; });
+                window.addEventListener("keyup", (e) => { this.keys[e.key.toLowerCase()] = false; });
             }
-            if (k === "i") menuUpgradesAberto = !menuUpgradesAberto;
-            if (!menuUpgradesAberto) processarInteracoes(k);
-        });
-        window.addEventListener("keyup", (e) => { teclas[e.key.toLowerCase()] = false; });
-
-        function checarColisao(objA, objB) {
-            return (
-                objA.x < objB.x + (objB.largura || 95) &&
-                objA.x + objA.largura > objB.x &&
-                objA.y < objB.y + (objB.height || 20) &&
-                objA.y + objA.altura > objB.y
-            );
+            isPressed(key) { return !!this.keys[key.toLowerCase()]; }
+            clearKey(key) { if(this.keys[key.toLowerCase()]) this.keys[key.toLowerCase()] = false; }
         }
 
-        function emitirParticulas(x, y, cor, qtd, tipo = "efeito") {
-            let cont = 0;
-            for(let i=0; i<MAX_PARTICULAS; i++) {
-                if(!poolParticulas[i].ativa) {
-                    let p = poolParticulas[i];
-                    p.ativa = true; p.x = x; p.y = y;
-                    p.vx = (Math.random() - 0.5) * (tipo === "folha" ? 1 : 4);
-                    p.vy = tipo === "folha" ? 1.5 : (Math.random() - 0.5) * 4 - 2;
-                    p.vida = 1.0; p.cor = cor; p.tipo = tipo;
-                    p.tam = tipo === "texto" ? 13 : 3;
-                    p.texto = tipo === "texto" ? cor : "";
-                    cont++;
-                    if(cont >= qtd) break;
+        class Camera {
+            constructor(width, height, worldWidth) {
+                this.x = 0;
+                this.width = width;
+                this.height = height;
+                this.worldWidth = worldWidth;
+            }
+            update(targetX, dt) {
+                let target = targetX - this.width / 2;
+                this.x += (target - this.x) * 0.08 * (dt / 16.66);
+                this.x = Math.max(0, Math.min(this.worldWidth - this.width, this.x));
+            }
+        }
+
+        class ParticleSystem {
+            constructor() { this.pool = []; }
+            emit(x, y, color, count, type = "default") {
+                for(let i=0; i<count; i++) {
+                    this.pool.push({
+                        x: x, y: y,
+                        vx: (Math.random() - 0.5) * (type === "leaf" ? 1.5 : 4),
+                        vy: type === "leaf" ? 1 + Math.random() : (Math.random() - 0.5) * 4 - 2,
+                        life: 1.0, decay: type === "text" ? 0.015 : 0.03,
+                        color: color, type: type,
+                        size: type === "text" ? 12 : 2 + Math.random() * 3
+                    });
+                }
+            }
+            update(dt, groundY) {
+                let factor = dt / 16.66;
+                for(let i = this.pool.length - 1; i >= 0; i--) {
+                    let p = this.pool[i];
+                    p.x += p.vx * factor;
+                    p.y += p.vy * factor;
+                    if(p.type === "default" || p.type === "splash") p.vy += 0.08 * factor;
+                    if(p.type === "text") p.y -= 0.6 * factor;
+                    p.life -= p.decay * factor;
+                    if(p.y > groundY || p.life <= 0) this.pool.splice(i, 1);
                 }
             }
         }
 
-        function processarInteracoes(tecla) {
-            if (checarColisao(jogador, areaPoco)) {
-                if (!jogador.aguaNoBalde) {
-                    jogador.aguaNoBalde = true;
-                    dialogo = "Reservatório Móvel Abastecido com Água Pura.";
-                    emitirParticulas(areaPoco.x + 40, areaPoco.y + 60, "#38bdf8", 6, "splash");
+        class SimulationEngine {
+            constructor() {
+                this.canvas = document.getElementById("gameCanvas");
+                this.ctx = this.canvas.getContext("2d");
+                this.input = new InputHandler();
+                this.particles = new ParticleSystem();
+                
+                this.worldWidth = 2000;
+                this.groundY = 430;
+                this.camera = new Camera(this.canvas.width, this.canvas.height, this.worldWidth);
+                
+                this.lastTime = 0;
+                this.timeAccumulator = 0;
+                this.globalTime = 0;
+
+                // State Machine Global do Ecossistema
+                this.state = {
+                    economy: 150,
+                    ecoHealth: 60,
+                    awareness: 0,
+                    timeOfDay: 6.0,
+                    weather: "clear",
+                    weatherTimer: 400,
+                    uiMenuOpen: false,
+                    log: "Instanciação concluída. Monitorando integridade bio-celular do ecossistema.",
+                    upgrades: { irrigation: false, geneSeed: false, bioFeed: false }
+                };
+
+                this.initEntities();
+            }
+
+            initEntities() {
+                this.player = { x: 500, y: 300, w: 32, h: 54, vx: 0, vy: 0, speed: 5.2, jump: 11.5, onGround: false, facing: "right", walking: false, hasWater: false };
+                this.npc = { x: 1800, y: 190, w: 32, h: 54 };
+                
+                this.plots = [
+                    { id: 1, x: 550, y: 410, w: 95, h: 20, state: 0, progress: 0, type: null },
+                    { id: 2, x: 770, y: 410, w: 95, h: 20, state: 0, progress: 0, type: null },
+                    { id: 3, x: 990, y: 410, w: 95, h: 20, state: 0, progress: 0, type: null },
+                    { id: 4, x: 1210, y: 410, w: 95, h: 20, state: 0, progress: 0, type: null }
+                ];
+
+                this.fauna = [
+                    { type: "cow", x: 350, y: 360, w: 54, h: 42, vx: 0.4, dir: 1, ready: true, fed: true, status: "graze", timer: 120 },
+                    { type: "chicken", x: 850, y: 384, w: 24, h: 18, vx: 0.65, dir: -1, ready: true, fed: true, status: "peck", timer: 60 },
+                    { type: "sheep", x: 1200, y: 365, w: 44, h: 36, vx: 0.45, dir: 1, ready: true, fed: true, status: "walk", timer: 90 }
+                ];
+
+                this.rain = [];
+                this.backgroundStars = [];
+                for(let i=0; i<60; i++) {
+                    this.backgroundStars.push({ x: Math.random() * this.worldWidth, y: Math.random() * 220, r: Math.random() });
                 }
             }
 
-            lotes.forEach(lote => {
-                if (checarColisao(jogador, lote)) {
-                    if (tecla === "j" && lote.estado === 0 && dinheiro >= 10) {
-                        dinheiro -= 10; lote.estado = jogador.upgrades.irrigacao ? 1 : 2;
-                        lote.insumo = "organico"; saudeEcologica = Math.min(100, saudeEcologica + 10);
-                        dialogo = "Lote " + lote.id + ": Bio-Sementes inseridas.";
-                        emitirParticulas(lote.x + 47, lote.y, "#10b981", 4);
-                    }
-                    else if (tecla === "k" && lote.estado === 0 && dinheiro >= 5) {
-                        dinheiro -= 5; lote.estado = jogador.upgrades.irrigacao ? 1 : 2;
-                        lote.insumo = "quimico"; saudeEcologica = Math.max(0, saudeEcologica - 15);
-                        dialogo = "Lote " + lote.id + ": Composto sintético aplicado.";
-                        emitirParticulas(lote.x + 47, lote.y, "#a855f7", 4);
-                    }
-                    else if (tecla === "r" && lote.estado === 2 && jogador.aguaNoBalde) {
-                        lote.estado = 1; jogador.aguaNoBalde = false;
-                        dialogo = "Lote " + lote.id + ": Nutrição hídrica completada.";
-                        emitirParticulas(lote.x + 47, lote.y, "#0ea5e9", 8, "splash");
-                    }
-                    else if (tecla === "e" && lote.estado === 3) {
-                        let baseLucro = (lote.insumo === "organico") ? 45 : 55;
-                        if(jogador.upgrades.superSemente) baseLucro = Math.floor(baseLucro * 1.5);
-                        dinheiro += baseLucro;
-                        dialogo = "Produção escoada: +$" + baseLucro;
-                        emitirParticulas(lote.x + 47, lote.y - 15, lote.insumo === "organico" ? "#fbbf24" : "#f43f5e", 6);
-                        emitirParticulas(lote.x + 47, lote.y - 35, "+$" + baseLucro, 1, "texto");
-                        lote.estado = 0; lote.progresso = 0; lote.insumo = null;
-                    }
-                }
-            });
+            checkCollision(rect1, rect2) {
+                return (rect1.x < rect2.x + rect2.w && rect1.x + rect1.w > rect2.x && rect1.y < rect2.y + rect2.h && rect1.y + rect1.h > rect2.y);
+            }
 
-            if (tecla === "u") {
-                animais.forEach(ani => {
-                    if (checarColisao(jogador, { x: ani.x, y: ani.y, largura: ani.largura, height: ani.height })) {
-                        if (saudeEcologica < 20) return;
-                        if (ani.prontoParaColeta) {
-                            let mult = jogador.upgrades.bioRacao ? 1.6 : 1.0;
-                            let valorBase = (ani.tipo === "vaca") ? 40 : ((ani.tipo === "ovelha") ? 30 : 20);
-                            let lucro = Math.floor(valorBase * mult);
-                            dinheiro += lucro;
-                            ani.prontoParaColeta = false; ani.alimentado = false;
-                            emitirParticulas(ani.x + ani.largura/2, ani.y + 15, "#f8fafc", 4);
-                            emitirParticulas(ani.x + ani.largura/2, ani.y - 20, "+$" + lucro, 1, "texto");
-                        } else if (!ani.alimentado) {
-                            ani.alimentado = true; ani.prontoParaColeta = true;
-                            emitirParticulas(ani.x + ani.largura/2, ani.y + 15, "#eab308", 4);
+            processInput() {
+                if (this.input.isPressed("i")) {
+                    this.state.uiMenuOpen = !this.state.uiMenuOpen;
+                    this.input.clearKey("i");
+                }
+
+                if (this.state.uiMenuOpen) {
+                    if (this.input.isPressed("1")) { this.buyUpgrade("irrigation", 80); this.input.clearKey("1"); }
+                    if (this.input.isPressed("2")) { this.buyUpgrade("geneSeed", 120); this.input.clearKey("2"); }
+                    if (this.input.isPressed("3")) { this.buyUpgrade("bioFeed", 150); this.input.clearKey("3"); }
+                    return;
+                }
+
+                // Lógica Dinâmica de Movimentação Física
+                this.player.vx = 0;
+                this.player.walking = false;
+                if (this.input.isPressed("a") || this.input.isPressed("arrowleft")) { this.player.vx = -this.player.speed; this.player.facing = "left"; this.player.walking = true; }
+                if (this.input.isPressed("d") || this.input.isPressed("arrowright")) { this.player.vx = this.player.speed; this.player.facing = "right"; this.player.walking = true; }
+
+                if ((this.input.isPressed(" ") || this.input.isPressed("w")) && this.player.onGround) {
+                    this.player.vy = -this.player.jump;
+                    this.player.onGround = false;
+                    this.particles.emit(this.player.x + 16, this.player.y + 52, "rgba(255,255,255,0.25)", 6, "poeira");
+                }
+
+                // Despacho de Eventos e Triggers Quentes do Teclado
+                if(this.input.isPressed("j")) { this.handlePlotAction("j"); this.input.clearKey("j"); }
+                if(this.input.isPressed("k")) { this.handlePlotAction("k"); this.input.clearKey("k"); }
+                if(this.input.isPressed("r")) { this.handlePlotAction("r"); this.input.clearKey("r"); }
+                if(this.input.isPressed("e")) { this.handlePlotAction("e"); this.input.clearKey("e"); }
+                if(this.input.isPressed("u")) { this.handleFaunaAction(); this.input.clearKey("u"); }
+                if(this.input.isPressed("c")) { this.handleNpcAction(); this.input.clearKey("c"); }
+            }
+
+            handlePlotAction(action) {
+                if (this.checkCollision(this.player, { x: 90, y: 340, w: 80, h: 90 }) && !this.player.hasWater) {
+                    this.player.hasWater = true;
+                    this.state.log = "Célula hídrica abastecida com fluído purificado mineral.";
+                    this.particles.emit(130, 390, "#38bdf8", 12, "splash");
+                    return;
+                }
+
+                this.plots.forEach(p => {
+                    if (this.checkCollision(this.player, p)) {
+                        if (action === "j" && p.state === 0 && this.state.economy >= 10) {
+                            this.state.economy -= 10; p.state = this.state.upgrades.irrigation ? 1 : 2;
+                            p.type = "organic"; this.state.ecoHealth = Math.min(100, this.state.ecoHealth + 8);
+                            this.state.log = `Matriz ${p.id}: Micro-semeadura biológica instalada.`;
+                            this.particles.emit(p.x + 47, p.y, "#10b981", 8);
+                        }
+                        else if (action === "k" && p.state === 0 && this.state.economy >= 5) {
+                            this.state.economy -= 5; p.state = this.state.upgrades.irrigation ? 1 : 2;
+                            p.type = "industrial"; this.state.ecoHealth = Math.max(0, this.state.ecoHealth - 12);
+                            this.state.log = `Matriz ${p.id}: Insumos químicos injetados de alta densidade.`;
+                            this.particles.emit(p.x + 47, p.y, "#a855f7", 8);
+                        }
+                        else if (action === "r" && p.state === 2 && this.player.hasWater) {
+                            p.state = 1; this.player.hasWater = false;
+                            this.state.log = `Matriz ${p.id}: Nivelamento hídrico computado.`;
+                            this.particles.emit(p.x + 47, p.y, "#0ea5e9", 15, "splash");
+                        }
+                        else if (action === "e" && p.state === 3) {
+                            let revenue = p.type === "organic" ? 45 : 55;
+                            if(this.state.upgrades.geneSeed) revenue = Math.floor(revenue * 1.5);
+                            this.state.economy += revenue;
+                            this.state.log = `Fitomassa coletada e processada no mercado: +$${revenue}`;
+                            this.particles.emit(p.x + 47, p.y - 10, p.type === "organic" ? "#fbbf24" : "#ef4444", 12);
+                            this.particles.emit(p.x + 47, p.y - 25, `+$${revenue}`, 1, "text");
+                            p.state = 0; p.progress = 0; p.type = null;
                         }
                     }
                 });
             }
 
-            if (tecla === "c" && checarColisao(jogador, npc)) {
-                if (saudeEcologica >= 85) {
-                    if (!teclas["lock_c"]) { conscientizacao = Math.min(100, conscientizacao + 25); teclas["lock_c"] = true; }
-                    dialogo = "Clarice: Formidável! Transição verde iniciada.";
-                    emitirParticulas(npc.x + 16, npc.y + 15, "#f43f5e", 8);
-                } else {
-                    dialogo = "Clarice: O ecossistema precisa de 85% de integridade.";
-                }
-            }
-        }
-
-        function executarUpgrade(tipo, custo) {
-            if (dinheiro >= custo && !jogador.upgrades[tipo]) {
-                dinheiro -= custo; jogador.upgrades[tipo] = true;
-                dialogo = "Upgrade Integrado com Sucesso.";
-                emitirParticulas(jogador.x + 16, jogador.y + 20, "#3b82f6", 10);
-            }
-        }
-
-        function atualizar() {
-            // Sincronização de interface em string direta (Evita reflows CSS complexos)
-            let corBorda = saudeEcologica < 30 ? "#f43f5e" : (saudeEcologica < 75 ? "#f59e0b" : "#10b981");
-            document.documentElement.style.setProperty('--borda-dinamica', corBorda);
-
-            horaMundo += 0.006;
-            if(horaMundo >= 24) horaMundo = 0;
-
-            timerClima--;
-            if(timerClima <= 0) {
-                let r = Math.random();
-                climaAtual = r < 0.5 ? "ensolarado" : (r < 0.8 ? "nublado" : "chuvoso");
-                timerClima = 500 + Math.random() * 400;
-            }
-
-            if (menuUpgradesAberto) {
-                if (teclas["1"]) { executarUpgrade("irrigacao", 80); teclas["1"] = false; }
-                if (teclas["2"]) { executarUpgrade("superSemente", 120); teclas["2"] = false; }
-                if (teclas["3"]) { executarUpgrade("bioRacao", 150); teclas["3"] = false; }
-                return;
-            }
-
-            jogador.velX = 0; jogador.andando = false;
-            if (teclas["a"] || teclas["arrowleft"]) { jogador.velX = -jogador.velocidade; jogador.olhandoPara = "esquerda"; jogador.andando = true; }
-            if (teclas["d"] || teclas["arrowright"]) { jogador.velX = jogador.velocidade; jogador.olhandoPara = "direita"; jogador.andando = true; }
-
-            jogador.x += jogador.velX; jogador.velY += GRAVIDADE; jogador.y += jogador.velY;
-
-            if (jogador.y + jogador.altura >= chaoY) { jogador.y = chaoY - jogador.altura; jogador.velY = 0; jogador.noChao = true; }
-            if (jogador.velY > 0 && jogador.x + jogador.largura > plataformaNPC.x && jogador.x < plataformaNPC.x + plataformaNPC.largura && jogador.y + jogador.altura >= plataformaNPC.y && jogador.y + jogador.altura - jogador.velY <= plataformaNPC.y) {
-                jogador.y = plataformaNPC.y - jogador.altura; jogador.velY = 0; jogador.noChao = true;
-            }
-            if(jogador.x < 0) jogador.x = 0; else if(jogador.x > LARGURA_MUNDO - jogador.largura) jogador.x = LARGURA_MUNDO - jogador.largura;
-
-            if (!checarColisao(jogador, npc)) teclas["lock_c"] = false;
-
-            // Câmera LERP Otimizada
-            let targetCamX = jogador.x - 464;
-            cameraX += (targetCamX - cameraX) * 0.08;
-            if(cameraX < 0) cameraX = 0; else if(cameraX > LARGURA_MUNDO - 960) cameraX = LARGURA_MUNDO - 960;
-
-            lotes.forEach(lote => {
-                if (lote.estado === 1) {
-                    lote.progresso += (jogador.upgrades.superSemente ? 0.71 : 0.42);
-                    if (lote.progresso >= 100) lote.estado = 3;
-                }
-            });
-
-            animais.forEach(ani => {
-                ani.timer--;
-                if(ani.timer <= 0) {
-                    ani.estado = Math.random() < 0.5 ? "andando" : "parado";
-                    ani.timer = 90 + Math.random() * 100;
-                    if(Math.random() > 0.5) ani.direcao = -ani.direcao;
-                }
-                if (saudeEcologica >= 20 && ani.estado === "andando") {
-                    ani.x += ani.velX * ani.direcao;
-                    if (ani.x < 180 || ani.x > 1400) ani.direcao = -ani.direcao;
-                }
-            });
-
-            tempoAnimacao += 0.05;
-
-            // Spawner de folhas usando a Pool Fixa
-            if (Math.random() < 0.04) {
-                for(let i=0; i<MAX_PARTICULAS; i++) {
-                    if(!poolParticulas[i].ativa) {
-                        let p = poolParticulas[i]; p.ativa = true; p.x = Math.random() * LARGURA_MUNDO; p.y = 0;
-                        p.vx = -1.5; p.vy = 2; p.vida = 1.0; p.tipo = "folha";
-                        p.cor = saudeEcologica < 30 ? "#78350f" : "#059669"; p.tam = 3; p.texto = "";
-                        break;
+            handleFaunaAction() {
+                this.fauna.forEach(f => {
+                    if (this.checkCollision(this.player, { x: f.x, y: f.y, w: f.w, h: f.h })) {
+                        if (this.state.ecoHealth < 20) {
+                            this.state.log = "Impossível coletar: Estresse biológico crítico na fauna local.";
+                            return;
+                        }
+                        if (f.ready) {
+                            let bonus = this.state.upgrades.bioFeed ? 1.6 : 1.0;
+                            let base = f.type === "cow" ? 40 : (f.type === "sheep" ? 30 : 20);
+                            let finalVal = Math.floor(base * bonus);
+                            this.state.economy += finalVal;
+                            this.state.log = "Derivados orgânicos purificados e integrados à receita.";
+                            f.ready = false; f.fed = false;
+                            this.particles.emit(f.x + f.w/2, f.y + 15, "#ffffff", 10);
+                            this.particles.emit(f.x + f.w/2, f.y - 20, `+$${finalVal}`, 1, "text");
+                        } else if (!f.fed) {
+                            f.fed = true; f.ready = true;
+                            this.state.log = "Suplementação nutricional Bio-Feed injetada.";
+                            this.particles.emit(f.x + f.w/2, f.y + 15, "#f59e0b", 8);
+                        }
                     }
-                }
-            }
-
-            // Clima de Chuva via Pool Fixa
-            if (climaAtual === "chuvoso") {
-                let spawned = 0;
-                for(let i=0; i<MAX_CHUVA; i++) {
-                    if(!poolChuva[i].ativa) {
-                        let g = poolChuva[i]; g.ativa = true; g.x = Math.random() * 960 + cameraX; g.y = -10;
-                        g.vy = 8; g.vx = -1.5; g.comp = 15;
-                        spawned++; if(spawned >= 2) break;
-                    }
-                }
-            }
-
-            // Update da Pool de Chuva
-            for(let i=0; i<MAX_CHUVA; i++) {
-                if(poolChuva[i].ativa) {
-                    let g = poolChuva[i]; g.x += g.vx; g.y += g.vy;
-                    if(g.y > chaoY) {
-                        g.ativa = false;
-                        if (g.x > cameraX && g.x < cameraX + 960) emitirParticulas(g.x, chaoY, "rgba(56, 189, 248, 0.4)", 1, "splash");
-                    }
-                }
-            }
-
-            // Update da Pool de Partículas (Sem Splice/Redimensionamento de Array)
-            for(let i=0; i<MAX_PARTICULAS; i++) {
-                if(poolParticulas[i].ativa) {
-                    let p = poolParticulas[i]; p.x += p.vx; p.y += p.vy;
-                    if(p.tipo === "efeito" || p.tipo === "splash") { p.vida -= 0.03; p.vy += 0.08; }
-                    else if(p.tipo === "poeira") { p.vida -= 0.05; p.vx *= 0.9; }
-                    else if(p.tipo === "texto") { p.vida -= 0.015; p.y -= 0.8; }
-                    else if(p.tipo === "folha") { if(p.y > chaoY) p.vida = 0; }
-                    if (p.vida <= 0) p.ativa = false;
-                }
-            }
-
-            // Movimento simplificado sem senos/cossenos para as borboletas
-            if (saudeEcologica >= 30) {
-                borboletas.forEach(b => {
-                    b.passo += 0.1;
-                    b.x += 1.0; b.y += (b.passo % 2 > 1 ? 0.6 : -0.6);
-                    if (b.x > LARGURA_MUNDO) b.x = 0;
-                    if (b.y < 60 || b.y > 350) b.y = 200;
                 });
             }
-        }
 
-        // --- ENGINES GRÁFICOS OTIMIZADOS ---
-
-        function desenharAvatar(x, y, camisaCor, cabeloCor, rumo, emMovimento, principal) {
-            let oscY = emMovimento ? (Math.floor(tempoAnimacao * 2) % 2 * 3) : 0;
-            let pX = (x - cameraX) | 0; // Operador Bitwise OR para truncar floats em inteiros ultrarrápidos
-            let pY = (y + oscY) | 0;
-
-            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-            ctx.fillRect(pX, (y + 51) | 0, 32, 4);
-
-            ctx.fillStyle = "#0f172a"; ctx.fillRect(pX + 4, pY + 44, 8, 10); ctx.fillRect(pX + 18, pY + 44, 8, 10);
-            ctx.fillStyle = "#2563eb"; ctx.fillRect(pX + 4, pY + 32, 23, 12);
-            ctx.fillStyle = camisaCor; ctx.fillRect(pX + 3, pY + 16, 25, 16);
-            ctx.fillStyle = "#fee2e2"; ctx.fillRect(pX + 6, pY + 4, 19, 12);
-            ctx.fillStyle = cabeloCor; ctx.fillRect(pX + 5, pY, 21, 5);
-
-            ctx.fillStyle = "#0f172a";
-            ctx.fillRect(pX + (rumo === "direita" ? 20 : 8), pY + 8, 3, 4);
-
-            if (principal) {
-                ctx.fillStyle = "#eab308"; ctx.fillRect(pX - 4, pY - 1, 39, 4);
-                if (jogador.aguaNoBalde) {
-                    ctx.fillStyle = "#475569"; ctx.fillRect(pX + (rumo === "direita" ? 29 : -13), pY + 24, 12, 12);
-                }
-            }
-        }
-
-        function desenharCenario() {
-            let r = 110, g = 155, b = 235;
-            if (saudeEcologica < 25) { r = 42; g = 42; b = 46; } 
-            else if (horaMundo > 18 || horaMundo < 5) { r = 14; g = 18; b = 36; }
-            if (climaAtual === "chuvoso") { r *= 0.5; g *= 0.5; b *= 0.6; }
-
-            ctx.fillStyle = "rgb(" + (r|0) + "," + (g|0) + "," + (b|0) + ")";
-            ctx.fillRect(0, 0, 960, 540);
-
-            let camX_int = cameraX | 0;
-
-            // Fundo estático de montanhas simplificado
-            ctx.fillStyle = saudeEcologica < 25 ? "#1e293b" : "#064e3b";
-            ctx.beginPath(); ctx.moveTo(0, chaoY); ctx.lineTo(320 - (camX_int >> 2), 240); ctx.lineTo(800 - (camX_int >> 2), chaoY); ctx.fill();
-
-            // Elementos do cenário
-            ctx.fillStyle = "#475569"; ctx.fillRect(areaPoco.x - camX_int, areaPoco.y + 35, 80, 55);
-            ctx.fillStyle = "#1e293b"; ctx.fillRect(areaSilo.x - camX_int, areaSilo.y, 100, 210);
-
-            // Cercas clonadas em loops rápidos
-            ctx.fillStyle = "#2d1504";
-            for(let cx = 80; cx < 1650; cx += 60) {
-                ctx.fillRect(cx - camX_int, chaoY - 24, 5, 24);
-                ctx.fillRect(cx - camX_int, chaoY - 18, 60, 3);
-            }
-
-            // Render das partículas vivas da Pool
-            for(let i=0; i<MAX_PARTICULAS; i++) {
-                if(poolParticulas[i].ativa) {
-                    let p = poolParticulas[i]; ctx.fillStyle = p.cor;
-                    if(p.tipo === "texto") { ctx.font = "bold 14px monospace"; ctx.fillText(p.texto, (p.x - camX_int)|0, p.y|0); }
-                    else { ctx.fillRect((p.x - camX_int)|0, p.y|0, p.tam, p.tam); }
-                }
-            }
-
-            // Chuva estática acelerada
-            if (climaAtual === "chuvoso") {
-                ctx.fillStyle = "#38bdf8";
-                for(let i=0; i<MAX_CHUVA; i++) {
-                    if(poolChuva[i].ativa) {
-                        let g = poolChuva[i]; ctx.fillRect((g.x - camX_int)|0, g.y|0, 2, g.comp);
+            handleNpcAction() {
+                if (this.checkCollision(this.player, { x: this.npc.x, y: this.npc.y, w: this.npc.w, h: this.npc.h })) {
+                    if (this.state.ecoHealth >= 85) {
+                        this.state.awareness = Math.min(100, this.state.awareness + 25);
+                        this.state.log = "Clarice: Fusão sistêmica avançada em andamento! Consciência ecológica expandida.";
+                        this.particles.emit(this.npc.x + 16, this.npc.y + 15, "#38bdf8", 15);
+                    } else {
+                        this.state.log = "Clarice: Descentralização negada. Garanta 85% de integridade bio-sistêmica.";
                     }
                 }
             }
 
-            // Solo e bases
-            ctx.fillStyle = "#0c0a09"; ctx.fillRect(0, chaoY, 960, 110);
-            ctx.fillStyle = saudeEcologica < 25 ? "#291305" : "#065f46"; ctx.fillRect(0, chaoY, 960, 16);
-            ctx.fillStyle = "#78350f"; ctx.fillRect(plataformaNPC.x - camX_int, plataformaNPC.y, 190, 16);
-
-            // Borboletas de render super leve
-            if (saudeEcologica >= 30) {
-                for(let i=0; i<borboletas.length; i++) {
-                    let b = borboletas[i]; ctx.fillStyle = b.cor;
-                    ctx.fillRect((b.x - camX_int)|0, b.y|0, 4, 4);
+            buyUpgrade(key, cost) {
+                if (this.state.economy >= cost && !this.state.upgrades[key]) {
+                    this.state.economy -= cost; this.state.upgrades[key] = true;
+                    this.state.log = `Módulo de infraestrutura estrutural instalado: ${key.toUpperCase()}`;
+                    this.particles.emit(this.player.x + 16, this.player.y + 20, "#10b981", 20);
+                } else {
+                    this.state.log = "Erro na requisição: Saldo insuficiente ou hardware duplicado.";
                 }
             }
 
-            // Filtro noturno otimizado flat (Substitui o composite mode lento)
-            if (horaMundo > 19 || horaMundo < 5) {
-                ctx.fillStyle = "rgba(10, 10, 35, 0.4)"; ctx.fillRect(0, 0, 960, 540);
-            }
-        }
+            update(dt) {
+                this.globalTime += 0.05 * (dt / 16.66);
+                this.state.timeOfDay += 0.004 * (dt / 16.66);
+                if(this.state.timeOfDay >= 24) this.state.timeOfDay = 0;
 
-        function desenharLotes() {
-            let camX_int = cameraX | 0;
-            lotes.forEach(lote => {
-                ctx.fillStyle = "#1c0d02"; ctx.fillRect(lote.x - camX_int, lote.y, 95, 20);
+                this.state.weatherTimer -= 1 * (dt / 16.66);
+                if(this.state.weatherTimer <= 0) {
+                    let rand = Math.random();
+                    this.state.weather = rand < 0.5 ? "clear" : (rand < 0.8 ? "cloudy" : "rainy");
+                    this.state.weatherTimer = 600 + Math.random() * 400;
+                }
+
+                this.processInput();
+                if (this.state.uiMenuOpen) return;
+
+                // Motor de Física Baseado em Passagem de Tempo Real (Delta Time Vectoring)
+                let f = dt / 16.66;
+                this.player.x += this.player.vx * f;
+                this.player.vy += CONFIG.gravidade * f;
+                this.player.y += this.player.vy * f;
+
+                if (this.player.y + this.player.h >= this.groundY) { this.player.y = this.groundY - this.player.h; this.player.vy = 0; this.player.onGround = true; }
                 
-                let cX = (lote.x + 47 - camX_int) | 0;
-                if (lote.estado === 1 || lote.estado === 2) {
-                    ctx.fillStyle = "#4ade80"; ctx.fillRect(cX - 3, lote.y - 15, 6, 15);
-                } else if (lote.estado === 3) {
-                    ctx.fillStyle = lote.insumo === "organico" ? "#f59e0b" : "#b45309";
-                    ctx.fillRect(cX - 10, lote.y - 20, 20, 20);
+                // Colisão Cirúrgica de Plataforma de Pesquisa
+                if (this.player.vy > 0 && this.player.x + this.player.w > CONFIG.plataformaNPC.x && this.player.x < CONFIG.plataformaNPC.x + CONFIG.plataformaNPC.largura && this.player.y + this.player.h >= CONFIG.plataformaNPC.y && this.player.y + this.player.h - this.player.vy * f <= CONFIG.plataformaNPC.y) {
+                    this.player.y = CONFIG.plataformaNPC.y - this.player.h; this.player.vy = 0; this.player.onGround = true;
                 }
-            });
-        }
+                this.player.x = Math.max(0, Math.min(this.worldWidth - this.player.w, this.player.x));
 
-        function desenharAnimais() {
-            let camX_int = cameraX | 0;
-            animais.forEach(ani => {
-                let pX = (ani.x - camX_int) | 0;
-                ctx.fillStyle = saudeEcologica < 25 ? "#4b5563" : "#f8fafc";
-                if (ani.tipo === "vaca") {
-                    ctx.fillRect(pX, ani.y + 10, 54, 25);
-                    ctx.fillStyle = "#1e293b"; ctx.fillRect(pX + 40, ani.y + 2, 12, 12);
-                } else if (ani.tipo === "galinha") {
-                    ctx.fillStyle = "#f97316"; ctx.fillRect(pX, ani.y + 4, 24, 14);
-                } else if (ani.tipo === "ovelha") {
-                    ctx.fillRect(pX, ani.y + 8, 44, 28);
+                this.camera.update(this.player.x, dt);
+
+                // Ciclo Biológico de Sementes e Crescimento de Matriz
+                this.plots.forEach(p => {
+                    if (p.state === 1) {
+                        p.progress += 0.35 * (this.state.upgrades.geneSeed ? 1.6 : 1.0) * f;
+                        if (p.progress >= 100) p.state = 3;
+                    }
+                });
+
+                // IA Autônoma de Agentes Animais
+                this.fauna.forEach(ani => {
+                    ani.timer -= 1 * f;
+                    if(ani.timer <= 0) {
+                        let r = Math.random();
+                        ani.status = r < 0.4 ? "walk" : (r < 0.75 ? "graze" : "idle");
+                        ani.timer = 80 + Math.random() * 100;
+                        if(Math.random() > 0.5) ani.dir *= -1;
+                    }
+                    if (this.state.ecoHealth >= 20 && ani.status === "walk") {
+                        ani.x += ani.vx * ani.dir * f;
+                        if (ani.x < 150 || ani.x > 1450) ani.dir *= -1;
+                    }
+                });
+
+                // Clima e Geração Atmosférica de Fluídos
+                if (Math.random() < 0.05) {
+                    this.particles.emit(Math.random() * this.worldWidth, 0, this.state.ecoHealth < 25 ? "#6b21a8" : "#047857", 1, "leaf");
                 }
-            });
-        }
 
-        function desenharInterfaceUpgrades() {
-            ctx.fillStyle = "#04060f"; ctx.fillRect(180, 70, 600, 370);
-            ctx.fillStyle = "#38bdf8"; ctx.font = "bold 18px monospace";
-            ctx.fillText("CENTRAL DE OPERAÇÕES BIOTECNOLÓGICAS", 215, 115);
-            ctx.fillStyle = "#ffffff"; ctx.font = "14px sans-serif";
-            ctx.fillText("1. Micro-Aspersores [Pressione 1] - Cost: $80", 220, 180);
-            ctx.fillText("2. Engenharia Organogênica [Pressione 2] - Cost: $120", 220, 240);
-            ctx.fillText("3. Sintetizador de Ração [Pressione 3] - Cost: $150", 220, 300);
-        }
+                if (this.state.weather === "rainy") {
+                    for(let i=0; i<2; i++) {
+                        this.rain.push({ x: Math.random() * this.canvas.width + this.camera.x, y: -10, vy: 8 + Math.random() * 3, len: 14 + Math.random() * 5 });
+                    }
+                }
 
-        function desenharHUD() {
-            ctx.fillStyle = "#070a13"; ctx.fillRect(20, 20, 460, 135);
-            ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px monospace";
-            ctx.fillText("● CAPITAL DISPONÍVEL: $" + dinheiro, 35, 45);
-            ctx.fillStyle = "#f8fafc"; ctx.fillText("SAÚDE ECO: " + saudeEcologica + "%", 35, 75);
-            ctx.fillText("CONSCIENTIZAÇÃO: " + conscientizacao + "%", 35, 105);
-            
-            ctx.fillStyle = "#070a13"; ctx.fillRect(20, 465, 920, 55);
-            ctx.fillStyle = "#f1f5f9"; ctx.font = "14px Arial"; ctx.fillText(dialogo, 40, 498);
-        }
+                for(let i = this.rain.length - 1; i >= 0; i--) {
+                    let r = this.rain[i]; r.y += r.vy * f;
+                    if(r.y > this.groundY) {
+                        if (r.x > this.camera.x && r.x < this.camera.x + this.canvas.width) this.particles.emit(r.x, this.groundY, "rgba(56, 189, 248, 0.3)", 1, "splash");
+                        this.rain.splice(i, 1);
+                    }
+                }
 
-        function loop() {
-            atualizar();
-            desenharCenario();
-            desenharLotes();
-            desenharAnimais();
-            
-            desenharAvatar(jogador.x, jogador.y, "#ef4444", "#2d1504", jogador.olhandoPara, jogador.andando, true);
-            desenharAvatar(npc.x, npc.y, "#a855f7", "#eab308", "esquerda", false, false);
-
-            desenharHUD();
-            if (menuUpgradesAberto) desenharInterfaceUpgrades();
-
-            if (conscientizacao >= 100) {
-                ctx.fillStyle = "#02040a"; ctx.fillRect(0, 0, 960, 540);
-                ctx.fillStyle = "#10b981"; ctx.font = "bold 24px monospace";
-                ctx.fillText("SISTEMA TOTALMENTE REGENERADO!", 260, 260);
-                return;
+                this.particles.update(dt, this.groundY);
             }
-            requestAnimationFrame(loop);
+
+            // --- ENGINE DE RENDERIZAÇÃO GRÁFICA VETORIAL ---
+
+            drawAgent(x, y, jacketColor, hairColor, dir, isWalking, isHero) {
+                let wave = isWalking ? Math.sin(this.globalTime * 3.5) * 2.2 : Math.sin(this.globalTime * 1.5) * 0.6;
+                let legMove = isWalking ? Math.sin(this.globalTime * 3.5) * 4.5 : 0;
+
+                this.ctx.save();
+                this.ctx.translate(x - this.camera.x, y + wave);
+
+                this.ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
+                this.ctx.beginPath(); this.ctx.ellipse(16, 53 - wave, 13, 3.5, 0, 0, Math.PI * 2); this.ctx.fill();
+
+                this.ctx.fillStyle = "#020617";
+                this.ctx.fillRect(4 + legMove, 44, 8, 9); this.ctx.fillRect(18 - legMove, 44, 8, 9);
+                this.ctx.fillStyle = "#1e3a8a"; this.ctx.fillRect(4, 32, 23, 12);
+                this.ctx.fillStyle = jacketColor; this.ctx.fillRect(3, 16, 25, 16);
+                this.ctx.fillStyle = "rgba(0,0,0,0.12)"; this.ctx.fillRect(3, 28, 25, 4);
+
+                this.ctx.fillStyle = jacketColor;
+                let armSwing = isWalking ? 0 : Math.sin(this.globalTime) * 1.2;
+                if (dir === "right") this.ctx.fillRect(-1, 17, 5, 12 + armSwing);
+                else this.ctx.fillRect(27, 17, 5, 12 + armSwing);
+
+                this.ctx.fillStyle = "#fee2e2"; this.ctx.fillRect(6, 4, 19, 12);
+                this.ctx.fillStyle = "#020617";
+                let eyePos = dir === "right" ? 18 : 8;
+                if (Math.floor(this.globalTime * 0.15) % 6 !== 0) {
+                    this.ctx.fillRect(eyePos, 8, 3, 4); this.ctx.fillRect(eyePos + (dir === "right" ? -5 : 5), 8, 3, 4);
+                }
+
+                this.ctx.fillStyle = hairColor; this.ctx.fillRect(5, 0, 21, 5);
+                if (dir === "right") this.ctx.fillRect(5, 5, 4, 5); else this.ctx.fillRect(22, 5, 4, 5);
+
+                if (isHero) {
+                    this.ctx.fillStyle = "#fbbf24"; this.ctx.fillRect(-2, -1, 35, 2.5);
+                    if (this.player.hasWater) {
+                        let bucketX = dir === "right" ? 27 : -10;
+                        this.ctx.fillStyle = "#475569"; this.ctx.fillRect(bucketX, 22, 11, 11);
+                        this.ctx.fillStyle = "#38bdf8"; this.ctx.fillRect(bucketX + 2, 22, 7, 2);
+                    }
+                } else {
+                    this.ctx.fillStyle = "#06b6d4"; this.ctx.fillRect(4, -2, 23, 2.5);
+                }
+                this.ctx.restore();
+            }
+
+            render() {
+                // Cálculo de Iluminação Dinâmica de Atmosfera (RGB Core Processing)
+                let r, g, b;
+                if (this.state.ecoHealth < 25) { r = 36; g = 36; b = 40; }
+                else {
+                    if (this.state.timeOfDay >= 5 && this.state.timeOfDay < 11) {
+                        let t = (this.state.timeOfDay - 5) / 6; r = 25 + t*75; g = 20 + t*120; b = 80 + t*140;
+                    } else if (this.state.timeOfDay >= 11 && this.state.timeOfDay < 17) {
+                        r = 100; g = 140; b = 220;
+                    } else if (this.state.timeOfDay >= 17 && this.state.timeOfDay < 20) {
+                        let t = (this.state.timeOfDay - 17) / 3; r = 100 + t*140; g = 140 - t*105; b = 220 - t*185;
+                    } else { r = 10; g = 12; b = 26; }
+                }
+
+                if (this.state.weather === "cloudy") { r *= 0.55; g *= 0.55; b *= 0.6; }
+                if (this.state.weather === "rainy") { r *= 0.4; g *= 0.4; b *= 0.45; }
+
+                let gradient = this.ctx.createLinearGradient(0, 0, 0, this.groundY);
+                gradient.addColorStop(0, `rgb(${Math.floor(r*0.5)}, ${Math.floor(g*0.5)}, ${Math.floor(b*0.6)})`);
+                gradient.addColorStop(1, `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`);
+                this.ctx.fillStyle = gradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Estrelas e Paralaxe
+                if (this.state.timeOfDay > 19 || this.state.timeOfDay < 5) {
+                    this.ctx.fillStyle = "#ffffff";
+                    this.backgroundStars.forEach(s => {
+                        this.ctx.globalAlpha = Math.abs(Math.sin(this.globalTime * 0.7 + s.r * 8));
+                        this.ctx.fillRect(s.x - this.camera.x * 0.25, s.y, 1.5, 1.5);
+                    });
+                    this.ctx.globalAlpha = 1.0;
+                }
+
+                // Montanhas Geométricas
+                this.ctx.fillStyle = this.state.ecoHealth < 25 ? "#0f172a" : "#022c22";
+                this.ctx.beginPath(); this.ctx.moveTo(0, this.groundY); this.ctx.lineTo(290 - this.camera.x * 0.15, 240); this.ctx.lineTo(720 - this.camera.x * 0.15, this.groundY); this.ctx.fill();
+                this.ctx.fillStyle = this.state.ecoHealth < 25 ? "#1e293b" : "#064e3b";
+                this.ctx.beginPath(); this.ctx.moveTo(100 - this.camera.x * 0.4, this.groundY); this.ctx.lineTo(580 - this.camera.x * 0.4, 200); this.ctx.lineTo(1050 - this.camera.x * 0.4, this.groundY); this.ctx.fill();
+
+                // Lotes Agrícolas Estáticos e Hidroponia
+                this.plots.forEach(p => {
+                    this.ctx.fillStyle = p.state === 1 ? "#020617" : "#1c0d02";
+                    this.ctx.fillRect(p.x - this.camera.x, p.y, p.w, p.h);
+                    if (this.state.upgrades.irrigation && p.state > 0) {
+                        this.ctx.fillStyle = "#0ea5e9"; this.ctx.fillRect(p.x + p.w/2 - 1.5 - this.camera.x, p.y - 8, 3, 8);
+                    }
+                    this.ctx.fillStyle = "#1e293b"; this.ctx.fillRect(p.x + p.w/2 - 1.5 - this.camera.x, p.y + p.h, 3, 14);
+                    this.ctx.fillStyle = "#334155"; this.ctx.fillRect(p.x + p.w/2 - 14 - this.camera.x, p.y + p.h + 2, 28, 11);
+                    this.ctx.fillStyle = "#fff"; this.ctx.font = "bold 8px 'Orbitron'"; this.ctx.fillText("LT " + p.id, p.x + p.w/2 - 10 - this.camera.x, p.y + p.h + 10);
+
+                    let cX = p.x + p.w / 2 - this.camera.x;
+                    if (p.state === 1 || p.state === 2) {
+                        let size = p.state === 1 ? 16 : 8;
+                        this.ctx.fillStyle = "#10b981"; this.ctx.fillRect(cX - 1.5, p.y - size, 3, size);
+                    } else if (p.state === 3) {
+                        this.ctx.fillStyle = "#064e3b"; this.ctx.beginPath(); this.ctx.arc(cX, p.y - 14, 18, 0, Math.PI*2); this.ctx.fill();
+                        this.ctx.fillStyle = p.type === "organic" ? "#f59e0b" : "#8b5cf6";
+                        this.ctx.beginPath(); this.ctx.arc(cX, p.y - 15, 8, 0, Math.PI*2); this.ctx.fill();
+                    }
+                });
+
+                // Fauna Inteligente
+                this.fauna.forEach(f => {
+                    this.ctx.save(); this.ctx.translate(f.x - this.camera.x, f.y);
+                    let anim = f.status === "walk" ? Math.sin(this.globalTime * 4) * 2 : 0;
+                    let filter = this.state.ecoHealth < 25 ? "#334155" : null;
+
+                    if (f.type === "cow") {
+                        this.ctx.fillStyle = filter || "#f8fafc"; this.ctx.fillRect(0, 10, f.w, 25);
+                        this.ctx.fillStyle = "#0f172a"; this.ctx.fillRect(4 + anim, 35, 6, 7); this.ctx.fillRect(14 - anim, 35, 6, 7);
+                        this.ctx.fillRect(28 + anim, 35, 6, 7); this.ctx.fillRect(40 - anim, 35, 6, 7);
+                        this.ctx.fillStyle = filter || "#e2e8f0"; this.ctx.fillRect(f.dir === 1 ? f.w - 4 : -12, 2, 16, 16);
+                        if (f.ready && this.state.ecoHealth >= 25) { this.ctx.font = "12px sans-serif"; this.ctx.fillText("🥛", 16, -5); }
+                    } else if (f.type === "chicken") {
+                        let peck = (f.status === "peck" && Math.floor(this.globalTime) % 3 === 0) ? 2 : 0;
+                        this.ctx.fillStyle = filter || "#ea580c"; this.ctx.fillRect(0, 4 + peck, f.w, 14);
+                        this.ctx.fillStyle = "#7c2d12"; this.ctx.fillRect(3, 18 + peck, 3, 2); this.ctx.fillRect(13, 18 + peck, 3, 2);
+                        if (f.ready && this.state.ecoHealth >= 25) { this.ctx.font = "12px sans-serif"; this.ctx.fillText("🥚", 4, -6); }
+                    } else if (f.type === "sheep") {
+                        this.ctx.fillStyle = filter || "#f1f5f9"; this.ctx.beginPath(); this.ctx.arc(14, 15, 14, 0, Math.PI*2); this.ctx.arc(28, 16, 13, 0, Math.PI*2); this.ctx.fill();
+                        this.ctx.fillStyle = "#0f172a"; this.ctx.fillRect(4 + anim, 28, 5, 8); this.ctx.fillRect(23 - anim, 28, 5, 8);
+                        this.ctx.fillStyle = "#cbd5e1"; this.ctx.fillRect(f.dir === 1 ? f.w - 2 : -8, 6, 10, 10);
+                        if (f.ready && this.state.ecoHealth >= 25) { this.ctx.font = "12px sans-serif"; this.ctx.fillText("☁️", 12, -8); }
+                    }
+                    this.ctx.restore();
+                });
+
+                // Desenho Estrutural dos Agentes (Herói e NPC)
+                this.drawAgent(this.player.x, this.player.y, "#ef4444", "#1e293b", this.player.facing, this.player.walking, true);
+                this.drawAgent(this.npc.x, this.npc.y, "#7c3aed", "#eab308", "left", false, false);
+
+                // Infraestrutura de Poço e Arquitetura Quântica
+                this.ctx.fillStyle = "#334155"; this.ctx.fillRect(90 - this.camera.x, 375, 80, 55);
+                this.ctx.fillStyle = "#020617"; this.ctx.fillRect(100 - this.camera.x, 382, 60, 43);
+                this.ctx.fillStyle = this.state.ecoHealth < 25 ? "#581c87" : "#0284c7"; this.ctx.fillRect(102 - this.camera.x, 388, 56, 32);
+                this.ctx.fillStyle = "#1e293b"; this.ctx.fillRect(1450 - this.camera.x, 220, 100, 210);
+                this.ctx.fillStyle = "#475569"; this.ctx.beginPath(); this.ctx.arc(1500 - this.camera.x, 220, 50, Math.PI, 0); this.ctx.fill();
+
+                // Chuva e Partículas
+                if (this.state.weather === "rainy") {
+                    this.ctx.strokeStyle = "rgba(56, 189, 248, 0.35)"; this.ctx.lineWidth = 1.0;
+                    this.rain.forEach(r => {
+                        this.ctx.beginPath(); this.ctx.moveTo(r.x - this.camera.x, r.y); this.ctx.lineTo(r.x - this.camera.x - 2, r.y + r.len); this.ctx.stroke();
+                    });
+                }
+
+                // Solo Sólido Inferior
+                this.ctx.fillStyle = "#020205"; this.ctx.fillRect(0, this.groundY, this.canvas.width, this.canvas.height - this.groundY);
+                this.ctx.fillStyle = this.state.ecoHealth < 25 ? "#451a03" : "#064e3b"; this.ctx.fillRect(0, this.groundY, this.canvas.width, 12);
+                this.ctx.fillStyle = "#475569"; this.ctx.fillRect(1720 - this.camera.x, 244, 190, 16);
+
+                // Efeito do Ciclo Multiplicador Noturno
+                if (this.state.timeOfDay > 19 || this.state.timeOfDay < 5) {
+                    let darkFactor = this.state.timeOfDay > 21 || this.state.timeOfDay < 3 ? 0.62 : 0.38;
+                    this.ctx.fillStyle = `rgba(3, 3, 12, ${darkFactor})`;
+                    this.ctx.globalCompositeOperation = "multiply";
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.ctx.globalCompositeOperation = "source-over";
+                }
+
+                this.drawHUD();
+                if (this.state.uiMenuOpen) this.drawUpgradeUI();
+
+                // Tela de Vitória Definitiva
+                if (this.state.awareness >= 100) {
+                    this.ctx.fillStyle = "#010204"; this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.ctx.fillStyle = "#10b981"; this.ctx.font = "bold 22px 'Orbitron'";
+                    this.ctx.fillText("ECOSISTEMA REGENERADO EM ESCOPO NACIONAL!", this.canvas.width/2 - 290, this.canvas.height/2 - 10);
+                    this.ctx.fillStyle = "#94a3b8"; this.ctx.font = "13px 'Inter'";
+                    this.ctx.fillText("Simulação concluída com sucesso. Nota de eficiência de hardware: AAA.", this.canvas.width/2 - 240, this.canvas.height/2 + 25);
+                }
+            }
+
+            drawHUD() {
+                this.ctx.fillStyle = "rgba(2, 4, 8, 0.92)"; this.ctx.strokeStyle = "rgba(51, 65, 85, 0.4)"; this.ctx.lineWidth = 1.5;
+                this.ctx.fillRect(20, 20, 460, 135); this.ctx.strokeRect(20, 20, 460, 135);
+                
+                this.ctx.fillStyle = "#fbbf24"; this.ctx.font = "bold 11px 'Orbitron'";
+                this.ctx.fillText(`● FINANÇAS DE REDE: $${this.state.economy}`, 35, 45);
+                
+                this.ctx.fillStyle = "#f8fafc"; this.ctx.font = "11px 'Orbitron'";
+                this.ctx.fillText(`SAÚDE DA BIOSFERA:       ${this.state.ecoHealth}%`, 35, 74);
+                this.ctx.fillStyle = "#1e293b"; this.ctx.fillRect(260, 65, 180, 9);
+                this.ctx.fillStyle = this.state.ecoHealth < 25 ? "#ef4444" : "#10b981"; this.ctx.fillRect(260, 65, 1.8 * this.state.ecoHealth, 9);
+                
+                this.ctx.fillStyle = "#f8fafc";
+                this.ctx.fillText(`CONSCIENTIZAÇÃO SOCIAL:  ${this.state.awareness}%`, 35, 100);
+                this.ctx.fillStyle = "#1e293b"; this.ctx.fillRect(260, 91, 180, 9);
+                this.ctx.fillStyle = "#3b82f6"; this.ctx.fillRect(260, 91, 1.8 * this.state.awareness, 9);
+                
+                let timeString = Math.floor(this.state.timeOfDay).toString().padStart(2, '0') + ":00";
+                this.ctx.fillStyle = "#38bdf8"; this.ctx.fillText(`SISTEMA TIME: ${timeString} | CONDIÇÃO ATMOSFÉRICA: ${this.state.weather.toUpperCase()}`, 35, 128);
+
+                this.ctx.fillStyle = "rgba(2, 4, 8, 0.94)"; this.ctx.strokeStyle = "rgba(30, 41, 59, 0.7)";
+                this.ctx.fillRect(20, 465, this.canvas.width - 40, 55); this.ctx.strokeRect(20, 465, this.canvas.width - 40, 55);
+                this.ctx.fillStyle = "#cbd5e1"; this.ctx.font = "13px 'Inter'"; this.ctx.fillText(this.state.log, 40, 498);
+            }
+
+            drawUpgradeUI() {
+                this.ctx.fillStyle = "rgba(1, 2, 4, 0.98)"; this.ctx.strokeStyle = "#0284c7"; this.ctx.lineWidth = 2.5;
+                this.ctx.fillRect(180, 70, 600, 370); this.ctx.strokeRect(180, 70, 600, 370);
+                
+                this.ctx.fillStyle = "#38bdf8"; this.ctx.font = "bold 16px 'Orbitron'";
+                this.ctx.fillText("BIOTEK SYSTEM HARDWARE CONTROL", 225, 115);
+                this.ctx.font = "12px 'Inter'";
+
+                let status1 = this.state.upgrades.irrigation ? "[UPGRADE OPERACIONAL]" : "[Pressione 1] Integrar por $80";
+                this.ctx.fillStyle = this.state.upgrades.irrigation ? "#10b981" : "#f59e0b";
+                this.ctx.fillText(`1. Aspersores Integrados Autônomos: ${status1}`, 220, 180);
+
+                let status2 = this.state.upgrades.geneSeed ? "[UPGRADE OPERACIONAL]" : "[Pressione 2] Integrar por $120";
+                this.ctx.fillStyle = this.state.upgrades.geneSeed ? "#10b981" : "#f59e0b";
+                this.ctx.fillText(`2. Engenharia Cromossômica de Germoplasma: ${status2}`, 220, 250);
+
+                let status3 = this.state.upgrades.bioFeed ? "[UPGRADE OPERACIONAL]" : "[Pressione 3] Integrar por $150";
+                this.ctx.fillStyle = this.state.upgrades.bioFeed ? "#10b981" : "#f59e0b";
+                this.ctx.fillText(`3. Bio-Sintetizador Nutricional Avançado: ${status3}`, 220, 320);
+
+                this.ctx.fillStyle = "#475569"; this.ctx.font = "11px 'Orbitron'"; this.ctx.fillText("Comando [I]: Desconectar Terminal Otimizador", 315, 415);
+            }
+
+            run(timestamp) {
+                if (!this.lastTime) this.lastTime = timestamp;
+                let dt = timestamp - this.lastTime;
+                this.lastTime = timestamp;
+
+                // Proteção Crítica Contra Quebras de Frame / Soluços de Carregamento
+                if (dt > 100) dt = 16.66;
+
+                this.timeAccumulator += dt;
+                while (this.timeAccumulator >= 16.66) {
+                    this.update(16.66);
+                    this.timeAccumulator -= 16.66;
+                }
+
+                this.render();
+                requestAnimationFrame((t) => this.run(t));
+            }
         }
-        loop();
+
+        const CONFIG = { plataformaNPC: { x: 1720, y: 244, largura: 190 } };
+        const app = new SimulationEngine();
+        requestAnimationFrame((t) => app.run(t));
     </script>
 </body>
 </html>
