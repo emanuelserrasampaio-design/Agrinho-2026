@@ -3,223 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TerraEco: Crônicas do Vale Vivo | ECO-SIM</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-
+    <title>TerraEco: Crônicas do Vale Vivo [Ultimate Edition]</title>
     <style>
-        :root {
-            --primary: #10b981;
-            --primary-glow: rgba(16, 185, 129, 0.25);
-            --bg-dark: #020617;
-            --panel-bg: rgba(15, 23, 42, 0.45);
-            --border-light: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-
-        * {
-            box-sizing: border-box;
-            user-select: none;
+        body {
             margin: 0;
             padding: 0;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+            background-color: #010204;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: var(--text-main);
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f1f5f9;
             flex-direction: column;
             overflow: hidden;
-            perspective: 1000px;
+            user-select: none;
         }
-
-        /* Container Principal com Design de Atração Visual (Showcase) */
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            animation: appAppear 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes appAppear {
-            0% { opacity: 0; transform: translateY(40px) scale(0.98); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Moldura Estilo Glassmorphism Premium */
-        .canvas-frame {
-            position: relative;
-            padding: 10px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
-            border-radius: 24px;
-            box-shadow: 
-                0 30px 70px -10px rgba(0, 0, 0, 0.8),
-                inset 0 1px 0px rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border-light);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
         canvas {
-            display: block;
-            border: 1px solid var(--primary);
-            border-radius: 16px;
-            box-shadow: 0 0 50px var(--primary-glow);
-            background-color: #030307;
-            transition: border-color 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border: 4px solid #334155;
+            border-radius: 12px;
+            box-shadow: 0px 30px 70px rgba(0,0,0,0.95);
+            background-color: #000;
         }
-
-        /* Painel Inferior Futurista (Dashboard de Comando) */
-        .dashboard-panel {
-            width: 980px;
-            background: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 24px 36px;
-            border-radius: 20px;
-            border: 1px solid var(--border-light);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dashboard-panel::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        }
-
-        .control-column {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .control-column h3 {
-            font-family: 'Orbitron', sans-serif;
-            color: #38bdf8;
+        .instrucoes {
+            margin-top: 14px;
+            text-align: center;
             font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
-            margin-bottom: 4px;
-        }
-
-        .control-row {
-            font-size: 13px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #94a3b8;
             line-height: 1.6;
+            max-width: 900px;
+            background: #0f172a;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
         }
-
-        /* Teclas do Console de Alta Fidelidade Visual */
-        span.command-key {
-            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
-            color: #ffffff;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
+        span.key {
+            background: #475569;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
             font-size: 11px;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-bottom: 3px solid #0f172a;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-            display: inline-block;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="canvas-frame">
-            <canvas id="gameCanvas" width="960" height="540"></canvas>
-        </div>
-        
-        <div class="dashboard-panel">
-            <div class="control-column">
-                <h3>Navegação e Integração</h3>
-                <div class="control-row">Movimentação Lateral: <span class="command-key">A</span> <span class="command-key">D</span> ou <span class="command-key">←</span> <span class="command-key">→</span></div>
-                <div class="control-row">Impulsão Vetorial (Pulo): <span class="command-key">W</span> ou <span class="command-key">ESPAÇO</span></div>
-                <div class="control-row">Interface do Painel BioTek: <span class="command-key">I</span> (Alternar Janela)</div>
-            </div>
-            <div class="control-column">
-                <h3>Bio-Manejo Tecnológico</h3>
-                <div class="control-row">Plantio: <span class="command-key">J</span> Orgânico (-$10) | <span class="command-key">K</span> Sintético (-$5)</div>
-                <div class="control-row">Ações: <span class="command-key">R</span> Irrigar Lote | <span class="command-key">E</span> Colher Recursos</div>
-                <div class="control-row">Simbiose: <span class="command-key">U</span> Interagir Fauna | <span class="command-key">C</span> Consultar Clarice</div>
-            </div>
-        </div>
+    <canvas id="gameCanvas" width="960" height="540"></canvas>
+    
+    <div class="instrucoes">
+        <strong>Controles Absolutos:</strong> Andar: <span class="key">A, D</span> / Setas | Pular: <span class="key">W</span> / <span class="key">ESPAÇO</span><br>
+        <strong>Manejo de Solo:</strong> Poço (Esquerda) dá água. Lotes: <span class="key">J</span> Orgânico (-$10) | <span class="key">K</span> Químico (-$5) | <span class="key">R</span> Regar | <span class="key">E</span> Colher<br>
+        <strong>Ações Avançadas:</strong> Animais: <span class="key">U</span> (Cuidar/Coletar) | Clarice: <span class="key">C</span> (Missão) | <strong>Menu de Upgrades Tecnológicos:</strong> <span class="key">I</span> (Abrir/Fechar)
     </div>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // Configurações Físicas Globais
-        const CONFIG = {
-            gravidade: 0.44,
-            larguraMundo: 2000,
-            chaoY: 430,
-            plataformaNPC: { x: 1720, y: 244, largura: 190, altura: 16 },
-            areaPoco: { x: 90, y: 340, largura: 80, altura: 90 },
-            areaSilo: { x: 1450, y: 220, largura: 100, altura: 210 }
-        };
-
-        // Estados do Sistema e Variáveis Dinâmicas
+        // Motores de Física
+        const GRAVIDADE = 0.44;
+        const LARGURA_MUNDO = 2000; 
         let tempoAnimacao = 0;
         let cameraX = 0;
-        let horaMundo = 6.0;
-        let climaAtual = "ensolarado";
-        let timerClima = 400;
         
+        // Ciclo de Tempo Avançado e Iluminação
+        let horaMundo = 6.0; 
         let estrelas = [];
-        let gotasChuva = [];
-        let particulas = [];
-        let borboletas = [];
-        let teclas = {};
-        
-        let menuUpgradesAberto = false;
-        let dinheiro = 150;
-        let saudeEcologica = 60;
-        let conscientizacao = 0;
-        let dialogo = "Sistemas Iniciados. Monitore e gerencie os índices ecológicos do ecossistema do vale.";
+        let neblinaAmbiente = 0;
+        for(let i=0; i<80; i++) estrelas.push({x: Math.random() * LARGURA_MUNDO, y: Math.random() * 260, brilho: Math.random(), tam: 1 + Math.random()*2});
 
-        // Entidades Principais
-        let jogador = {
-            x: 500, y: 300, largura: 32, altura: 54,
-            velX: 0, velY: 0, velocidade: 5.2, forcaPulo: 11.5, noChao: false,
+        // Entidades Principais (Evolutivas)
+        let jogador = { 
+            x: 500, y: 300, largura: 32, altura: 54, 
+            velX: 0, velY: 0, velocidade: 4.8, forcaPulo: 11.0, noChao: false,
             olhandoPara: "direita", andando: false, aguaNoBalde: false,
             upgrades: { irrigacao: false, superSemente: false, bioRacao: false }
         };
-
-        let npc = { x: 1800, y: 190, largura: 32, altura: 54 };
-
+        
+        let npc = { x: 1800, y: 190, largura: 32, altura: 54, nome: "Clarice" };
+        
         let animais = [
-            { tipo: "vaca", x: 350, y: 360, largura: 54, altura: 42, velX: 0.4, direcao: 1, prontoParaColeta: true, alimentado: true, estado: "pastando", timer: 120 },
-            { tipo: "galinha", x: 850, y: 384, largura: 24, altura: 18, velX: 0.65, direcao: -1, prontoParaColeta: true, alimentado: true, estado: "bicando", timer: 60 },
-            { tipo: "ovelha", x: 1200, y: 365, largura: 44, altura: 36, velX: 0.45, direcao: 1, prontoParaColeta: true, alimentado: true, estado: "andando", timer: 90 }
+            { tipo: "vaca", x: 350, y: 360, largura: 52, height: 42, velX: 0.35, direcao: 1, prontoParaColeta: true, alimentado: true, estado: "pastando", timer: 120 },
+            { tipo: "galinha", x: 850, y: 384, largura: 22, height: 16, velX: 0.6, direcao: -1, prontoParaColeta: true, alimentado: true, estado: "bicando", timer: 60 },
+            { tipo: "ovelha", x: 1200, y: 365, largura: 42, height: 36, velX: 0.4, direcao: 1, prontoParaColeta: true, alimentado: true, estado: "andando", timer: 90 }
         ];
 
+        const chaoY = 430;
+        let plataformaNPC = { x: 1720, y: 244, largura: 190, height: 16 };
+        let areaPoco = { x: 90, y: 340, largura: 80, height: 90 };
+        let areaSilo = { x: 1450, y: 220, largura: 100, height: 210 };
+
+        // Lotes Sistêmicos de Cultivo
         let lotes = [
             { id: 1, x: 550, y: 410, largura: 95, altura: 20, estado: 0, progresso: 0, insumo: null },
             { id: 2, x: 770, y: 410, largura: 95, altura: 20, estado: 0, progresso: 0, insumo: null },
@@ -227,33 +103,44 @@
             { id: 4, x: 1210, y: 410, largura: 95, altura: 20, estado: 0, progresso: 0, insumo: null }
         ];
 
-        // Inicialização de Elementos Cenográficos Estéticos
-        for(let i=0; i<80; i++) {
-            estrelas.push({ x: Math.random() * CONFIG.larguraMundo, y: Math.random() * 230, brilho: Math.random(), tam: 1 + Math.random() * 2 });
-        }
-        for (let i = 0; i < 10; i++) {
-            borboletas.push({ x: Math.random() * CONFIG.larguraMundo, y: 120 + Math.random() * 160, angulo: Math.random() * Math.PI * 2, cor: `hsl(${140 + Math.random() * 60}, 90%, 65%)` });
+        // Partículas Dinâmicas Universais
+        let particulas = [];
+        let borboletas = [];
+        let menuUpgradesAberto = false;
+
+        // Variáveis Sociais, Econômicas e Ambientais
+        let dinheiro = 150;
+        let saudeEcologica = 60;
+        let conscientizacao = 0;
+        let dialogo = "Guia do Amanhã: Use o painel tecnológico [I] para automatizar a regeneração biológica.";
+
+        let teclas = {};
+
+        // Inicializador de Flora Alada
+        for (let i = 0; i < 9; i++) {
+            borboletas.push({ x: Math.random() * LARGURA_MUNDO, y: 100 + Math.random() * 180, angulo: Math.random() * Math.PI * 2, cor: `hsl(${Math.random() * 360}, 90%, 65%)` });
         }
 
-        // Sistema de Escuta e Captação de Teclado
         window.addEventListener("keydown", (e) => {
             let k = e.key.toLowerCase();
             teclas[k] = true;
             if ((e.key === " " || k === "w") && jogador.noChao && !menuUpgradesAberto) {
                 jogador.velY = -jogador.forcaPulo;
                 jogador.noChao = false;
-                emitirParticulas(jogador.x + 16, jogador.y + 52, "rgba(255,255,255,0.3)", 8, "poeira");
+                emitirParticulas(jogador.x + 16, jogador.y + 52, "#64748b", 8, "poeira");
             }
-            if (k === "i") menuUpgradesAberto = !menuUpgradesAberto;
-            if (!menuUpgradesAberto) tratarAcoesDoJogador(k);
+            if (k === "i") { menuUpgradesAberto = !menuUpgradesAberto; }
+            if (!menuUpgradesAberto) processarInteracoes(k);
         });
         window.addEventListener("keyup", (e) => { teclas[e.key.toLowerCase()] = false; });
 
         function checarColisao(objA, objB) {
+            let bW = objB.largura || objB.width || 95;
+            let bH = objB.height || objB.altura || 20;
             return (
-                objA.x < objB.x + objB.largura &&
+                objA.x < objB.x + bW &&
                 objA.x + objA.largura > objB.x &&
-                objA.y < objB.y + objB.altura &&
+                objA.y < objB.y + bH &&
                 objA.y + objA.altura > objB.y
             );
         }
@@ -262,364 +149,414 @@
             for(let i=0; i<qtd; i++) {
                 particulas.push({
                     x: x, y: y,
-                    vx: (Math.random() - 0.5) * (tipo === "folha" ? 2 : 4),
+                    vx: (Math.random() - 0.5) * (tipo === "folha" ? 1.5 : 4),
                     vy: tipo === "folha" ? 1 + Math.random() : (Math.random() - 0.5) * 4 - 2,
                     vida: 1.0, cor: cor, tipo: tipo,
-                    tam: tipo === "texto" ? 14 : 2 + Math.random() * 3,
-                    texto: tipo === "texto" ? cor : ""
+                    tam: tipo === "texto" ? 12 : 2 + Math.random() * 4,
+                    texto: tipo === "texto" ? cor : "" 
                 });
             }
         }
 
-        function tratarAcoesDoJogador(tecla) {
-            if (checarColisao(jogador, CONFIG.areaPoco) && !jogador.aguaNoBalde) {
-                jogador.aguaNoBalde = true;
-                dialogo = "Módulo hídrico preenchido com água filtrada das camadas subterrâneas.";
-                emitirParticulas(CONFIG.areaPoco.x + 40, CONFIG.areaPoco.y + 50, "#38bdf8", 15, "splash");
+        function processarInteracoes(tecla) {
+            // Poço de Captação Hídrica
+            if (checarColisao(jogador, areaPoco)) {
+                if (!jogador.aguaNoBalde) {
+                    jogador.aguaNoBalde = true;
+                    dialogo = "Balde preenchido com água filtrada das rochas subterrâneas.";
+                    emitirParticulas(areaPoco.x + 40, areaPoco.y + 60, "#0ea5e9", 15, "splash");
+                }
             }
 
+            // Manejo de Solo nos Lotes Cadastrados
             lotes.forEach(lote => {
                 if (checarColisao(jogador, lote)) {
+                    // Semeadura Orgânica
                     if (tecla === "j" && lote.estado === 0 && dinheiro >= 10) {
-                        dinheiro -= 10; lote.estado = jogador.upgrades.irrigacao ? 1 : 2;
-                        lote.insumo = "organico"; saudeEcologica = Math.min(100, saudeEcologica + 8);
-                        dialogo = `Lote ${lote.id}: Sementes orgânicas integradas. O solo responde positivamente.`;
-                        emitirParticulas(lote.x + 47, lote.y, "#10b981", 10);
+                        dinheiro -= 10; lote.estado = jogador.upgrades.irrigacao ? 1 : 2; 
+                        lote.insumo = "organico";
+                        saudeEcologica = Math.min(100, saudeEcologica + 8);
+                        dialogo = `Lote ${lote.id}: Semeado organicamente. Biofertilização ativa.`;
+                        emitirParticulas(lote.x + 47, lote.y, "#22c55e", 10);
                     }
+                    // Semeadura Química Sintética
                     else if (tecla === "k" && lote.estado === 0 && dinheiro >= 5) {
-                        dinheiro -= 5; lote.estado = jogador.upgrades.irrigacao ? 1 : 2;
-                        lote.insumo = "quimico"; saudeEcologica = Math.max(0, saudeEcologica - 12);
-                        dialogo = `Lote ${lote.id}: Insumos artificiais aplicados. Alerta de saturação química emitido.`;
-                        emitirParticulas(lote.x + 47, lote.y, "#a855f7", 10);
+                        dinheiro -= 5; lote.estado = jogador.upgrades.irrigacao ? 1 : 2; 
+                        lote.insumo = "quimico";
+                        saudeEcologica = Math.max(0, saudeEcologica - 16);
+                        dialogo = `Lote ${lote.id}: Agroquímicos injetados. Compactação do solo iniciada.`;
+                        emitirParticulas(lote.x + 47, lote.y, "#d8b4fe", 10);
                     }
+                    // Irrigação Manual
                     else if (tecla === "r" && lote.estado === 2 && jogador.aguaNoBalde) {
                         lote.estado = 1; jogador.aguaNoBalde = false;
-                        dialogo = `Lote ${lote.id}: Hidratação molecular de solo ativada com sucesso.`;
-                        emitirParticulas(lote.x + 47, lote.y, "#0ea5e9", 20, "splash");
+                        dialogo = `Lote ${lote.id}: Solo umectado de forma ideal.`;
+                        emitirParticulas(lote.x + 47, lote.y, "#38bdf8", 20, "splash");
                     }
+                    // Colheita de Biomassa
                     else if (tecla === "e" && lote.estado === 3) {
-                        let lucroFinal = (lote.insumo === "organico") ? 45 : 55;
-                        if(jogador.upgrades.superSemente) lucroFinal = Math.floor(lucroFinal * 1.5);
-                        dinheiro += lucroFinal;
-                        dialogo = `Colheita comercializada nos mercados locais: +$${lucroFinal}`;
-                        emitirParticulas(lote.x + 47, lote.y - 10, lote.insumo === "organico" ? "#fbbf24" : "#ef4444", 15);
-                        emitirParticulas(lote.x + 47, lote.y - 30, `+$${lucroFinal}`, 1, "texto");
+                        let baseLucro = (lote.insumo === "organico") ? 40 : 50;
+                        if(jogador.upgrades.superSemente) baseLucro = Math.floor(baseLucro * 1.4);
+                        dinheiro += baseLucro;
+                        dialogo = `Mercadoria coletada! +$${baseLucro} injetados na sua conta global.`;
+                        emitirParticulas(lote.x + 47, lote.y - 12, lote.insumo === "organico" ? "#f59e0b" : "#ef4444", 18);
+                        emitirParticulas(lote.x + 47, lote.y - 30, `+$${baseLucro}`, 1, "texto");
                         lote.estado = 0; lote.progresso = 0; lote.insumo = null;
                     }
                 }
             });
 
+            // Manejo Animal Humano
             if (tecla === "u") {
                 animais.forEach(ani => {
-                    if (checarColisao(jogador, { x: ani.x, y: ani.y, largura: ani.largura, altura: ani.height })) {
-                        if (saudeEcologica < 20) {
-                            dialogo = "A fauna local recusa-se a interagir devido aos altos níveis de poluição.";
+                    if (checarColisao(jogador, { x: ani.x, y: ani.y, largura: ani.largura, height: ani.height })) {
+                        if (saudeEcologica < 25) {
+                            dialogo = "A criatura se recusa a produzir. O ar e o solo carregam toxinas perigosas.";
                             return;
                         }
                         if (ani.prontoParaColeta) {
-                            let multiplicador = jogador.upgrades.bioRacao ? 1.6 : 1.0;
-                            let valorDeTroca = (ani.tipo === "vaca") ? 40 : ((ani.tipo === "ovelha") ? 30 : 20);
-                            let lucroObtido = Math.floor(valorDeTroca * multiplicador);
-                            dinheiro += lucroObtido;
-                            dialogo = "Produtos biológicos regenerativos processados e integrados à receita.";
+                            let bônus = jogador.upgrades.bioRacao ? 1.5 : 1.0;
+                            let lucroAnimal = Math.floor((ani.tipo === "vaca" ? 35 : ani.tipo === "ovelha" ? 28 : 18) * bônus);
+                            dinheiro += lucroAnimal;
+                            dialogo = `Recursos coletados com sucesso da espécie ${ani.tipo}.`;
                             ani.prontoParaColeta = false; ani.alimentado = false;
                             emitirParticulas(ani.x + ani.largura/2, ani.y + 15, "#ffffff", 12);
-                            emitirParticulas(ani.x + ani.largura/2, ani.y - 20, `+$${lucroObtido}`, 1, "texto");
+                            emitirParticulas(ani.x + ani.largura/2, ani.y - 15, `+$${lucroAnimal}`, 1, "texto");
                         } else if (!ani.alimentado) {
                             ani.alimentado = true; ani.prontoParaColeta = true;
-                            dialogo = "Nutrientes orgânicos de alta qualidade fornecidos à espécie.";
-                            emitirParticulas(ani.x + ani.largura/2, ani.y + 15, "#f59e0b", 10);
+                            dialogo = `Você nutriu a criatura com fitoplâncton saudável.`;
+                            emitirParticulas(ani.x + ani.largura/2, ani.y + 15, "#fef08a", 10);
                         }
                     }
                 });
             }
 
+            // Diplomacia Social (Clarice)
             if (tecla === "c" && checarColisao(jogador, npc)) {
                 if (saudeEcologica >= 85) {
-                    if (!teclas["lock_c"]) { conscientizacao = Math.min(100, conscientizacao + 25); teclas["lock_c"] = true; }
-                    dialogo = "Clarice: Impressionante! O equilíbrio ecológico está se espalhando pelas fronteiras digitais.";
-                    emitirParticulas(npc.x + 16, npc.y + 15, "#38bdf8", 20);
+                    if (!teclas["trava_c"]) { conscientizacao = Math.min(100, conscientizacao + 25); teclas["trava_c"] = true; }
+                    dialogo = "Clarice: Impressionante! Toda a comunidade está convertendo seus campos após seus resultados.";
+                    emitirParticulas(npc.x + 16, npc.y + 15, "#ec4899", 20);
+                } else if (saudeEcologica < 30) {
+                    dialogo = "Clarice: Seus métodos industriais agressivos destruíram o lençol freático da vila!";
                 } else {
-                    dialogo = "Clarice: Precisamos de no mínimo 85% de estabilidade ecológica antes de expandir as redes do vale.";
+                    dialogo = "Clarice: Suas terras estão estáveis, mas para mudar a mente dos anciãos, precisamos de 85% de Saúde Ecológica.";
                 }
             }
         }
 
-        function aplicarUpgrade(tipo, custo) {
+        function executarUpgrade(tipo, custo) {
             if (dinheiro >= custo && !jogador.upgrades[tipo]) {
-                dinheiro -= custo; jogador.upgrades[tipo] = true;
-                dialogo = `Upgrade Ativado: Sistema avançado de ${tipo.toUpperCase()} integrado à malha.`;
-                emitirParticulas(jogador.x + 16, jogador.y + 20, "#10b981", 25);
+                dinheiro -= custo;
+                jogador.upgrades[tipo] = true;
+                dialogo = `Tecnologia Ativada: ${tipo.toUpperCase()} integrada ao maquinário com sucesso!`;
+                emitirParticulas(jogador.x + 16, jogador.y + 20, "#3b82f6", 25);
             } else if (jogador.upgrades[tipo]) {
-                dialogo = "Este módulo de infraestrutura já opera em sua capacidade máxima.";
+                dialogo = "Este módulo cibernético de infraestrutura já está operacional.";
             } else {
-                dialogo = "Recursos financeiros insuficientes para expansão de hardware.";
+                dialogo = "Capital financeiro insuficiente para esta transação tecnológica.";
             }
         }
 
         function atualizar() {
-            let corTema = saudeEcologica < 30 ? "#f43f5e" : (saudeEcologica < 75 ? "#f59e0b" : "#10b981");
-            let corBrilho = saudeEcologica < 30 ? "rgba(244, 63, 94, 0.3)" : (saudeEcologica < 75 ? "rgba(245, 158, 11, 0.3)" : "rgba(16, 185, 129, 0.3)");
-            document.documentElement.style.setProperty('--primary', corTema);
-            document.documentElement.style.setProperty('--primary-glow', corBrilho);
-
+            // Relógio Solar Matricial Fluido
             horaMundo += 0.005;
             if(horaMundo >= 24) horaMundo = 0;
 
-            timerClima--;
-            if(timerClima <= 0) {
-                let aleatorio = Math.random();
-                climaAtual = aleatorio < 0.5 ? "ensolarado" : (aleatorio < 0.8 ? "nublado" : "chuvoso");
-                timerClima = 600 + Math.random() * 400;
-            }
-
             if (menuUpgradesAberto) {
-                if (teclas["1"]) { aplicarUpgrade("irrigacao", 80); teclas["1"] = false; }
-                if (teclas["2"]) { aplicarUpgrade("superSemente", 120); teclas["2"] = false; }
-                if (teclas["3"]) { aplicarUpgrade("bioRacao", 150); teclas["3"] = false; }
-                return;
+                // Se o menu estiver aberto, verifica inputs de clique de upgrade baseados em teclado
+                if (teclas["1"]) executarUpgrade("irrigacao", 80);
+                if (teclas["2"]) executarUpgrade("superSemente", 120);
+                if (teclas["3"]) executarUpgrade("bioRacao", 150);
+                teclas["1"] = teclas["2"] = teclas["3"] = false; // Consome evento
+                return; 
             }
 
+            // Movimentação Cinemática com Desaceleração por Atrito Sutil
             jogador.velX = 0; jogador.andando = false;
             if (teclas["a"] || teclas["arrowleft"]) { jogador.velX = -jogador.velocidade; jogador.olhandoPara = "esquerda"; jogador.andando = true; }
             if (teclas["d"] || teclas["arrowright"]) { jogador.velX = jogador.velocidade; jogador.olhandoPara = "direita"; jogador.andando = true; }
 
-            jogador.x += jogador.velX; jogador.velY += CONFIG.gravidade; jogador.y += jogador.velY;
+            jogador.x += jogador.velX; jogador.velY += GRAVIDADE; jogador.y += jogador.velY;
 
-            if (jogador.y + jogador.altura >= CONFIG.chaoY) { jogador.y = CONFIG.chaoY - jogador.altura; jogador.velY = 0; jogador.noChao = true; }
-            
-            if (jogador.velY > 0 && jogador.x + jogador.largura > CONFIG.plataformaNPC.x && jogador.x < CONFIG.plataformaNPC.x + CONFIG.plataformaNPC.largura && jogador.y + jogador.altura >= CONFIG.plataformaNPC.y && jogador.y + jogador.altura - jogador.velY <= CONFIG.plataformaNPC.y) {
-                jogador.y = CONFIG.plataformaNPC.y - jogador.altura; jogador.velY = 0; jogador.noChao = true;
+            // Colisões Físicas de Plataformas Reais
+            if (jogador.y + jogador.altura >= chaoY) { jogador.y = chaoY - jogador.altura; jogador.velY = 0; jogador.noChao = true; }
+            if (jogador.velY > 0 && jogador.x + jogador.largura > plataformaNPC.x && jogador.x < plataformaNPC.x + plataformaNPC.largura && jogador.y + jogador.altura >= plataformaNPC.y && jogador.y + jogador.altura - jogador.velY <= plataformaNPC.y) { 
+                jogador.y = plataformaNPC.y - jogador.altura; jogador.velY = 0; jogador.noChao = true; 
             }
-            jogador.x = Math.max(0, Math.min(CONFIG.larguraMundo - jogador.largura, jogador.x));
+            jogador.x = Math.max(0, Math.min(LARGURA_MUNDO - jogador.largura, jogador.x));
 
-            if (!checarColisao(jogador, npc)) teclas["lock_c"] = false;
+            if (!checarColisao(jogador, npc)) teclas["trava_c"] = false;
 
-            // Suavização Cinematográfica de Câmera (LERP)
-            let alvoCameraX = jogador.x - canvas.width / 2 + jogador.largura / 2;
-            cameraX += (alvoCameraX - cameraX) * 0.08;
-            cameraX = Math.max(0, Math.min(CONFIG.larguraMundo - canvas.width, cameraX));
+            // Câmera Suave Baseada em Interpolação Linear (LERP)
+            let idealCam = jogador.x - canvas.width / 2 + jogador.largura / 2;
+            cameraX += (idealCam - cameraX) * 0.08;
+            cameraX = Math.max(0, Math.min(LARGURA_MUNDO - canvas.width, cameraX));
 
-            lotes.forEach(lote => {
-                if (lote.estado === 1) {
-                    lote.progresso += 0.38 * (jogador.upgrades.superSemente ? 1.6 : 1.0);
-                    if (lote.progresso >= 100) lote.estado = 3;
-                }
+            // Crescimento Celular Vegetal Multiplicado por Engenharia Genética
+            lotes.forEach(lote => { 
+                if (lote.estado === 1) { 
+                    let multCrescimento = jogador.upgrades.superSemente ? 1.6 : 1.0;
+                    lote.progresso += 0.38 * multCrescimento; 
+                    if (lote.progresso >= 100) lote.estado = 3; 
+                } 
             });
 
+            // Gerenciador de Estados da IA Animal
             animais.forEach(ani => {
                 ani.timer--;
                 if(ani.timer <= 0) {
-                    let r = Math.random();
-                    ani.estado = r < 0.4 ? "andando" : (r < 0.75 ? "pastando" : "parado");
-                    ani.timer = 80 + Math.random() * 100;
+                    let acaso = Math.random();
+                    ani.estado = acaso < 0.35 ? "andando" : (acaso < 0.7 ? "pastando" : "parado");
+                    ani.timer = 60 + Math.random() * 100;
                     if(Math.random() > 0.5) ani.direcao *= -1;
                 }
+
                 if (saudeEcologica >= 20 && ani.estado === "andando") {
                     ani.x += ani.velX * ani.direcao;
-                    if (ani.x < 150 || ani.x > 1450) ani.direcao *= -1;
+                    if (ani.x < 180 || ani.x > 1400) ani.direcao *= -1;
                 }
             });
 
             tempoAnimacao += 0.05;
 
-            // Clima e Geração Orgânica de Partículas Ambientais
-            if (Math.random() < 0.06) {
+            // Processamento do Ecossistema de Partículas Livres
+            if (Math.random() < 0.07) {
                 particulas.push({
-                    x: Math.random() * CONFIG.larguraMundo, y: 0,
-                    vx: -1.5 - Math.random() * 1.5, vy: 1.5 + Math.random() * 2,
-                    vida: 1.0, tipo: "folha", cor: saudeEcologica < 30 ? "#7c2d12" : "#047857", tam: 3 + Math.random() * 2
+                    x: Math.random() * LARGURA_MUNDO, y: 0,
+                    vx: -1.0 - Math.random() * 1.5, vy: 1.5 + Math.random() * 2,
+                    vida: 1.0, tipo: "folha", cor: saudeEcologica < 30 ? "#7c2d12" : "#16a34a", tam: 3 + Math.random() * 4
                 });
             }
 
-            if (climaAtual === "chuvoso") {
-                for(let i=0; i<3; i++) {
-                    gotasChuva.push({ x: Math.random() * canvas.width + cameraX, y: -10, vy: 7 + Math.random() * 3, vx: -2, tam: 12 + Math.random() * 6 });
-                }
-            }
-
-            for(let i = gotasChuva.length - 1; i >= 0; i--) {
-                let g = gotasChuva[i]; g.x += g.vx; g.y += g.vy;
-                if(g.y > CONFIG.chaoY) {
-                    if (g.x > cameraX && g.x < cameraX + canvas.width) emitirParticulas(g.x, CONFIG.chaoY, "rgba(56, 189, 248, 0.4)", 1, "splash");
-                    gotasChuva.splice(i, 1);
-                }
+            // Se a poluição estiver extrema, chove cinzas químicas
+            if (saudeEcologica < 25 && Math.random() < 0.15) {
+                emitirParticulas(Math.random() * LARGURA_MUNDO, 0, "rgba(30,30,30,0.6)", 1, "folha");
             }
 
             for(let i = particulas.length - 1; i >= 0; i--) {
-                let p = particulas[i]; p.x += p.vx; p.y += p.vy;
-                if(p.tipo === "efeito" || p.tipo === "splash") { p.vida -= 0.025; p.vy += 0.08; }
-                if(p.tipo === "poeira") { p.vida -= 0.04; p.vx *= 0.9; }
+                let p = particulas[i];
+                p.x += p.vx; p.y += p.vy;
+                if(p.tipo === "efeito" || p.tipo === "splash") { p.vida -= 0.02; p.vy += 0.07; }
+                if(p.tipo === "poeira") { p.vida -= 0.035; p.vx *= 0.94; }
                 if(p.tipo === "texto") { p.vida -= 0.015; p.y -= 0.8; }
-                if (p.y > CONFIG.chaoY || p.vida <= 0) particulas.splice(i, 1);
+                if (p.y > chaoY || p.vida <= 0) particulas.splice(i, 1);
             }
 
-            if (saudeEcologica >= 30) {
+            // Voo de Borboletas Baseado em Ruído Matemático Crítico
+            if (saudeEcologica >= 35) {
                 borboletas.forEach(b => {
-                    b.angulo += (Math.random() - 0.5) * 0.3;
+                    b.angulo += (Math.random() - 0.5) * 0.35;
                     b.x += Math.cos(b.angulo) * 1.1;
-                    b.y += Math.sin(b.angulo) * 0.8 + Math.sin(tempoAnimacao * 0.5) * 0.2;
-                    if (b.x < 0) b.x = CONFIG.larguraMundo; if (b.x > CONFIG.larguraMundo) b.x = 0;
-                    if (b.y < 50) b.y = 350; if (b.y > 400) b.y = 120;
+                    b.y += Math.sin(b.angulo) * 0.8 + Math.sin(tempoAnimacao * 0.5) * 0.3;
+                    if (b.x < 0) b.x = LARGURA_MUNDO; if (b.x > LARGURA_MUNDO) b.x = 0;
+                    if (b.y < 50) b.y = 350; if (b.y > 400) b.y = 90;
                 });
             }
         }
 
-        // --- SISTEMAS DE ILUMINAÇÃO E RENDERIZAÇÃO ESTÉTICA ---
+        // --- ENGINES GRÁFICOS DE ALTA PERFORMANCE ---
 
-        function desenharAgente(ctx, x, y, jaquetaCor, mechasCor, direcao, emMovimento, lider) {
-            let oscY = emMovimento ? Math.sin(tempoAnimacao * 3.5) * 2.5 : Math.sin(tempoAnimacao * 1.5) * 0.7;
-            let cicloPernas = emMovimento ? Math.sin(tempoAnimacao * 3.5) * 5 : 0;
+        function desenharAvatar(ctx, x, y, camisaCor, cabeloCor, rumo, emMovimento, principal) {
+            let respiracao = Math.sin(tempoAnimacao * 1.5) * 0.7;
+            let oscilaY = emMovimento ? Math.sin(tempoAnimacao * 3.0) * 2.5 : respiracao;
+            let pernasGiro = emMovimento ? Math.sin(tempoAnimacao * 3.0) * 5.5 : 0;
 
             ctx.save();
-            ctx.translate(x - cameraX, y + oscY);
+            ctx.translate(x - cameraX, y + oscilaY);
 
-            // Projeção Óptica de Sombras Dinâmicas
-            ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-            ctx.beginPath(); ctx.ellipse(16, 53 - oscY, 14, 4, 0, 0, Math.PI * 2); ctx.fill();
+            // Sombra Oclusiva Projetada
+            ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+            ctx.beginPath(); ctx.ellipse(16, 53 - oscilaY, 15, 4.5, 0, 0, Math.PI * 2); ctx.fill();
 
-            // Sapatilhas e Locomoção
-            ctx.fillStyle = "#090d16";
-            ctx.fillRect(4 + cicloPernas, 44, 8, 9);
-            ctx.fillRect(18 - cicloPernas, 44, 8, 9);
-            ctx.fillStyle = "#1e3a8a"; ctx.fillRect(4, 32, 23, 12);
+            // Calças e Botas de trabalho
+            ctx.fillStyle = "#020617"; 
+            ctx.fillRect(4 + pernasGiro, 44 - respiracao, 8, 9 + respiracao); 
+            ctx.fillRect(18 - pernasGiro, 44 - respiracao, 8, 9 + respiracao); 
+            ctx.fillStyle = "#1d4ed8"; ctx.fillRect(4, 32, 23, 13); 
 
-            // Jaqueta Texturizada
-            ctx.fillStyle = jaquetaCor; ctx.fillRect(3, 16, 25, 16);
-            ctx.fillStyle = "rgba(0,0,0,0.15)"; ctx.fillRect(3, 28, 25, 4);
+            // Jaqueta de Fibra Ecológica
+            ctx.fillStyle = camisaCor; ctx.fillRect(3, 16, 25, 16); 
+            ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fillRect(3, 29, 25, 3); 
 
-            // Simulação de Membros Superiores
-            ctx.fillStyle = jaquetaCor;
-            let anguloBraco = emMovimento ? 0 : Math.sin(tempoAnimacao) * 1.2;
-            if (direcao === "direita") {
-                ctx.fillRect(emMovimento ? 2 : -1, 17, 5, 13 + anguloBraco);
+            // Dinâmica dos Braços Articulados
+            ctx.fillStyle = camisaCor;
+            let bracoBalanco = emMovimento ? 0 : Math.sin(tempoAnimacao) * 1.4;
+            if (rumo === "direita") {
+                ctx.fillRect(emMovimento ? 2 : -2, 17, 5, 14 + bracoBalanco);
+                ctx.fillStyle = "#fee2e2"; ctx.fillRect(emMovimento ? 2 : -2, 31 + bracoBalanco, 5, 4);
             } else {
-                ctx.fillRect(27, 17, 5, 13 + anguloBraco);
+                ctx.fillRect(28, 17, 5, 14 + bracoBalanco);
+                ctx.fillStyle = "#fee2e2"; ctx.fillRect(28, 31 + bracoBalanco, 5, 4);
             }
 
-            // Epiderme e Biometria Ocular
-            ctx.fillStyle = "#fee2e2"; ctx.fillRect(6, 4, 19, 12);
-            ctx.fillStyle = "#090d16";
-            let posXOlho = direcao === "direita" ? 19 : 7;
-            if (Math.floor(tempoAnimacao * 0.2) % 5 !== 0) {
-                ctx.fillRect(posXOlho, 8, 3, 4);
-                ctx.fillRect(posXOlho + (direcao === "direita" ? -5 : 5), 8, 3, 4);
+            // Cabeça Pixels e Piscar Biométrico
+            ctx.fillStyle = "#fee2e2"; ctx.fillRect(6, 4, 19, 13); 
+            ctx.fillStyle = "#0f172a";
+            let eyeX = rumo === "direita" ? 19 : 8;
+            if (Math.floor(tempoAnimacao * 0.3) % 8 !== 0) {
+                ctx.fillRect(eyeX, 9, 3, 4);
+                ctx.fillRect(eyeX + (rumo === "direita" ? -6 : 6), 9, 3, 4);
             }
 
-            // Estética Capilar e Acessórios
-            ctx.fillStyle = mechasCor; ctx.fillRect(5, 0, 21, 5);
-            if (direcao === "direita") ctx.fillRect(5, 5, 4, 6); else ctx.fillRect(22, 5, 4, 6);
+            // Customização Capilar e Chapéus Estilizados
+            ctx.fillStyle = cabeloCor; ctx.fillRect(5, 0, 21, 5); 
+            if (rumo === "direita") { ctx.fillRect(5, 5, 5, 7); } else { ctx.fillRect(21, 5, 5, 7); }
 
-            if (lider) {
-                ctx.fillStyle = "#fbbf24"; ctx.fillRect(-2, -1, 35, 3);
-                if (jogador.aguaNoBalde) {
-                    let bX = direcao === "direita" ? 28 : -11;
-                    ctx.fillStyle = "#64748b"; ctx.fillRect(bX, 22, 12, 12);
-                    ctx.fillStyle = "#0284c7"; ctx.fillRect(bX + 2, 22, 8, 2);
-                }
+            if (principal) {
+                ctx.fillStyle = "#f59e0b"; ctx.fillRect(-4, -1, 39, 4); // Chapéu aba larga
+                ctx.fillStyle = "#ca8a04"; ctx.fillRect(5, -6, 21, 6); 
             } else {
-                ctx.fillStyle = "#38bdf8"; ctx.fillRect(4, -2, 23, 3);
+                ctx.fillStyle = "#f43f5e"; ctx.fillRect(5, -2, 21, 3); // Tiara Cibernética
+            }
+
+            // Renderizador do Balde Hidrodinâmico
+            if (principal && jogador.aguaNoBalde) {
+                let bx = rumo === "direita" ? 28 : -12;
+                ctx.fillStyle = "#64748b"; ctx.fillRect(bx, 24, 13, 13);
+                ctx.fillStyle = "#0ea5e9"; ctx.fillRect(bx + 2, 24, 9, 3); 
             }
             ctx.restore();
         }
 
-        function desenharMundo() {
-            // Renderização e Gradiente Luminoso do Céu Integrado
+        function desenharAnimais() {
+            animais.forEach(ani => {
+                ctx.save();
+                ctx.translate(ani.x - cameraX, ani.y);
+                let cicloMov = ani.estado === "andando" ? Math.sin(tempoAnimacao * 4.0) * 2.0 : 0;
+                let caudaFisica = Math.sin(tempoAnimacao * 3.0) * 5;
+
+                // Mutação cromática por contaminação química severa
+                let corPoluida = saudeEcologica < 25 ? "#4b5563" : null;
+
+                if (ani.tipo === "vaca") {
+                    ctx.fillStyle = corPoluida || "#f8fafc"; ctx.fillRect(0, 10, ani.largura, 25); 
+                    if (!corPoluida) { ctx.fillStyle = "#0f172a"; ctx.fillRect(8, 12, 14, 11); ctx.fillRect(30, 15, 12, 12); }
+                    ctx.fillStyle = "#475569"; ctx.fillRect(-4, 12 + caudaFisica/2, 3, 12); // Cauda
+                    ctx.fillStyle = "#334155"; // Membros
+                    ctx.fillRect(4 + cicloMov, 35, 6, 8); ctx.fillRect(15 - cicloMov, 35, 6, 8);
+                    ctx.fillRect(30 + cicloMov, 35, 6, 8); ctx.fillRect(42 - cicloMov, 35, 6, 8);
+                    
+                    ctx.fillStyle = corPoluida || "#f1f5f9";
+                    let hx = ani.direcao === 1 ? ani.largura - 4 : -14;
+                    ctx.fillRect(hx, 2, 18, 18);
+                    ctx.fillStyle = saudeEcologica < 25 ? "#374151" : "#f43f5e"; ctx.fillRect(hx + (ani.direcao === 1 ? 8 : -2), 8, 11, 11);
+
+                    if (ani.prontoParaColeta && saudeEcologica >= 25) {
+                        ctx.fillStyle = "#ffffff"; ctx.font = "12px Arial"; ctx.fillText("🥛", 16, -6);
+                    }
+                } 
+                else if (ani.tipo === "galinha") {
+                    let bicarEfeito = (ani.estado === "bicando" && Math.floor(tempoAnimacao) % 4 === 0) ? 3 : 0;
+                    ctx.fillStyle = corPoluida || "#ea580c"; ctx.fillRect(0, 4 + bicarEfeito, ani.largura, 13); 
+                    ctx.fillStyle = "#dc2626"; ctx.fillRect(ani.direcao === 1 ? ani.largura - 6 : 2, -2 + bicarEfeito, 6, 7); 
+                    ctx.fillStyle = "#78350f"; ctx.fillRect(4, 17 + bicarEfeito, 3, 3); ctx.fillRect(14, 17 + bicarEfeito, 3, 3);
+
+                    if (ani.prontoParaColeta && saudeEcologica >= 25) {
+                        ctx.fillStyle = "#ffffff"; ctx.font = "12px Arial"; ctx.fillText("🥚", 3, -8);
+                    }
+                }
+                else if (ani.tipo === "ovelha") {
+                    ctx.fillStyle = corPoluida || "#f1f5f9"; 
+                    ctx.beginPath(); ctx.arc(15, 16, 17, 0, Math.PI*2); ctx.arc(29, 17, 15, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "#0f172a"; ctx.fillRect(5 + cicloMov, 30, 5, 8); ctx.fillRect(26 - cicloMov, 30, 5, 8); 
+                    ctx.fillStyle = "#cbd5e1"; ctx.fillRect(ani.direcao === 1 ? ani.largura - 2 : -10, 6, 13, 13); 
+
+                    if (ani.prontoParaColeta && saudeEcologica >= 25) {
+                        ctx.fillStyle = "#ffffff"; ctx.font = "12px Arial"; ctx.fillText("☁️", 13, -10);
+                    }
+                }
+                ctx.restore();
+            });
+        }
+
+        function desenharCenario() {
+            // Render de Iluminação Matemática do Céu Dinâmico
             let r, g, b;
             if (saudeEcologica < 25) {
-                r = 40; g = 40; b = 44;
+                r = 38; g = 38; b = 42; // Céu poluído ácido
             } else {
-                if (horaMundo >= 5 && horaMundo < 11) {
-                    let t = (horaMundo - 5) / 6; r = 30 + t*70; g = 25 + t*120; b = 90 + t*130;
-                } else if (horaMundo >= 11 && horaMundo < 17) {
-                    r = 100; g = 145; b = 220;
-                } else if (horaMundo >= 17 && horaMundo < 20) {
-                    let t = (horaMundo - 17) / 3; r = 100 + t*140; g = 145 - t*100; b = 220 - t*180;
-                } else {
-                    r = 12; g = 14; b = 28;
+                if (horaMundo >= 5 && horaMundo < 11) { 
+                    let t = (horaMundo - 5) / 6; r = 40 + t*60; g = 30 + t*110; b = 100 + t*120; // Amanhecer Cósmico
+                } else if (horaMundo >= 11 && horaMundo < 17) { 
+                    r = 100; g = 145; b = 225; // Pleno Dia
+                } else if (horaMundo >= 17 && horaMundo < 20) { 
+                    let t = (horaMundo - 17) / 3; r = 100 + t*130; g = 145 - t*105; b = 225 - t*175; // Pôr do Sol
+                } else { 
+                    r = 12; g = 16; b = 32; // Noite profunda estrelada
                 }
             }
 
-            if (climaAtual === "nublado") { r *= 0.6; g *= 0.6; b *= 0.65; }
-            if (climaAtual === "chuvoso") { r *= 0.45; g *= 0.45; b *= 0.5; }
-
-            let gradienteCeu = ctx.createLinearGradient(0, 0, 0, CONFIG.chaoY);
-            gradienteCeu.addColorStop(0, `rgb(${Math.floor(r*0.6)}, ${Math.floor(g*0.6)}, ${Math.floor(b*0.7)})`);
-            gradienteCeu.addColorStop(1, `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`);
-            ctx.fillStyle = gradienteCeu;
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Estrelas Cadentes Noturnas
-            if ((horaMundo > 19 || horaMundo < 5) && climaAtual === "ensolarado") {
+            // Abóbada Estrelada Cintiante
+            if (horaMundo > 19 || horaMundo < 5) {
                 ctx.fillStyle = "#ffffff";
                 estrelas.forEach(e => {
-                    ctx.globalAlpha = Math.abs(Math.sin(tempoAnimacao * 0.8 + e.brilho * 10));
-                    ctx.fillRect(e.x - cameraX * 0.3, e.y, e.tam, e.tam);
+                    ctx.globalAlpha = Math.abs(Math.sin(tempoAnimacao * 0.8 + e.brilho * 8));
+                    ctx.fillRect(e.x - cameraX * 0.4, e.y, e.tam, e.tam); // Paralaxe nas estrelas
                 });
                 ctx.globalAlpha = 1.0;
             }
 
-            // Cadeia de Montanhas Geométricas (Paralaxe de Alta Profundidade)
-            ctx.fillStyle = saudeEcologica < 25 ? "#111827" : "#022c22";
-            ctx.beginPath(); ctx.moveTo(0, CONFIG.chaoY); ctx.lineTo(300 - cameraX * 0.2, 230); ctx.lineTo(750 - cameraX * 0.2, CONFIG.chaoY); ctx.fill();
-            ctx.fillStyle = saudeEcologica < 25 ? "#1f2937" : "#064e3b";
-            ctx.beginPath(); ctx.moveTo(120 - cameraX * 0.5, CONFIG.chaoY); ctx.lineTo(600 - cameraX * 0.5, 190); ctx.lineTo(1100 - cameraX * 0.5, CONFIG.chaoY); ctx.fill();
+            // Camadas de Montanhas (Efeito de Paralaxe Profundo)
+            ctx.fillStyle = saudeEcologica < 25 ? "#1f2937" : "#14532d";
+            ctx.beginPath(); ctx.moveTo(0, chaoY); ctx.lineTo(300 - cameraX * 0.3, 250); ctx.lineTo(750 - cameraX * 0.3, chaoY); ctx.fill();
+            ctx.fillStyle = saudeEcologica < 25 ? "#374151" : "#166534";
+            ctx.beginPath(); ctx.moveTo(150 - cameraX * 0.6, chaoY); ctx.lineTo(600 - cameraX * 0.6, 210); ctx.lineTo(1100 - cameraX * 0.6, chaoY); ctx.fill();
 
-            // Elementos Cenográficos Estáticos
-            ctx.fillStyle = "#334155"; ctx.fillRect(CONFIG.areaPoco.x - cameraX, CONFIG.areaPoco.y + 35, CONFIG.areaPoco.largura, 55);
-            ctx.fillStyle = "#020617"; ctx.fillRect(CONFIG.areaPoco.x + 10 - cameraX, CONFIG.areaPoco.y + 42, CONFIG.areaPoco.largura - 20, 43);
-            ctx.fillStyle = saudeEcologica < 25 ? "#581c87" : "#0284c7"; ctx.fillRect(CONFIG.areaPoco.x + 12 - cameraX, CONFIG.areaPoco.y + 48, CONFIG.areaPoco.largura - 24, 32);
-            ctx.fillStyle = "#451a03"; ctx.fillRect(CONFIG.areaPoco.x + 10 - cameraX, CONFIG.areaPoco.y, 6, 35); ctx.fillRect(CONFIG.areaPoco.x + CONFIG.areaPoco.largura - 16 - cameraX, CONFIG.areaPoco.y, 6, 35);
-            ctx.fillStyle = "#991b1b"; ctx.fillRect(CONFIG.areaPoco.x - 4 - cameraX, CONFIG.areaPoco.y - 4, CONFIG.areaPoco.largura + 8, 10);
+            // Árvores com Simulação Volumétrica de Copas
+            let ventoOnda = Math.sin(tempoAnimacao) * 2.8;
+            ctx.fillStyle = "#3b1e08"; ctx.fillRect(280 - cameraX, chaoY - 85, 14, 85); 
+            ctx.fillStyle = saudeEcologica < 25 ? "#451a03" : "#15803d";
+            ctx.beginPath(); ctx.arc(287 - cameraX + ventoOnda, chaoY - 95, 42, 0, Math.PI*2); ctx.fill();
 
-            ctx.fillStyle = "#0f172a"; ctx.fillRect(CONFIG.areaSilo.x - cameraX, CONFIG.areaSilo.y, CONFIG.areaSilo.largura, CONFIG.areaSilo.height);
-            ctx.fillStyle = "#334155"; ctx.beginPath(); ctx.arc(CONFIG.areaSilo.x + 50 - cameraX, CONFIG.areaSilo.y, 50, Math.PI, 0); ctx.fill();
-            ctx.fillStyle = "#f59e0b"; ctx.font = "bold 10px 'Orbitron'"; ctx.fillText("UPGRADES [I]", CONFIG.areaSilo.x + 8 - cameraX, CONFIG.areaSilo.y + 50);
+            // Poço de Extração Ancestral
+            ctx.fillStyle = "#334155"; ctx.fillRect(areaPoco.x - cameraX, areaPoco.y + 35, areaPoco.largura, 55); 
+            ctx.fillStyle = "#0f172a"; ctx.fillRect(areaPoco.x + 12 - cameraX, areaPoco.y + 45, areaPoco.largura - 24, 40); 
+            ctx.fillStyle = saudeEcologica < 25 ? "#581c87" : "#0284c7"; ctx.fillRect(areaPoco.x + 14 - cameraX, areaPoco.y + 52, areaPoco.largura - 28, 28); 
+            ctx.fillStyle = "#5c2d17"; ctx.fillRect(areaPoco.x + 12 - cameraX, areaPoco.y, 8, 35); ctx.fillRect(areaPoco.x + areaPoco.largura - 20 - cameraX, areaPoco.y, 8, 35); 
+            ctx.fillStyle = "#991b1b"; ctx.fillRect(areaPoco.x - 6 - cameraX, areaPoco.y - 6, areaPoco.largura + 12, 12); 
 
-            // Vedação de Campo (Cercado Linear)
-            ctx.fillStyle = "#1e293b";
-            for(let cX = 80; cX < 1650; cX += 45) {
-                ctx.fillRect(cX - cameraX, CONFIG.chaoY - 26, 4, 26);
-                ctx.fillRect(cX - cameraX, CONFIG.chaoY - 18, 45, 3);
+            // Silo de Armazenagem Central e Comercial
+            ctx.fillStyle = "#1e293b"; ctx.fillRect(areaSilo.x - cameraX, areaSilo.y, areaSilo.largura, areaSilo.height);
+            ctx.fillStyle = "#475569"; ctx.beginPath(); ctx.arc(areaSilo.x + 50 - cameraX, areaSilo.y, 50, Math.PI, 0); ctx.fill();
+            ctx.fillStyle = "#f59e0b"; ctx.font = "bold 11px sans-serif"; ctx.fillText("TECNOLOGIA [I]", areaSilo.x + 8 - cameraX, areaSilo.y + 65);
+
+            // Cercamento e Demarcação Territorial
+            ctx.fillStyle = "#451a03";
+            for(let cx = 80; cx < 1650; cx += 50) {
+                ctx.fillRect(cx - cameraX, chaoY - 28, 6, 28);
+                ctx.fillRect(cx - cameraX, chaoY - 20, 50, 4);
             }
 
-            // Render de Vetores de Partículas Físicas
+            // Injeção de Partículas Livres na Tela
             particulas.forEach(p => {
                 ctx.fillStyle = p.cor; ctx.globalAlpha = p.vida;
-                if(p.tipo === "texto") { ctx.font = "bold 12px 'Orbitron'"; ctx.fillText(p.texto, p.x - cameraX, p.y); }
-                else { ctx.fillRect(p.x - cameraX, p.y, p.tam, p.tam); }
+                if(p.tipo === "texto") {
+                    ctx.font = "bold 14px monospace";
+                    ctx.fillText(p.texto, p.x - cameraX, p.y);
+                } else {
+                    ctx.fillRect(p.x - cameraX, p.y, p.tam, p.tam);
+                }
                 ctx.globalAlpha = 1.0;
             });
 
-            // Vetores e Traçados Hídricos das Gotas de Chuva
-            if (climaAtual === "chuvoso") {
-                ctx.strokeStyle = "rgba(56, 189, 248, 0.4)"; ctx.lineWidth = 1.2;
-                gotasChuva.forEach(g => {
-                    ctx.beginPath(); ctx.moveTo(g.x - cameraX, g.y); ctx.lineTo(g.x - cameraX + g.vx, g.y + g.tam); ctx.stroke();
-                });
-            }
+            // Estrutura Geológica do Solo (Grama e Subsolo)
+            ctx.fillStyle = "#14110f"; ctx.fillRect(0, chaoY, canvas.width, canvas.height - chaoY);
+            ctx.fillStyle = saudeEcologica < 25 ? "#3f2314" : "#166534"; ctx.fillRect(0, chaoY, canvas.width, 16); 
 
-            // Solo Hidropônico e Crosta Biológica Superior
-            ctx.fillStyle = "#05050a"; ctx.fillRect(0, CONFIG.chaoY, canvas.width, canvas.height - CONFIG.chaoY);
-            ctx.fillStyle = saudeEcologica < 25 ? "#451a03" : "#064e3b"; ctx.fillRect(0, CONFIG.chaoY, canvas.width, 14);
+            // Estação de Monitoramento da Clarice
+            ctx.fillStyle = "#451a03"; 
+            ctx.fillRect(plataformaNPC.x + 25 - cameraX, plataformaNPC.y, 14, chaoY - plataformaNPC.y);
+            ctx.fillRect(plataformaNPC.x + plataformaNPC.largura - 39 - cameraX, plataformaNPC.y, 14, chaoY - plataformaNPC.y);
+            ctx.fillStyle = "#854d0e"; ctx.fillRect(plataformaNPC.x - cameraX, plataformaNPC.y, plataformaNPC.largura, plataformaNPC.height);
 
-            // Estrutura de Apoio da Plataforma Flutuante
-            ctx.fillStyle = "#0f172a";
-            ctx.fillRect(CONFIG.plataformaNPC.x + 20 - cameraX, CONFIG.plataformaNPC.y, 10, CONFIG.chaoY - CONFIG.plataformaNPC.y);
-            ctx.fillRect(CONFIG.plataformaNPC.x + CONFIG.plataformaNPC.largura - 30 - cameraX, CONFIG.plataformaNPC.y, 10, CONFIG.chaoY - CONFIG.plataformaNPC.y);
-            ctx.fillStyle = "#475569"; ctx.fillRect(CONFIG.plataformaNPC.x - cameraX, CONFIG.plataformaNPC.y, CONFIG.plataformaNPC.largura, CONFIG.plataformaNPC.height);
-
-            // Voo Fluido das Borboletas
-            if (saudeEcologica >= 30) {
-                borboletas.forEach(b => {
-                    ctx.fillStyle = b.cor; ctx.fillRect(b.x - cameraX, b.y, 4, 4);
-                });
-            }
-
-            // Camada Óptica de Interpolação de Luminosidade Noturna
+            // FILTRO DE ILUMINAÇÃO NOTURNA (Lightmaps via Código Matemático)
             if (horaMundo > 19 || horaMundo < 5) {
-                let opacidadeNoturna = horaMundo > 21 || horaMundo < 3 ? 0.65 : 0.4;
-                ctx.fillStyle = `rgba(4, 4, 15, ${opacidadeNoturna})`;
+                let opacidadeNoite = horaMundo > 21 || horaMundo < 3 ? 0.65 : 0.4;
+                ctx.fillStyle = `rgba(5, 5, 15, ${opacidadeNoite})`;
                 ctx.globalCompositeOperation = "multiply";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.globalCompositeOperation = "source-over";
@@ -628,147 +565,127 @@
 
         function desenharLotes() {
             lotes.forEach(lote => {
-                ctx.fillStyle = (lote.estado === 1) ? "#020617" : "#170c04";
+                ctx.fillStyle = (lote.estado === 1) ? "#14110f" : "#221208";
                 ctx.fillRect(lote.x - cameraX, lote.y, lote.largura, lote.altura);
 
+                // Automação visual por aspersor se upgrade ativo
                 if (jogador.upgrades.irrigacao && lote.estado > 0) {
-                    ctx.fillStyle = "#0ea5e9"; ctx.fillRect(lote.x + lote.largura/2 - 2 - cameraX, lote.y - 10, 4, 10);
-                    if(Math.random() < 0.2) emitirParticulas(lote.x + lote.largura/2, lote.y - 10, "#38bdf8", 1, "splash");
+                    ctx.fillStyle = "#38bdf8"; ctx.fillRect(lote.x + lote.largura/2 - 2 - cameraX, lote.y - 12, 4, 12);
+                    if(Math.random() < 0.2) emitirParticulas(lote.x + lote.largura/2, lote.y - 12, "#38bdf8", 1, "splash");
                 }
 
-                ctx.fillStyle = "#1e293b"; ctx.fillRect(lote.x + lote.largura/2 - 2 - cameraX, lote.y + lote.altura, 4, 14);
-                ctx.fillStyle = "#334155"; ctx.fillRect(lote.x + lote.largura/2 - 14 - cameraX, lote.y + lote.altura + 2, 28, 12);
-                ctx.fillStyle = "#ffffff"; ctx.font = "bold 8px 'Orbitron'"; ctx.fillText("LOTE " + lote.id, lote.x + lote.largura/2 - 12 - cameraX, lote.y + lote.altura + 11);
+                // Identificadores de Lote Placa Sombreada
+                ctx.fillStyle = "#451a03"; ctx.fillRect(lote.x + lote.largura/2 - 2 - cameraX, lote.y + lote.altura, 4, 14);
+                ctx.fillStyle = "#b45309"; ctx.fillRect(lote.x + lote.largura/2 - 14 - cameraX, lote.y + lote.altura + 3, 28, 12);
+                ctx.fillStyle = "#ffffff"; ctx.font = "bold 9px sans-serif"; ctx.fillText("LOT" + lote.id, lote.x + lote.largura/2 - 10 - cameraX, lote.y + lote.altura + 12);
 
                 let cX = lote.x + lote.largura / 2 - cameraX;
+                let cY = lote.y;
+
+                // Estágios Biológicos do Vegetal
                 if (lote.estado === 1 || lote.estado === 2) {
-                    let tamanhoMuda = lote.estado === 1 ? 18 : 9;
-                    ctx.fillStyle = "#10b981"; ctx.fillRect(cX - 2, lote.y - tamanhoMuda, 4, tamanhoMuda);
-                    ctx.fillStyle = "#047857"; ctx.fillRect(cX - 9, lote.y - tamanhoMuda + 2, 7, 3);
-                }
+                    let hMuda = lote.estado === 1 ? 18 : 8;
+                    ctx.fillStyle = "#4ade80"; ctx.fillRect(cX - 3, cY - hMuda, 6, hMuda); 
+                    ctx.fillStyle = "#16a34a"; ctx.fillRect(cX - 10, cY - hMuda + 2, 7, 4);
+                } 
                 else if (lote.estado === 3) {
-                    ctx.fillStyle = "#064e3b"; ctx.beginPath(); ctx.arc(cX, lote.y - 16, 20, 0, Math.PI*2); ctx.fill();
-                    ctx.fillStyle = lote.insumo === "organico" ? "#f59e0b" : "#9333ea";
-                    ctx.beginPath(); ctx.arc(cX, lote.y - 18, 9, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "#14532d"; ctx.beginPath(); ctx.arc(cX, cY - 16, 20, 0, Math.PI*2); ctx.fill();
+                    if (lote.insumo === "organico") {
+                        ctx.fillStyle = "#fbbf24"; ctx.beginPath(); ctx.arc(cX, cY - 18, 9, 0, Math.PI*2); ctx.fill(); // Frutos Ricos
+                    } else {
+                        ctx.fillStyle = "#ca8a04"; ctx.fillRect(cX - 12, cY - 26, 24, 10); // Mutação Química Cromática
+                    }
                 }
             });
         }
 
-        function desenharFauna() {
-            animais.forEach(ani => {
-                ctx.save(); ctx.translate(ani.x - cameraX, ani.y);
-                let oscilacaoMembro = ani.estado === "andando" ? Math.sin(tempoAnimacao * 4) * 2 : 0;
-                let caudaFisica = Math.sin(tempoAnimacao * 3) * 5;
-                let filtroPoluicao = saudeEcologica < 25 ? "#374151" : null;
+        function desenharInterfaceUpgrades() {
+            // Overlay do Painel de Upgrades Cyber-Agroecológicos
+            ctx.fillStyle = "rgba(10, 15, 30, 0.95)"; ctx.strokeStyle = "#3b82f6"; ctx.lineWidth = 4;
+            ctx.fillRect(180, 80, 600, 350); ctx.strokeRect(180, 80, 600, 350);
 
-                if (ani.tipo === "vaca") {
-                    ctx.fillStyle = filtroPoluicao || "#f8fafc"; ctx.fillRect(0, 10, ani.largura, 25);
-                    if (!filtroPoluicao) { ctx.fillStyle = "#0f172a"; ctx.fillRect(6, 12, 12, 10); ctx.fillRect(28, 16, 10, 10); }
-                    ctx.fillStyle = "#475569"; ctx.fillRect(-3, 12 + caudaFisica/2, 3, 10);
-                    ctx.fillStyle = "#1e293b";
-                    ctx.fillRect(4 + oscilacaoMembro, 35, 6, 7); ctx.fillRect(14 - oscilacaoMembro, 35, 6, 7);
-                    ctx.fillRect(28 + oscilacaoMembro, 35, 6, 7); ctx.fillRect(40 - oscilacaoMembro, 35, 6, 7);
-                    ctx.fillStyle = filtroPoluicao || "#e2e8f0";
-                    let dirHead = ani.direcao === 1 ? ani.largura - 4 : -12;
-                    ctx.fillRect(dirHead, 2, 16, 16);
-                    if (ani.prontoParaColeta && saudeEcologica >= 25) { ctx.fillStyle = "#ffffff"; ctx.font = "12px sans-serif"; ctx.fillText("🥛", 16, -6); }
-                }
-                else if (ani.tipo === "galinha") {
-                    let oscBico = (ani.estado === "bicando" && Math.floor(tempoAnimacao) % 3 === 0) ? 2 : 0;
-                    ctx.fillStyle = filtroPoluicao || "#ea580c"; ctx.fillRect(0, 4 + oscBico, ani.largura, 14);
-                    ctx.fillStyle = "#b45309"; ctx.fillRect(3, 18 + oscBico, 3, 2); ctx.fillRect(13, 18 + oscBico, 3, 2);
-                    if (ani.prontoParaColeta && saudeEcologica >= 25) { ctx.fillStyle = "#ffffff"; ctx.font = "12px sans-serif"; ctx.fillText("🥚", 4, -8); }
-                }
-                else if (ani.tipo === "ovelha") {
-                    ctx.fillStyle = filtroPoluicao || "#f1f5f9";
-                    ctx.beginPath(); ctx.arc(14, 15, 15, 0, Math.PI*2); ctx.arc(28, 16, 14, 0, Math.PI*2); ctx.fill();
-                    ctx.fillStyle = "#0f172a"; ctx.fillRect(4 + oscilacaoMembro, 28, 5, 8); ctx.fillRect(24 - oscilacaoMembro, 28, 5, 8);
-                    ctx.fillStyle = "#cbd5e1"; ctx.fillRect(ani.direcao === 1 ? ani.largura - 2 : -8, 6, 11, 11);
-                    if (ani.prontoParaColeta && saudeEcologica >= 25) { ctx.fillStyle = "#ffffff"; ctx.font = "12px sans-serif"; ctx.fillText("☁️", 12, -10); }
-                }
-                ctx.restore();
-            });
-        }
+            ctx.fillStyle = "#38bdf8"; ctx.font = "bold 20px monospace";
+            ctx.fillText("TERMINAL DE BIOTECNOLOGIA EXPANDIDA", 240, 120);
 
-        function desenharPainelUpgrades() {
-            ctx.fillStyle = "rgba(2, 3, 8, 0.98)"; ctx.strokeStyle = "#0284c7"; ctx.lineWidth = 3;
-            ctx.fillRect(180, 70, 600, 370); ctx.strokeRect(180, 70, 600, 370);
+            ctx.fillStyle = "#ffffff"; ctx.font = "14px sans-serif";
             
-            ctx.fillStyle = "#38bdf8"; ctx.font = "bold 18px 'Orbitron'";
-            ctx.fillText("TERMINAL OPERACIONAL BIOTEK", 215, 115);
-            ctx.font = "13px 'Inter'";
-            
-            let t1 = jogador.upgrades.irrigacao ? "[ESTÁVEL]" : "[Pressione 1] Integrar por $80";
-            ctx.fillStyle = jogador.upgrades.irrigacao ? "#10b981" : "#f59e0b";
-            ctx.fillText(`1. Aspersão Automatizada Integrada: ${t1}`, 220, 180);
-            ctx.fillStyle = "#64748b"; ctx.fillText("   -> Estabilização contínua de água sem necessidade de recarga manual.", 220, 200);
+            // Item 1
+            let u1 = jogador.upgrades.irrigacao ? "[ADQUIRIDO]" : "[Pressione 1] Adquirir por $80";
+            ctx.fillStyle = jogador.upgrades.irrigacao ? "#22c55e" : "#f59e0b";
+            ctx.fillText(`1. Micro-Aspersores Automáticos: ${u1}`, 220, 180);
+            ctx.fillStyle = "#94a3b8"; ctx.fillText("   -> Elimina a necessidade de regar os lotes manualmente.", 220, 200);
 
-            let t2 = jogador.upgrades.superSemente ? "[ESTÁVEL]" : "[Pressione 2] Integrar por $120";
-            ctx.fillStyle = jogador.upgrades.superSemente ? "#10b981" : "#f59e0b";
-            ctx.fillText(`2. Engenharia Genômica de Sementes: ${t2}`, 220, 250);
-            ctx.fillStyle = "#64748b"; ctx.fillText("   -> Alteração biológica molecular que incrementa os ganhos de colheita em 50%.", 220, 270);
+            // Item 2
+            let u2 = jogador.upgrades.superSemente ? "[ADQUIRIDO]" : "[Pressione 2] Adquirir por $120";
+            ctx.fillStyle = jogador.upgrades.superSemente ? "#22c55e" : "#f59e0b";
+            ctx.fillText(`2. Sementes de Alto Rendimento Organogênico: ${u2}`, 220, 240);
+            ctx.fillStyle = "#94a3b8"; ctx.fillText("   -> Acelera o crescimento celular e aumenta lucros em 40%.", 220, 260);
 
-            let t3 = jogador.upgrades.bioRacao ? "[ESTÁVEL]" : "[Pressione 3] Integrar por $150";
-            ctx.fillStyle = jogador.upgrades.bioRacao ? "#10b981" : "#f59e0b";
-            ctx.fillText(`3. Sintetizador de Biomassa Animal: ${t3}`, 220, 320);
-            ctx.fillStyle = "#64748b"; ctx.fillText("   -> Formulação alimentar de alta eficiência que otimiza rendimento animal em 60%.", 220, 340);
+            // Item 3
+            let u3 = jogador.upgrades.bioRacao ? "[ADQUIRIDO]" : "[Pressione 3] Adquirir por $150";
+            ctx.fillStyle = jogador.upgrades.bioRacao ? "#22c55e" : "#f59e0b";
+            ctx.fillText(`3. Sintetizador de Bio-Biomassa Animal: ${u3}`, 220, 320);
+            ctx.fillStyle = "#94a3b8"; ctx.fillText("   -> Incrementa em 50% o valor dos recursos animais coletados.", 220, 340);
 
-            ctx.fillStyle = "#475569"; ctx.font = "11px 'Orbitron'"; ctx.fillText("Comando [I]: Fechar Interface de Operação de Rede", 320, 415);
+            ctx.fillStyle = "#64748b"; ctx.font = "12px monospace";
+            ctx.fillText("Pressione [I] para sair do terminal e retornar ao campo.", 340, 400);
         }
 
         function desenharHUD() {
-            // Moldura Transparente de Monitoramento
-            ctx.fillStyle = "rgba(4, 6, 13, 0.9)"; ctx.strokeStyle = "rgba(51, 65, 85, 0.5)"; ctx.lineWidth = 2;
-            ctx.fillRect(20, 20, 460, 135); ctx.strokeRect(20, 20, 460, 135);
-            
-            ctx.fillStyle = "#fbbf24"; ctx.font = "bold 11px 'Orbitron'";
-            ctx.fillText(`● RESERVAS FINANCEIRAS DA REDE: $${dinheiro}`, 35, 45);
-            
-            ctx.fillStyle = "#f8fafc"; ctx.font = "11px 'Orbitron'";
-            ctx.fillText(`SAÚDE ECOLÓGICA DO VALE:  ${saudeEcologica}%`, 35, 74);
-            ctx.fillStyle = "#1e293b"; ctx.fillRect(260, 65, 180, 10);
-            ctx.fillStyle = (saudeEcologica < 25) ? "#ef4444" : "#10b981"; ctx.fillRect(260, 65, 1.8 * saudeEcologica, 10);
-            
-            ctx.fillStyle = "#f8fafc";
-            ctx.fillText(`CONSCIENTIZAÇÃO REGIONAL: ${conscientizacao}%`, 35, 100);
-            ctx.fillStyle = "#1e293b"; ctx.fillRect(260, 91, 180, 10);
-            ctx.fillStyle = "#3b82f6"; ctx.fillRect(260, 91, 1.8 * conscientizacao, 10);
-            
-            let horaFormatada = Math.floor(horaMundo).toString().padStart(2, '0') + ":00";
-            ctx.fillStyle = "#38bdf8"; ctx.fillText(`HORÁRIO DO VALE: ${horaFormatada} | CLIMA ATMOSFÉRICO: ${climaAtual.toUpperCase()}`, 35, 128);
+            // Placa HUD de Controle e Monitoramento
+            ctx.fillStyle = "rgba(15, 23, 42, 0.94)"; ctx.strokeStyle = "#475569"; ctx.lineWidth = 3;
+            ctx.fillRect(20, 20, 450, 130); ctx.strokeRect(20, 20, 450, 130);
 
-            // Terminal de Diálogo Inferior
-            ctx.fillStyle = "rgba(4, 6, 13, 0.95)"; ctx.strokeStyle = "rgba(30, 41, 59, 0.8)";
+            ctx.fillStyle = "#fbbf24"; ctx.font = "bold 12px monospace";
+            ctx.fillText(`● CAPITAL LÍQUIDO DISPONÍVEL: $${dinheiro}`, 35, 45);
+
+            ctx.fillStyle = "#f1f5f9";
+            ctx.fillText(`EQUILÍBRIO DA ECOESFERA:  ${saudeEcologica}%`, 35, 72);
+            ctx.fillStyle = "#334155"; ctx.fillRect(270, 62, 170, 12);
+            ctx.fillStyle = (saudeEcologica < 25) ? "#ef4444" : "#22c55e"; ctx.fillRect(270, 62, 1.7 * saudeEcologica, 12);
+
+            ctx.fillText(`CONSCIENTIZAÇÃO GLOBAL:   ${conscientizacao}%`, 35, 96);
+            ctx.fillStyle = "#334155"; ctx.fillRect(270, 86, 170, 12);
+            ctx.fillStyle = "#3b82f6"; ctx.fillRect(270, 86, 1.7 * conscientizacao, 12);
+
+            let strHora = Math.floor(horaMundo).toString().padStart(2, '0') + ":00";
+            ctx.fillStyle = "#38bdf8"; ctx.fillText(`CRONÔMETRO DO VALE: ${strHora}`, 35, 122);
+
+            // Terminal de Diálogo Inferior Estilizado
+            ctx.fillStyle = "rgba(15, 23, 42, 0.96)"; ctx.strokeStyle = "#334155"; ctx.lineWidth = 2;
             ctx.fillRect(20, 465, canvas.width - 40, 55); ctx.strokeRect(20, 465, canvas.width - 40, 55);
-            ctx.fillStyle = "#e2e8f0"; ctx.font = "13px 'Inter'"; ctx.fillText(dialogo, 40, 498);
+            ctx.fillStyle = "#f8fafc"; ctx.font = "13px Arial"; ctx.fillText(dialogo, 40, 498);
         }
 
-        function renderizar() {
-            desenharMundo();
+        function desenhar() {
+            desenharCenario();
             desenharLotes();
-            desenharFauna();
+            desenharAnimais();
 
-            desenharAgente(ctx, jogador.x, jogador.y, "#ef4444", "#1e293b", jogador.olhandoPara, jogador.andando, true);
-            desenharAgente(ctx, npc.x, npc.y, "#8b5cf6", "#f59e0b", "esquerda", false, false);
+            // Render de Atores Principais
+            desenharAvatar(ctx, jogador.x, jogador.y, "#ef4444", "#451a03", jogador.olhandoPara, jogador.andando, true);
+            desenharAvatar(ctx, npc.x, npc.y, "#a855f7", "#ca8a04", "esquerda", false, false);
 
             desenharHUD();
-            if (menuUpgradesAberto) desenharPainelUpgrades();
 
-            // Condição Crítica de Vitória do Ecossistema
+            if (menuUpgradesAberto) desenharInterfaceUpgrades();
+
+            // Tela de Vitória Absoluta e Conclusão de Narrativa
             if (conscientizacao >= 100) {
-                ctx.fillStyle = "#010205"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#10b981"; ctx.font = "bold 24px 'Orbitron'";
-                ctx.fillText("SISTEMA TOTALMENTE REGENERADO!", canvas.width/2 - 250, canvas.height/2 - 15);
-                ctx.fillStyle = "#94a3b8"; ctx.font = "14px 'Inter'";
-                ctx.fillText("Parabéns! O Vale Vivo atingiu a estabilidade simbiótica permanente.", canvas.width/2 - 255, canvas.height/2 + 20);
-                return;
+                ctx.fillStyle = "rgba(4, 10, 22, 0.98)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = "#22c55e"; ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+                ctx.fillStyle = "#22c55e"; ctx.font = "bold 26px monospace";
+                ctx.fillText("CIVILIZAÇÃO ECOLOGICAMENTE REGENERADA!", canvas.width/2 - 270, canvas.height/2 - 20);
+                ctx.fillStyle = "#cbd5e1"; ctx.font = "14px sans-serif";
+                ctx.fillText("Parabéns! Suas otimizações biológicas e alianças estratégicas uniram o Vale do Amanhã.", canvas.width/2 - 310, canvas.height/2 + 20);
+                ctx.fillText("A inteligência cibernética e a natureza agora operam em simbiose perfeita perpetuamente.", canvas.width/2 - 320, canvas.height/2 + 45);
             }
-            requestAnimationFrame(loop);
         }
 
         function loop() {
             atualizar();
-            renderizar();
+            desenhar();
+            requestAnimationFrame(loop);
         }
 
         loop();
