@@ -231,16 +231,23 @@
                 });
             }
 
-            // Diplomacia Social (Clarice)
+            // Diplomacia Social (Clarice) - MISSÕES TOTALMENTE CORRIGIDAS
             if (tecla === "c" && checarColisao(jogador, npc)) {
                 if (saudeEcologica >= 85) {
-                    if (!teclas["trava_c"]) { conscientizacao = Math.min(100, conscientizacao + 25); teclas["trava_c"] = true; }
-                    dialogo = "Clarice: Impressionante! Toda a comunidade está convertendo seus campos após seus resultados.";
-                    emitirParticulas(npc.x + 16, npc.y + 15, "#ec4899", 20);
+                    if (conscientizacao < 100) {
+                        conscientizacao = Math.min(100, conscientizacao + 25);
+                        dialogo = "Clarice: Impressionante! Toda a comunidade está convertendo seus campos após seus resultados!";
+                        emitirParticulas(npc.x + 16, npc.y + 15, "#ec4899", 20);
+                    } else {
+                        dialogo = "Clarice: Você salvou o Vale Vivo! A vila inteira agora vive em harmonia ecológica.";
+                        emitirParticulas(npc.x + 16, npc.y + 15, "#22c55e", 10);
+                    }
                 } else if (saudeEcologica < 30) {
-                    dialogo = "Clarice: Seus métodos industriais agressivos destruíram o lençol freático da vila!";
+                    dialogo = "Clarice: Pare imediatamente! Seus métodos industriais agressivos destruíram o lençol freático da vila!";
+                    emitirParticulas(npc.x + 16, npc.y + 15, "#ef4444", 8, "poeira");
                 } else {
                     dialogo = "Clarice: Suas terras estão estáveis, mas para mudar a mente dos anciãos, precisamos de 85% de Saúde Ecológica.";
+                    emitirParticulas(npc.x + 16, npc.y + 15, "#eab308", 5);
                 }
             }
         }
@@ -264,7 +271,6 @@
             if(horaMundo >= 24) horaMundo = 0;
 
             if (menuUpgradesAberto) {
-                // Se o menu estiver aberto, verifica inputs de clique de upgrade baseados em teclado
                 if (teclas["1"]) executarUpgrade("irrigacao", 80);
                 if (teclas["2"]) executarUpgrade("superSemente", 120);
                 if (teclas["3"]) executarUpgrade("bioRacao", 150);
@@ -285,8 +291,6 @@
                 jogador.y = plataformaNPC.y - jogador.altura; jogador.velY = 0; jogador.noChao = true; 
             }
             jogador.x = Math.max(0, Math.min(LARGURA_MUNDO - jogador.largura, jogador.x));
-
-            if (!checarColisao(jogador, npc)) teclas["trava_c"] = false;
 
             // Câmera Suave Baseada em Interpolação Linear (LERP)
             let idealCam = jogador.x - canvas.width / 2 + jogador.largura / 2;
@@ -329,7 +333,6 @@
                 });
             }
 
-            // Se a poluição estiver extrema, chove cinzas químicas
             if (saudeEcologica < 25 && Math.random() < 0.15) {
                 emitirParticulas(Math.random() * LARGURA_MUNDO, 0, "rgba(30,30,30,0.6)", 1, "folha");
             }
@@ -343,7 +346,6 @@
                 if (p.y > chaoY || p.vida <= 0) particulas.splice(i, 1);
             }
 
-            // Voo de Borboletas Baseado em Ruído Matemático Crítico
             if (saudeEcologica >= 35) {
                 borboletas.forEach(b => {
                     b.angulo += (Math.random() - 0.5) * 0.35;
@@ -355,8 +357,6 @@
             }
         }
 
-        // --- ENGINES GRÁFICOS DE ALTA PERFORMANCE ---
-
         function desenharAvatar(ctx, x, y, camisaCor, cabeloCor, rumo, emMovimento, principal) {
             let respiracao = Math.sin(tempoAnimacao * 1.5) * 0.7;
             let oscilaY = emMovimento ? Math.sin(tempoAnimacao * 3.0) * 2.5 : respiracao;
@@ -365,21 +365,17 @@
             ctx.save();
             ctx.translate(x - cameraX, y + oscilaY);
 
-            // Sombra Oclusiva Projetada
             ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
             ctx.beginPath(); ctx.ellipse(16, 53 - oscilaY, 15, 4.5, 0, 0, Math.PI * 2); ctx.fill();
 
-            // Calças e Botas de trabalho
             ctx.fillStyle = "#020617"; 
             ctx.fillRect(4 + pernasGiro, 44 - respiracao, 8, 9 + respiracao); 
             ctx.fillRect(18 - pernasGiro, 44 - respiracao, 8, 9 + respiracao); 
             ctx.fillStyle = "#1d4ed8"; ctx.fillRect(4, 32, 23, 13); 
 
-            // Jaqueta de Fibra Ecológica
             ctx.fillStyle = camisaCor; ctx.fillRect(3, 16, 25, 16); 
             ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fillRect(3, 29, 25, 3); 
 
-            // Dinâmica dos Braços Articulados
             ctx.fillStyle = camisaCor;
             let bracoBalanco = emMovimento ? 0 : Math.sin(tempoAnimacao) * 1.4;
             if (rumo === "direita") {
@@ -390,7 +386,6 @@
                 ctx.fillStyle = "#fee2e2"; ctx.fillRect(28, 31 + bracoBalanco, 5, 4);
             }
 
-            // Cabeça Pixels e Piscar Biométrico
             ctx.fillStyle = "#fee2e2"; ctx.fillRect(6, 4, 19, 13); 
             ctx.fillStyle = "#0f172a";
             let eyeX = rumo === "direita" ? 19 : 8;
@@ -399,18 +394,16 @@
                 ctx.fillRect(eyeX + (rumo === "direita" ? -6 : 6), 9, 3, 4);
             }
 
-            // Customização Capilar e Chapéus Estilizados
             ctx.fillStyle = cabeloCor; ctx.fillRect(5, 0, 21, 5); 
             if (rumo === "direita") { ctx.fillRect(5, 5, 5, 7); } else { ctx.fillRect(21, 5, 5, 7); }
 
             if (principal) {
-                ctx.fillStyle = "#f59e0b"; ctx.fillRect(-4, -1, 39, 4); // Chapéu aba larga
+                ctx.fillStyle = "#f59e0b"; ctx.fillRect(-4, -1, 39, 4); 
                 ctx.fillStyle = "#ca8a04"; ctx.fillRect(5, -6, 21, 6); 
             } else {
-                ctx.fillStyle = "#f43f5e"; ctx.fillRect(5, -2, 21, 3); // Tiara Cibernética
+                ctx.fillStyle = "#f43f5e"; ctx.fillRect(5, -2, 21, 3); 
             }
 
-            // Renderizador do Balde Hidrodinâmico
             if (principal && jogador.aguaNoBalde) {
                 let bx = rumo === "direita" ? 28 : -12;
                 ctx.fillStyle = "#64748b"; ctx.fillRect(bx, 24, 13, 13);
@@ -426,14 +419,13 @@
                 let cicloMov = ani.estado === "andando" ? Math.sin(tempoAnimacao * 4.0) * 2.0 : 0;
                 let caudaFisica = Math.sin(tempoAnimacao * 3.0) * 5;
 
-                // Mutação cromática por contaminação química severa
                 let corPoluida = saudeEcologica < 25 ? "#4b5563" : null;
 
                 if (ani.tipo === "vaca") {
                     ctx.fillStyle = corPoluida || "#f8fafc"; ctx.fillRect(0, 10, ani.largura, 25); 
                     if (!corPoluida) { ctx.fillStyle = "#0f172a"; ctx.fillRect(8, 12, 14, 11); ctx.fillRect(30, 15, 12, 12); }
-                    ctx.fillStyle = "#475569"; ctx.fillRect(-4, 12 + caudaFisica/2, 3, 12); // Cauda
-                    ctx.fillStyle = "#334155"; // Membros
+                    ctx.fillStyle = "#475569"; ctx.fillRect(-4, 12 + caudaFisica/2, 3, 12); 
+                    ctx.fillStyle = "#334155"; 
                     ctx.fillRect(4 + cicloMov, 35, 6, 8); ctx.fillRect(15 - cicloMov, 35, 6, 8);
                     ctx.fillRect(30 + cicloMov, 35, 6, 8); ctx.fillRect(42 - cicloMov, 35, 6, 8);
                     
@@ -471,67 +463,59 @@
         }
 
         function desenharCenario() {
-            // Render de Iluminação Matemática do Céu Dinâmico
             let r, g, b;
             if (saudeEcologica < 25) {
-                r = 38; g = 38; b = 42; // Céu poluído ácido
+                r = 38; g = 38; b = 42; 
             } else {
                 if (horaMundo >= 5 && horaMundo < 11) { 
-                    let t = (horaMundo - 5) / 6; r = 40 + t*60; g = 30 + t*110; b = 100 + t*120; // Amanhecer Cósmico
+                    let t = (horaMundo - 5) / 6; r = 40 + t*60; g = 30 + t*110; b = 100 + t*120; 
                 } else if (horaMundo >= 11 && horaMundo < 17) { 
-                    r = 100; g = 145; b = 225; // Pleno Dia
+                    r = 100; g = 145; b = 225; 
                 } else if (horaMundo >= 17 && horaMundo < 20) { 
-                    let t = (horaMundo - 17) / 3; r = 100 + t*130; g = 145 - t*105; b = 225 - t*175; // Pôr do Sol
+                    let t = (horaMundo - 17) / 3; r = 100 + t*130; g = 145 - t*105; b = 225 - t*175; 
                 } else { 
-                    r = 12; g = 16; b = 32; // Noite profunda estrelada
+                    r = 12; g = 16; b = 32; 
                 }
             }
 
             ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Abóbada Estrelada Cintiante
             if (horaMundo > 19 || horaMundo < 5) {
                 ctx.fillStyle = "#ffffff";
                 estrelas.forEach(e => {
                     ctx.globalAlpha = Math.abs(Math.sin(tempoAnimacao * 0.8 + e.brilho * 8));
-                    ctx.fillRect(e.x - cameraX * 0.4, e.y, e.tam, e.tam); // Paralaxe nas estrelas
+                    ctx.fillRect(e.x - cameraX * 0.4, e.y, e.tam, e.tam); 
                 });
                 ctx.globalAlpha = 1.0;
             }
 
-            // Camadas de Montanhas (Efeito de Paralaxe Profundo)
             ctx.fillStyle = saudeEcologica < 25 ? "#1f2937" : "#14532d";
             ctx.beginPath(); ctx.moveTo(0, chaoY); ctx.lineTo(300 - cameraX * 0.3, 250); ctx.lineTo(750 - cameraX * 0.3, chaoY); ctx.fill();
             ctx.fillStyle = saudeEcologica < 25 ? "#374151" : "#166534";
             ctx.beginPath(); ctx.moveTo(150 - cameraX * 0.6, chaoY); ctx.lineTo(600 - cameraX * 0.6, 210); ctx.lineTo(1100 - cameraX * 0.6, chaoY); ctx.fill();
 
-            // Árvores com Simulação Volumétrica de Copas
             let ventoOnda = Math.sin(tempoAnimacao) * 2.8;
             ctx.fillStyle = "#3b1e08"; ctx.fillRect(280 - cameraX, chaoY - 85, 14, 85); 
             ctx.fillStyle = saudeEcologica < 25 ? "#451a03" : "#15803d";
             ctx.beginPath(); ctx.arc(287 - cameraX + ventoOnda, chaoY - 95, 42, 0, Math.PI*2); ctx.fill();
 
-            // Poço de Extração Ancestral
             ctx.fillStyle = "#334155"; ctx.fillRect(areaPoco.x - cameraX, areaPoco.y + 35, areaPoco.largura, 55); 
             ctx.fillStyle = "#0f172a"; ctx.fillRect(areaPoco.x + 12 - cameraX, areaPoco.y + 45, areaPoco.largura - 24, 40); 
             ctx.fillStyle = saudeEcologica < 25 ? "#581c87" : "#0284c7"; ctx.fillRect(areaPoco.x + 14 - cameraX, areaPoco.y + 52, areaPoco.largura - 28, 28); 
             ctx.fillStyle = "#5c2d17"; ctx.fillRect(areaPoco.x + 12 - cameraX, areaPoco.y, 8, 35); ctx.fillRect(areaPoco.x + areaPoco.largura - 20 - cameraX, areaPoco.y, 8, 35); 
             ctx.fillStyle = "#991b1b"; ctx.fillRect(areaPoco.x - 6 - cameraX, areaPoco.y - 6, areaPoco.largura + 12, 12); 
 
-            // Silo de Armazenagem Central e Comercial
             ctx.fillStyle = "#1e293b"; ctx.fillRect(areaSilo.x - cameraX, areaSilo.y, areaSilo.largura, areaSilo.height);
             ctx.fillStyle = "#475569"; ctx.beginPath(); ctx.arc(areaSilo.x + 50 - cameraX, areaSilo.y, 50, Math.PI, 0); ctx.fill();
             ctx.fillStyle = "#f59e0b"; ctx.font = "bold 11px sans-serif"; ctx.fillText("TECNOLOGIA [I]", areaSilo.x + 8 - cameraX, areaSilo.y + 65);
 
-            // Cercamento e Demarcação Territorial
             ctx.fillStyle = "#451a03";
             for(let cx = 80; cx < 1650; cx += 50) {
                 ctx.fillRect(cx - cameraX, chaoY - 28, 6, 28);
                 ctx.fillRect(cx - cameraX, chaoY - 20, 50, 4);
             }
 
-            // Injeção de Partículas Livres na Tela
             particulas.forEach(p => {
                 ctx.fillStyle = p.cor; ctx.globalAlpha = p.vida;
                 if(p.tipo === "texto") {
@@ -543,17 +527,14 @@
                 ctx.globalAlpha = 1.0;
             });
 
-            // Estrutura Geológica do Solo (Grama e Subsolo)
             ctx.fillStyle = "#14110f"; ctx.fillRect(0, chaoY, canvas.width, canvas.height - chaoY);
             ctx.fillStyle = saudeEcologica < 25 ? "#3f2314" : "#166534"; ctx.fillRect(0, chaoY, canvas.width, 16); 
 
-            // Estação de Monitoramento da Clarice
             ctx.fillStyle = "#451a03"; 
             ctx.fillRect(plataformaNPC.x + 25 - cameraX, plataformaNPC.y, 14, chaoY - plataformaNPC.y);
             ctx.fillRect(plataformaNPC.x + plataformaNPC.largura - 39 - cameraX, plataformaNPC.y, 14, chaoY - plataformaNPC.y);
             ctx.fillStyle = "#854d0e"; ctx.fillRect(plataformaNPC.x - cameraX, plataformaNPC.y, plataformaNPC.largura, plataformaNPC.height);
 
-            // FILTRO DE ILUMINAÇÃO NOTURNA (Lightmaps via Código Matemático)
             if (horaMundo > 19 || horaMundo < 5) {
                 let opacidadeNoite = horaMundo > 21 || horaMundo < 3 ? 0.65 : 0.4;
                 ctx.fillStyle = `rgba(5, 5, 15, ${opacidadeNoite})`;
@@ -568,13 +549,11 @@
                 ctx.fillStyle = (lote.estado === 1) ? "#14110f" : "#221208";
                 ctx.fillRect(lote.x - cameraX, lote.y, lote.largura, lote.altura);
 
-                // Automação visual por aspersor se upgrade ativo
                 if (jogador.upgrades.irrigacao && lote.estado > 0) {
                     ctx.fillStyle = "#38bdf8"; ctx.fillRect(lote.x + lote.largura/2 - 2 - cameraX, lote.y - 12, 4, 12);
                     if(Math.random() < 0.2) emitirParticulas(lote.x + lote.largura/2, lote.y - 12, "#38bdf8", 1, "splash");
                 }
 
-                // Identificadores de Lote Placa Sombreada
                 ctx.fillStyle = "#451a03"; ctx.fillRect(lote.x + lote.largura/2 - 2 - cameraX, lote.y + lote.altura, 4, 14);
                 ctx.fillStyle = "#b45309"; ctx.fillRect(lote.x + lote.largura/2 - 14 - cameraX, lote.y + lote.altura + 3, 28, 12);
                 ctx.fillStyle = "#ffffff"; ctx.font = "bold 9px sans-serif"; ctx.fillText("LOT" + lote.id, lote.x + lote.largura/2 - 10 - cameraX, lote.y + lote.altura + 12);
@@ -582,7 +561,6 @@
                 let cX = lote.x + lote.largura / 2 - cameraX;
                 let cY = lote.y;
 
-                // Estágios Biológicos do Vegetal
                 if (lote.estado === 1 || lote.estado === 2) {
                     let hMuda = lote.estado === 1 ? 18 : 8;
                     ctx.fillStyle = "#4ade80"; ctx.fillRect(cX - 3, cY - hMuda, 6, hMuda); 
@@ -591,9 +569,9 @@
                 else if (lote.estado === 3) {
                     ctx.fillStyle = "#14532d"; ctx.beginPath(); ctx.arc(cX, cY - 16, 20, 0, Math.PI*2); ctx.fill();
                     if (lote.insumo === "organico") {
-                        ctx.fillStyle = "#fbbf24"; ctx.beginPath(); ctx.arc(cX, cY - 18, 9, 0, Math.PI*2); ctx.fill(); // Frutos Ricos
+                        ctx.fillStyle = "#fbbf24"; ctx.beginPath(); ctx.arc(cX, cY - 18, 9, 0, Math.PI*2); ctx.fill(); 
                     } else {
-                        ctx.fillStyle = "#ca8a04"; ctx.fillRect(cX - 12, cY - 26, 24, 10); // Mutação Química Cromática
+                        ctx.fillStyle = "#ca8a04"; ctx.fillRect(cX - 12, cY - 26, 24, 10); 
                     }
                 }
             });
@@ -604,87 +582,81 @@
             ctx.fillStyle = "rgba(10, 15, 30, 0.95)"; ctx.strokeStyle = "#3b82f6"; ctx.lineWidth = 4;
             ctx.fillRect(180, 80, 600, 350); ctx.strokeRect(180, 80, 600, 350);
 
-            ctx.fillStyle = "#38bdf8"; ctx.font = "bold 20px monospace";
-            ctx.fillText("TERMINAL DE BIOTECNOLOGIA EXPANDIDA", 240, 120);
+            ctx.fillStyle = "#38bdf8"; 
+            ctx.font = "bold 20px 'Segoe UI', sans-serif";
+            ctx.fillText("PAINEL DE UPGRADES TECNOLÓGICOS", 220, 120);
 
-            ctx.fillStyle = "#ffffff"; ctx.font = "14px sans-serif";
-            
-            // Item 1
-            let u1 = jogador.upgrades.irrigacao ? "[ADQUIRIDO]" : "[Pressione 1] Adquirir por $80";
-            ctx.fillStyle = jogador.upgrades.irrigacao ? "#22c55e" : "#f59e0b";
-            ctx.fillText(`1. Micro-Aspersores Automáticos: ${u1}`, 220, 180);
-            ctx.fillStyle = "#94a3b8"; ctx.fillText("   -> Elimina a necessidade de regar os lotes manualmente.", 220, 200);
+            ctx.font = "14px 'Segoe UI', sans-serif";
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillText("Pressione o número correspondente para adquirir:", 220, 150);
 
-            // Item 2
-            let u2 = jogador.upgrades.superSemente ? "[ADQUIRIDO]" : "[Pressione 2] Adquirir por $120";
-            ctx.fillStyle = jogador.upgrades.superSemente ? "#22c55e" : "#f59e0b";
-            ctx.fillText(`2. Sementes de Alto Rendimento Organogênico: ${u2}`, 220, 240);
-            ctx.fillStyle = "#94a3b8"; ctx.fillText("   -> Acelera o crescimento celular e aumenta lucros em 40%.", 220, 260);
+            // Item 1: Irrigação Automatizada
+            ctx.fillStyle = jogador.upgrades.irrigacao ? "#22c55e" : "#f1f5f9";
+            ctx.fillText("[1] Sistema de Aspersores Bióticos (Custo: $80)", 220, 200);
+            ctx.fillStyle = "#64748b";
+            ctx.fillText(jogador.upgrades.irrigacao ? "-> ATIVADO (Lotes não precisam mais de rega manual)" : "-> Mantém o solo permanentemente úmido", 240, 220);
 
-            // Item 3
-            let u3 = jogador.upgrades.bioRacao ? "[ADQUIRIDO]" : "[Pressione 3] Adquirir por $150";
-            ctx.fillStyle = jogador.upgrades.bioRacao ? "#22c55e" : "#f59e0b";
-            ctx.fillText(`3. Sintetizador de Bio-Biomassa Animal: ${u3}`, 220, 320);
-            ctx.fillStyle = "#94a3b8"; ctx.fillText("   -> Incrementa em 50% o valor dos recursos animais coletados.", 220, 340);
+            // Item 2: Super Sementes
+            ctx.fillStyle = jogador.upgrades.superSemente ? "#22c55e" : "#f1f5f9";
+            ctx.fillText("[2] Engenharia de Super Sementes (Custo: $120)", 220, 260);
+            ctx.fillStyle = "#64748b";
+            ctx.fillText(jogador.upgrades.superSemente ? "-> ATIVADO (+40% de Lucro e +60% de velocidade)" : "-> Aumenta a velocidade de crescimento e o valor de venda", 240, 280);
 
-            ctx.fillStyle = "#64748b"; ctx.font = "12px monospace";
-            ctx.fillText("Pressione [I] para sair do terminal e retornar ao campo.", 340, 400);
+            // Item 3: Bio-Ração
+            ctx.fillStyle = jogador.upgrades.bioRacao ? "#22c55e" : "#f1f5f9";
+            ctx.fillText("[3] Bio-Ração de Fitoplâncton (Custo: $150)", 220, 340);
+            ctx.fillStyle = "#64748b";
+            ctx.fillText(jogador.upgrades.bioRacao ? "-> ATIVADO (+50% de rendimento dos animais)" : "-> Maximiza a coleta de recursos dos animais da fazenda", 240, 360);
+
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 13px sans-serif";
+            ctx.fillText("Pressione [I] para Fechar o Menu", 380, 400);
         }
 
         function desenharHUD() {
-            // Placa HUD de Controle e Monitoramento
-            ctx.fillStyle = "rgba(15, 23, 42, 0.94)"; ctx.strokeStyle = "#475569"; ctx.lineWidth = 3;
-            ctx.fillRect(20, 20, 450, 130); ctx.strokeRect(20, 20, 450, 130);
+            ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+            ctx.fillRect(0, 0, canvas.width, 50);
 
-            ctx.fillStyle = "#fbbf24"; ctx.font = "bold 12px monospace";
-            ctx.fillText(`● CAPITAL LÍQUIDO DISPONÍVEL: $${dinheiro}`, 35, 45);
+            ctx.font = "bold 14px sans-serif";
+            ctx.fillStyle = "#22c55e";
+            ctx.fillText(`Capital: $${dinheiro}`, 20, 30);
+
+            let corEco = saudeEcologica > 60 ? "#22c55e" : (saudeEcologica > 30 ? "#eab308" : "#ef4444");
+            ctx.fillStyle = corEco;
+            ctx.fillText(`Saúde Ecológica: ${saudeEcologica}%`, 180, 30);
+
+            ctx.fillStyle = "#ec4899";
+            ctx.fillText(`Conscientização: ${conscientizacao}%`, 400, 30);
+
+            ctx.fillStyle = "#94a3b8";
+            let minutos = Math.floor((horaMundo % 1) * 60).toString().padStart(2, '0');
+            let horas = Math.floor(horaMundo).toString().padStart(2, '0');
+            ctx.fillText(`Tempo: ${horas}:${minutos}h`, 620, 30);
+
+            ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+            ctx.fillRect(10, canvas.height - 45, canvas.width - 20, 35);
+            ctx.strokeStyle = "#1e293b";
+            ctx.strokeRect(10, canvas.height - 45, canvas.width - 20, 35);
 
             ctx.fillStyle = "#f1f5f9";
-            ctx.fillText(`EQUILÍBRIO DA ECOESFERA:  ${saudeEcologica}%`, 35, 72);
-            ctx.fillStyle = "#334155"; ctx.fillRect(270, 62, 170, 12);
-            ctx.fillStyle = (saudeEcologica < 25) ? "#ef4444" : "#22c55e"; ctx.fillRect(270, 62, 1.7 * saudeEcologica, 12);
-
-            ctx.fillText(`CONSCIENTIZAÇÃO GLOBAL:   ${conscientizacao}%`, 35, 96);
-            ctx.fillStyle = "#334155"; ctx.fillRect(270, 86, 170, 12);
-            ctx.fillStyle = "#3b82f6"; ctx.fillRect(270, 86, 1.7 * conscientizacao, 12);
-
-            let strHora = Math.floor(horaMundo).toString().padStart(2, '0') + ":00";
-            ctx.fillStyle = "#38bdf8"; ctx.fillText(`CRONÔMETRO DO VALE: ${strHora}`, 35, 122);
-
-            // Terminal de Diálogo Inferior Estilizado
-            ctx.fillStyle = "rgba(15, 23, 42, 0.96)"; ctx.strokeStyle = "#334155"; ctx.lineWidth = 2;
-            ctx.fillRect(20, 465, canvas.width - 40, 55); ctx.strokeRect(20, 465, canvas.width - 40, 55);
-            ctx.fillStyle = "#f8fafc"; ctx.font = "13px Arial"; ctx.fillText(dialogo, 40, 498);
-        }
-
-        function desenhar() {
-            desenharCenario();
-            desenharLotes();
-            desenharAnimais();
-
-            // Render de Atores Principais
-            desenharAvatar(ctx, jogador.x, jogador.y, "#ef4444", "#451a03", jogador.olhandoPara, jogador.andando, true);
-            desenharAvatar(ctx, npc.x, npc.y, "#a855f7", "#ca8a04", "esquerda", false, false);
-
-            desenharHUD();
-
-            if (menuUpgradesAberto) desenharInterfaceUpgrades();
-
-            // Tela de Vitória Absoluta e Conclusão de Narrativa
-            if (conscientizacao >= 100) {
-                ctx.fillStyle = "rgba(4, 10, 22, 0.98)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = "#22c55e"; ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
-                ctx.fillStyle = "#22c55e"; ctx.font = "bold 26px monospace";
-                ctx.fillText("CIVILIZAÇÃO ECOLOGICAMENTE REGENERADA!", canvas.width/2 - 270, canvas.height/2 - 20);
-                ctx.fillStyle = "#cbd5e1"; ctx.font = "14px sans-serif";
-                ctx.fillText("Parabéns! Suas otimizações biológicas e alianças estratégicas uniram o Vale do Amanhã.", canvas.width/2 - 310, canvas.height/2 + 20);
-                ctx.fillText("A inteligência cibernética e a natureza agora operam em simbiose perfeita perpetuamente.", canvas.width/2 - 320, canvas.height/2 + 45);
-            }
+            ctx.font = "13px sans-serif";
+            ctx.fillText(dialogo, 25, canvas.height - 23);
         }
 
         function loop() {
             atualizar();
-            desenhar();
+            desenharCenario();
+            desenharLotes();
+            desenharAnimais();
+            
+            desenharAvatar(ctx, npc.x, npc.y, "#db2777", "#f472b6", "esquerda", false, false); 
+            desenharAvatar(ctx, jogador.x, jogador.y, "#0284c7", "#f59e0b", jogador.olhandoPara, jogador.andando, true); 
+
+            if (menuUpgradesAberto) {
+                desenharInterfaceUpgrades();
+            }
+            
+            desenharHUD();
             requestAnimationFrame(loop);
         }
 
